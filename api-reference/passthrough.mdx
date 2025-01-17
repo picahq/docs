@@ -1,0 +1,20 @@
+---
+title: 'Passthrough API'
+description: 'Documentation for the Pica Passthrough API'
+---
+
+The Passthrough API is a powerful tool that allows you to interact directly with the underlying API of any integration.
+
+<Warning>
+  Responses from the Passthrough API are not unified
+</Warning> 
+
+### Base URL
+```
+https://api.picaos.com/v1/passthrough/{path}
+```
+Where `{path}` corresponds to the endpoint path in the third-party API's documentation.
+
+### Required Headers
+- `x-pica-secret`: Your Pica API key
+- `x-pica-connection-key`: The connection key for the specific integration

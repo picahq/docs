@@ -1,0 +1,54 @@
+---
+title: 'AuthKit (Early Access)'
+description: 'A drop-in web component designed for developers building agents, enabling their customers to securely and easily connect to various tools and services.'
+icon: 'link'
+---
+
+<Tip>
+Key Benefit: Empowers developers to offer seamless and secure tool integrations to their customers, ensuring a smooth onboarding experience while prioritizing security.
+</Tip>
+
+# Quick Start with AuthKit
+
+## Server
+
+```typescript
+import { NextRequest, NextResponse } from "next/server";
+import { AuthKitToken } from "@picahq/authkit-node";
+
+export async function POST(req: NextRequest) {
+  const authKitToken = new AuthKitToken(process.env.PICA_SANDBOX_API_KEY as string);
+  
+  const token = await authKitToken.create({
+    identity: "user_123", // a meaningful identifier (i.e., userId, teamId or organizationId)
+    identityType: "user" // can be either user, team or organization
+  });
+
+  return NextResponse.json(token);
+}
+```
+
+## Client
+
+```typescript
+import { useAuthKit } from "@picahq/authkit";
+import { Button } from "@/components/ui/button";
+
+export function AuthKitButton() {
+  const { open } = useAuthKit({
+    token: {
+      url: "https://api.your-company-name.com/authkit-token",
+      headers: {},
+    },
+    onSuccess: (connection) => {},
+    onError: (error) => {},
+    onClose: () => {},
+  });
+
+  return (
+    <Button onClick={open}>
+      Connect Tools
+    </Button>
+  );
+}
+```

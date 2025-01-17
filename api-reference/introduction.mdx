@@ -1,33 +1,22 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'Overview'
+description: 'A guide to the Pica API fundamentals'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+Pica provides powerful APIs that enable you to build, deploy, and scale AI agents with seamless access to over 100+ integrations and tools. 
+Connect your AI to QuickBooks, Salesforce, HubSpot, Shopify, and more leading platforms through our Unified API via Common Models to unlock real-time data and automation capabilities.
 
-## Welcome
+## Vault API
+The Connections API provides endpoints to manage your integrations through listing, deleting, and viewing connection details.
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+## Unified API 
+Our standardized API layer enables LLMs to interact with third-party services through common models. Features include:
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+- Integration with QuickBooks, Salesforce, HubSpot, Shopify and [more](https://www.picaos.com/community/connectors)
+- Standard CRUD operations across all integrations
+- Built-in authentication and connection management
+- AI SDK support for LLM capabilities
 
-## Authentication
+## Transaction Keys
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
-
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
-```
+A transactionKey is a unique ID returned as part of the response body for every Pica API response. The transactionKey can be used to look up the request in the Logs and should be included when contacting Support regarding a specific API call.

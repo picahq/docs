@@ -1,0 +1,71 @@
+---
+title: 'List Connections'
+api: 'GET https://api.integrationos.com/v1/vault/connections'
+description: 'List available Connections'
+---
+
+## Query Parameters
+
+<ParamField query="_id" type="string">
+  The Connection ID
+</ParamField>
+
+<ParamField query="platformVersion" type="string">
+  The platform version
+</ParamField>
+
+<ParamField query="name" type="string">
+  The Connection name
+</ParamField>
+
+<ParamField query="key" type="string">
+  The Connection Key
+</ParamField>
+
+<ParamField query="identity" type="string">
+  The Connection identifier
+</ParamField>
+
+<ParamField query="identityType" type="string">
+  The Identity type (user, team, organization)
+</ParamField>
+
+<ParamField query="platform" type="string">
+  The platform
+</ParamField>
+
+<ParamField query="active" type="boolean">
+  The Connection status
+</ParamField>
+
+## Response
+
+<ResponseField name="connections" type="Connection[]">
+  Array of Connection objects
+</ResponseField>
+
+<RequestExample>
+```bash Example Request
+curl --location --request GET 'https://api.integrationos.com/v1/vault/connections' \
+--header 'Authorization: Bearer <token>'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "connections": [
+    {
+      "_id": "conn_123",
+      "platformVersion": "2.0",
+      "name": "My Connection",
+      "key": "connection_key",
+      "identity": "user_123",
+      "identityType": "user",
+      "platform": "salesforce",
+      "active": true
+    }
+  ]
+}
+```
+</ResponseExample>

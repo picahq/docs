@@ -1,0 +1,30 @@
+---
+title: 'Authentication'
+description: 'Learn how to authenticate your API requests'
+---
+
+Pica authenticates your API requests using API keys. Include your API key in the `x-pica-secret` header of your requests:
+
+```bash
+x-pica-secret: YOUR_API_KEY
+```
+
+<Note>
+  Need an API key? Sign up for a [Pica account](https://app.picaos.com) to get started with our APIs.
+</Note>
+
+### Environments
+
+From the dashboard, you can create two different types of API keys that correspond to two distinct development environments:
+
+<ResponseField name="Sandbox" type="environment">
+  Build out your end-to-end Integration UX safely using test credentials
+</ResponseField>
+
+<ResponseField name="Production" type="environment">
+  Launch your new Integration UX confidently using isolated live credentials
+</ResponseField>
+
+## Connection Scoping
+
+Connections are scoped to Environment and cannot be moved between environments once created. Both Sandbox and Production environments include unlimited Connections and unlimited API calls. All testing should be done in the Sandbox environment.
