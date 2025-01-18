@@ -17,10 +17,43 @@ Follow these 3 steps to get connected to Pica 🚀
     ></video>
   </Step>
   <Step title="Connect your Integration">
-  
     Add a connection via the Pica Dashboard [OneTool Tab](https://app.picaos.com/connections).
+
+    <video
+      muted
+      controls
+      className="w-full aspect-video"
+      src="../videos/add-connection.mp4"
+    ></video>
   </Step>
   <Step title="Install OneTool">
-    Connect the tools from the Pica AI SDK to your LLM.
+    Connect the tools from the [Pica AI SDK](http://localhost:3000/sdk/vercel-ai) to your LLM.
+    
+```typescript Example in Router using Vercel AI SDK
+import { openai } from "@ai-sdk/openai";
+import { convertToCoreMessages, streamText } from "ai";
+import { Pica } from "@picahq/ai";
+
+export async function POST(request: Request) {
+  const { messages } = await request.json();
+
+  const pica = new Pica(process.env.PICA_SECRET_KEY as string);
+
+  const systemPrompt = await pica.generateSystemPrompt();
+
+  const stream = streamText({
+    model: openai("gpt-4"),
+    system: systemPrompt,
+    tools: { ...pica.oneTool },
+    messages: convertToCoreMessages(messages),
+    maxSteps: 5,
+  });
+
+  return (await stream).toDataStreamResponse();
+}
+```
+  <Note>
+    Make sure to set your `PICA_SECRET_KEY` and `OPENAI_API_KEY` in your environment variables.
+  </Note>
   </Step>
 </Steps>
