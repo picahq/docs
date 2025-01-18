@@ -4,8 +4,8 @@ description: 'Generate AI content using the Vercel AI SDK'
 icon: 'wand-magic-sparkles'
 ---
 
-<Card title="> @picahq/pica" icon="github" href="https://github.com/picahq/pica" horizontal>
-Check out our GitHub repository to explore the code, contribute, or raise issues.
+<Card title="> @picahq/ai" icon="npm" href="https://npmjs.com/package/@picahq/ai" horizontal>
+Install the Pica AI package to unlock powerful tools for the Vercel AI SDK
 </Card>
 
 The Vercel AI SDK integration allows you to generate AI content using Pica's powerful AI models. This guide will show you how to use the SDK to generate content in your applications.
@@ -18,10 +18,36 @@ Install the [Pica AI package](https://npmjs.com/package/@picahq/ai):
 npm install @picahq/ai
 ```
 
-## Usage
+## Example Usage with OpenAI
 
-Import and initialize the AI client:
+Install the [Vercel AI SDK](https://npmjs.com/package/ai) and [OpenAI](https://npmjs.com/package/openai) packages:
+
+```bash
+npm install ai openai
+```
+
+Here's an example of using Pica with OpenAI in a Next.js API route:
 
 ```typescript
-import { PicaAI } from '@picahq/ai';
+import { openai } from "@ai-sdk/openai";
+import { convertToCoreMessages, streamText } from "ai";
+import { Pica } from "@picahq/ai";
+
+export async function POST(request: Request) {
+  const { messages } = await request.json();
+
+  const pica = new Pica(process.env.PICA_SECRET_KEY as string);
+
+  const systemPrompt = await pica.generateSystemPrompt();
+
+  const stream = streamText({
+    model: openai("gpt-4o"),
+    system: systemPrompt,
+    tools: { ...pica.oneTool },
+    messages: convertToCoreMessages(messages),
+    maxSteps: 5,
+  });
+
+  return (await stream).toDataStreamResponse();
+}
 ```
