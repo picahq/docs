@@ -693,5 +693,11 @@
     "x": "https://x.com/picahq",
     "github": "https://github.com/picahq",
     "linkedin": "https://linkedin.com/company/picahq"
+  },
+  "api": {
+    "auth": {
+      "method": "key",
+      "name": "x-pica-secret"
+    }
   }
 }

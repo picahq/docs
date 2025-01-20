@@ -1,6 +1,6 @@
 ---
 title: 'Vercel AI SDK'
-description: 'Generate AI content using the Vercel AI SDK'
+description: 'Connect Pica with the Vercel AI SDK for enhanced AI capabilities'
 icon: 'wand-magic-sparkles'
 ---
 
@@ -8,7 +8,7 @@ icon: 'wand-magic-sparkles'
 Install the Pica AI package to unlock powerful tools for the Vercel AI SDK
 </Card>
 
-The Vercel AI SDK integration allows you to generate AI content using Pica's powerful AI models. This guide will show you how to use the SDK to generate content in your applications.
+The Pica AI SDK is a powerful tool that allows you connect Pica with Vercel's AI SDK for enhanced AI capabilities.
 
 ## Installation
 
@@ -18,12 +18,14 @@ Install the [Pica AI package](https://npmjs.com/package/@picahq/ai):
 npm install @picahq/ai
 ```
 
-## Example Usage with OpenAI
+## Examples
 
-Install the [Vercel AI SDK](https://npmjs.com/package/ai) and [OpenAI](https://npmjs.com/package/openai) packages:
+<Tabs>
+  <Tab title="Next.js API Route">
+Install the required packages:
 
 ```bash
-npm install ai openai
+npm install ai openai @picahq/ai
 ```
 
 Here's an example of using Pica with OpenAI in a Next.js API route:
@@ -51,6 +53,77 @@ export async function POST(request: Request) {
   return (await stream).toDataStreamResponse();
 }
 ```
+  </Tab>
+  <Tab title="Express Server">
+1. **Install dependencies**
+
+```bash
+npm install express @ai-sdk/openai ai @picahq/ai dotenv
+```
+
+2. **Create the server**
+
+```typescript
+import express from "express";
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
+import { Pica } from "@picahq/ai";
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(express.json());
+
+app.post("/api/ai", async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    // Initialize Pica
+    const pica = new Pica(process.env.PICA_SECRET_KEY);
+
+    // Generate the system prompt
+    const systemPrompt = await pica.generateSystemPrompt();
+
+    // Create the stream
+    const { text } = await generateText({
+      model: openai("gpt-4o"),
+      system: systemPrompt,
+      tools: { ...pica.oneTool },
+      prompt: message,
+      maxSteps: 5,
+    });
+
+    res.setHeader("Content-Type", "application/json");
+    
+    res.status(200).json({ text });
+  } catch (error) {
+    console.error("Error processing AI request:", error);
+
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+export default app;
+```
+
+3. **Test the server**
+
+```bash
+curl --location 'http://localhost:3000/api/ai' \
+--header 'Content-Type: application/json' \
+--data '{
+    "message": "What connections do I have access to?"
+}'
+```
+  </Tab>
+</Tabs>
 
 ## Demo
 
@@ -61,9 +134,10 @@ export async function POST(request: Request) {
   title="Pica OneTool Demo with Vercel AI SDK"
   frameborder="0"
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowfullscreen={true}
+  controls
+  allowFullScreen
 ></iframe>
 
-<Card title="@picahq/ai" icon="github" href="https://github.com/picahq/ai" horizontal>
+<Card title="@picahq/onetool-demo" icon="github" href="https://github.com/picahq/onetool-demo" horizontal>
 View on GitHub
 </Card>
