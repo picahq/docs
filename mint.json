@@ -689,10 +689,87 @@
       ]
     }
   ],
-  "footerSocials": {
-    "x": "https://x.com/picahq",
-    "github": "https://github.com/picahq",
-    "linkedin": "https://linkedin.com/company/picahq"
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true,
+    "raiseIssue": true
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/picahq",
+      "github": "https://github.com/picahq",
+      "linkedin": "https://linkedin.com/company/picahq",
+      "slack": "https://picahub.slack.com"
+    },
+    "links": [
+      {
+        "title": "Resources",
+        "links": [
+          {
+            "label": "Community",
+            "url": "https://www.picaos.com/community"
+          },
+          {
+            "label": "Connectors",
+            "url": "https://www.picaos.com/community/connectors"
+          },
+          {
+            "label": "Blog",
+            "url": "https://www.picaos.com/community/posts"
+          },
+          {
+            "label": "Use Cases",
+            "url": "https://www.picaos.com/community/use-cases"
+          },
+          {
+            "label": "Changelog",
+            "url": "https://www.picaos.com/community/changelog"
+          },
+          {
+            "label": "Creators Program",
+            "url": "https://www.picaos.com/community/creators"
+          }
+        ]
+      },
+      {
+        "title": "Company",
+        "links": [
+          {
+            "label": "Mission",
+            "url": "https://www.picaos.com/community/mission"
+          },
+          {
+            "label": "Values",
+            "url": "https://www.picaos.com/community/values"
+          },
+          {
+            "label": "Team",
+            "url": "https://www.picaos.com/community/team"
+          },
+          {
+            "label": "Careers",
+            "url": "https://www.picaos.com/community/careers"
+          },
+          {
+            "label": "Milestones",
+            "url": "https://www.picaos.com/community/milestones"
+          }
+        ]
+      },
+      {
+        "title": "Legal",
+        "links": [
+          {
+            "label": "Privacy Policy",
+            "url": "/legal/privacy-policy"
+          },
+          {
+            "label": "Terms of Service",
+            "url": "/legal/terms-of-service"
+          }
+        ]
+      }
+    ]
   },
   "api": {
     "auth": {
