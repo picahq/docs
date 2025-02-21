@@ -54,7 +54,7 @@
     {
       "name": "Connectors",
       "icon": "database",
-      "url": "https://www.picaos.com/community/connectors"
+      "url": "https://app.picaos.com/tools"
     },
     {
       "name": "Blog",
@@ -93,7 +93,8 @@
       "group": "Use Cases",
       "pages": [
         "use-cases/awesome-pica",
-        "use-cases/elevenlabs"
+        "use-cases/elevenlabs",
+        "use-cases/chat-app"
       ]
     },
     {
