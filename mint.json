@@ -90,6 +90,13 @@
       ]
     },
     {
+      "group": "Use Cases",
+      "pages": [
+        "use-cases/awesome-pica",
+        "use-cases/elevenlabs"
+      ]
+    },
+    {
       "group": "API Documentation",
       "pages": [
         "api-reference/introduction",
