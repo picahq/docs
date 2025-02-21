@@ -7,7 +7,7 @@ Documentation is available at [docs.picaos.com](https://docs.picaos.com) and bui
 ## Focal Features
 
 - **OneTool SDK**: A single SDK that connects AI agents seamlessly to all APIs and tools, handling schema definitions, authentication, and execution processes automatically
-- **Unified API**: Access 100+ integrations through standardized endpoints with common models
+- **Passthrough API**: Access 6000+ actions through standardized endpoints
 - **Vault API**: Manage your integrations securely through comprehensive connection management
 - **Built-in Authentication**: Robust authentication system with AuthKit for secure API access
 - **Multiple SDK Support**: Integration with popular frameworks including Vercel AI SDK, Anthropic MCP (coming soon), Vapi (coming soon), and Langchain (coming soon)
