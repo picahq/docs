@@ -54,7 +54,7 @@
     {
       "name": "Connectors",
       "icon": "database",
-      "url": "https://app.picaos.com/tools"
+      "url": "https://www.picaos.com/community/connectors"
     },
     {
       "name": "Blog",
@@ -72,20 +72,16 @@
       ]
     },
     {
-      "group": "Explore",
+      "group": "Products",
       "pages": [
         "core/one-tool",
-        "core/authkit",
-        "core/agent",
-        "core/agent-flow"
+        "core/authkit"
       ]
     },
     {
       "group": "SDK",
       "pages": [
         "sdk/vercel-ai",
-        "sdk/anthropic-mcp",
-        "sdk/vapi",
         "sdk/langchain"
       ]
     },
@@ -143,7 +139,7 @@
           },
           {
             "label": "Use Cases",
-            "url": "https://www.picaos.com/community/use-cases"
+            "url": "https://github.com/picahq/awesome-pica"
           },
           {
             "label": "Changelog",
