@@ -4,6 +4,190 @@ description: 'Build AI applications with LangChain'
 icon: 'python'
 ---
 
-<Tip>We're actively working on integrating LangChain into Pica. Have ideas for other integrations? Share them on our [feature request board](https://www.picaos.com/community/feature-requests)!</Tip>
+<Card title="pica-langchain" icon="python" href="https://pypi.org/project/pica-langchain" horizontal>
+Install the Python SDK to unlock powerful tools for LangChain
+</Card>
+
+Connect your LangChain applications with Pica to supercharge your AI workflows and unlock powerful automation capabilities.
 
 <Info>Want to learn more about LangChain? [Read the docs](https://python.langchain.com/docs/get_started/introduction).</Info>
+
+## Installation
+
+Install the Pica LangChain SDK:
+
+```bash
+pip install pica-langchain
+```
+
+## Configuration
+
+The `PicaClientOptions` class allows you to configure the Pica client with the following options:
+
+| Option | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| server_url | str | No | https://api.picaos.com | URL for self-hosted Pica server. |
+| connectors | List[str] | No | All available connectors | List of connector keys to give the LLM access to. If not provided, all available connectors will be initialized. |
+
+The `create_pica_agent` function allows customizing the following parameters:
+
+| Option | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| verbose | bool | No | False | Whether to print verbose logs. |
+| system_prompt | str | No | None | A custom system prompt to append to the default system prompt. |
+| agent_type | AgentType | No | OPENAI_FUNCTIONS | The type of agent to create. |
+
+## Usage
+
+This is a getting started example using Pica with LangChain and OpenAI.
+
+Ensure you have the following environment variables set:
+
+```bash
+export PICA_SECRET="your-pica-secret"
+export OPENAI_API_KEY="your-openai-api-key"
+```
+
+```python
+import os
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentType
+from pica_langchain import PicaClient, create_pica_agent
+from pica_langchain.models import PicaClientOptions
+
+def main():
+    try:
+        pica_client = PicaClient(
+            secret=os.environ["PICA_SECRET"],
+            options=PicaClientOptions(
+                # server_url="https://my-self-hosted-server.com",
+                # connectors=["connector-key-1", "connector-key-2"]
+            )
+        )
+        
+        llm = ChatOpenAI(
+            temperature=0,
+            model="gpt-4o",
+        )
+
+        # Create an agent with Pica tools
+        agent = create_pica_agent(
+            client=pica_client,
+            llm=llm,
+            agent_type=AgentType.OPENAI_FUNCTIONS,
+        )
+
+        # Execute a multi-step workflow using the GitHub Connector
+        result = agent.invoke({
+            "input": (
+                "What connections do I have access to?"
+            )
+        })
+        
+        print(f"\nWorkflow Result:\n {result}")
+    
+    except Exception as e:
+        print(f"ERROR: An unexpected error occurred: {e}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+## Examples
+
+<Tabs>
+  <Tab title="Star a GitHub repo">
+```python
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentType
+from pica_langchain import PicaClient, create_pica_agent
+
+pica_client = PicaClient(secret="YOUR_PICA_SECRET")
+
+llm = ChatOpenAI(temperature=0, model="gpt-4o")
+
+agent = create_pica_agent(
+    client=pica_client,
+    llm=llm,
+    agent_type=AgentType.OPENAI_FUNCTIONS
+)
+
+result = agent.invoke({
+    "input": (
+        "Star the picahq/pica repo in github. "
+        "Then, list the number of stars for the picahq/pica repo in github."
+    )
+})
+
+print(f"Result: {result}")
+```
+  </Tab>
+  <Tab title="Create GitHub Issues from Airtable">
+    ```python
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentType
+from pica_langchain import PicaClient, create_pica_agent
+
+pica_client = PicaClient(secret="YOUR_PICA_SECRET")
+
+llm = ChatOpenAI(temperature=0, model="gpt-4o")
+
+agent = create_pica_agent(
+        client=pica_client,
+        llm=llm,
+        agent_type=AgentType.OPENAI_FUNCTIONS
+)
+
+result = agent.invoke({
+        "input": (
+            "Retrieve the list of available bases from Airtable."
+            "List the tasks from the Base 'My Tasks' with the status 'Todo'"
+            "For each task, create a GitHub issue in the '' repository."
+            "Use the task title as the issue title and the task description as the issue body."
+            "Add the Airtable ticket ID for reference in the issue."
+            "Assign the issue to the task's assignee if available."
+            "Report the number of tasks created, skipped, or failed."
+        )
+})
+
+print(f"Result: {result}")
+    ```
+  </Tab>
+  <Tab title="Email a Google Sheet Summary">
+    ```python
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentType
+from pica_langchain import PicaClient, create_pica_agent
+
+pica_client = PicaClient(secret="YOUR_PICA_SECRET")
+
+llm = ChatOpenAI(temperature=0, model="gpt-4o")
+
+agent = create_pica_agent(
+        client=pica_client,
+        llm=llm,
+        agent_type=AgentType.OPENAI_FUNCTIONS
+)
+
+result = agent.invoke({
+        "input": (
+            "List my available google spreadsheets. "
+            "Retrieve the data from Spreadsheet ID '1NBp5QpEJV43Sq2P0aeo1DtYUof2BDY_YcdKcIIQTCcs'. "
+            "List the content from the sheet named 'Sheet1' in the range 'A1:C5'."
+            "Summarize the Comment column"
+            "Send the summarized comment data to using gmail to hello@picaos.com"
+        )
+})
+
+print(f"Result: {result}")
+    ```
+  </Tab>
+</Tabs>
+
+## GitHub
+
+<Card title="> @picahq/pica-langchain" icon="github" href="https://github.com/picahq/pica-langchain" horizontal>
+Check out our GitHub repository to explore the code, contribute, or raise issues.
+</Card>
