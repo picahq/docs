@@ -10,6 +10,26 @@ Install the Pica AI package to unlock powerful tools for the Vercel AI SDK
 
 The Pica AI SDK is a powerful tool that allows you connect Pica with Vercel's AI SDK for enhanced AI capabilities.
 
+## Configuration
+
+The Pica SDK can be configured with the following options:
+
+| Option | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| serverUrl | `String` | No | https://api.picaos.com | URL for self-hosted Pica server. |
+| connectors | `String[]` | No | All available connectors | List of connector keys to give the LLM access to. If not provided, all available connectors will be initialized. |
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  serverUrl: "https://my-hosted-instance.com",
+  connectors: [
+    "test::gmail::default::0fc9f64d309349be8cccb63a02e16c2a",
+    "test::notion::default::0fc9f64d309349be8cccb63a02e16c2a",
+    "test::postgres::default::0fc9f64d309349be8cccb63a02e16c2a",
+  ]
+});
+```
+
 ## Installation
 
 Install the [Pica AI package](https://npmjs.com/package/@picahq/ai):
@@ -127,6 +147,8 @@ curl --location 'http://localhost:3000/api/ai' \
 
 ## Demo
 
+You can now use the chat interface directly in the [Pica Dashboard](https://app.picaos.com/chat).
+
 <iframe
   width="100%"
   height="400"
@@ -141,3 +163,5 @@ curl --location 'http://localhost:3000/api/ai' \
 <Card title="@picahq/onetool-demo" icon="github" href="https://github.com/picahq/onetool-demo" horizontal>
 View on GitHub
 </Card>
+
+<Info>Want to learn more about Vercel AI SDK? [Read the docs](https://sdk.vercel.ai/docs/introduction).</Info>
