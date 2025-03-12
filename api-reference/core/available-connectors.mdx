@@ -1,0 +1,75 @@
+---
+title: 'Available Connectors'
+api: 'GET https://api.picaos.com/v1/available-connectors'
+description: 'Get a list of available connectors'
+---
+
+
+## Query Parameters
+
+<ParamField query="includeActions" type="boolean" default="false">
+  Boolean to include supported actions in the response for each connector
+</ParamField>
+
+<ParamField query="platform" type="string">
+  The Connector Platform
+</ParamField>
+
+<ParamField query="key" type="string">
+  The Connector Key
+</ParamField>
+
+<ParamField query="name" type="string">
+  The Connector Name
+</ParamField>
+
+<ParamField query="category" type="string">
+  The Connector Category
+</ParamField>
+
+## Response
+
+<ResponseField name="connectors" type="Connector[]">
+  Array of Connectors
+</ResponseField>
+
+<RequestExample>
+```bash Example Request
+curl --location --request GET 'https://api.picaos.com/v1/available-connectors' \
+--header 'x-pica-secret: YOUR_API_KEY'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+    "type": "connection_definition",
+    "rows": [
+        {
+            "name": "ElevenLabs",
+            "key": "api::elevenlabs::v1",
+            "platformVersion": "v1",
+            "description": "Create the most realistic speech with our AI audio platform",
+            "category": "AI",
+            "image": "https://assets.buildable.dev/catalog/node-templates/elevenlabs.svg",
+            "tags": [
+                "ai"
+            ],
+            "oauth": false,
+            "createdAt": 1740383090925,
+            "updatedAt": 1740383090925,
+            "updated": false,
+            "version": "1.0.0",
+            "lastModifiedBy": "system",
+            "deleted": false,
+            "active": true,
+            "deprecated": false
+        },
+        ...
+    ],
+    "total": 66,
+    "skip": 0,
+    "limit": 20
+}
+```
+</ResponseExample>
