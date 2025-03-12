@@ -27,6 +27,14 @@ description: 'Get a list of available connectors'
   The Connector Category
 </ParamField>
 
+<ParamField query="limit" type="number" default="20">
+  The number of connectors to return
+</ParamField>
+
+<ParamField query="skip" type="number" default="0">
+  The number of connectors to skip
+</ParamField>
+
 ## Response
 
 <ResponseField name="connectors" type="Connector[]">
