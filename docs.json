@@ -1,0 +1,220 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "The Open-Source Catalyst for Autonomous AI",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "get-started/introduction",
+              "get-started/quickstart",
+              "get-started/development"
+            ]
+          },
+          {
+            "group": "Products",
+            "pages": [
+              "core/one-tool",
+              "core/authkit"
+            ]
+          },
+          {
+            "group": "SDK",
+            "pages": [
+              "sdk/vercel-ai",
+              "sdk/langchain"
+            ]
+          },
+          {
+            "group": "Use Cases",
+            "pages": [
+              "use-cases/awesome-pica",
+              "use-cases/elevenlabs",
+              "use-cases/chat-app"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "API Documentation",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/authentication",
+              "api-reference/passthrough"
+            ]
+          },
+          {
+            "group": "Core API",
+            "pages": [
+              "api-reference/core/available-connectors"
+            ]
+          },
+          {
+            "group": "Vault API",
+            "pages": [
+              "api-reference/vault/connections/list",
+              "api-reference/vault/connections/delete"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Homepage",
+          "href": "https://picaos.com",
+          "icon": "house"
+        },
+        {
+          "anchor": "Community",
+          "href": "https://www.picaos.com/community",
+          "icon": "people"
+        },
+        {
+          "anchor": "Changelog",
+          "href": "https://www.picaos.com/community/changelog",
+          "icon": "code-compare"
+        },
+        {
+          "anchor": "Connectors",
+          "href": "https://www.picaos.com/community/connectors",
+          "icon": "database"
+        },
+        {
+          "anchor": "Status",
+          "href": "https://status.picaos.com",
+          "icon": "signal"
+        },
+        {
+          "anchor": "Blog",
+          "href": "https://www.picaos.com/community/posts",
+          "icon": "newspaper"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "api": {
+    "mdx": {
+      "auth": {
+        "method": "key",
+        "name": "x-pica-secret"
+      }
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/picahq/pica"
+      },
+      {
+        "label": "Support",
+        "href": "mailto:support@picaos.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://app.picaos.com"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/picahq",
+      "github": "https://github.com/picahq",
+      "linkedin": "https://linkedin.com/company/picahq",
+      "slack": "https://picahub.slack.com"
+    },
+    "links": [
+      {
+        "header": "Resources",
+        "items": [
+          {
+            "label": "Community",
+            "href": "https://www.picaos.com/community"
+          },
+          {
+            "label": "Connectors",
+            "href": "https://www.picaos.com/community/connectors"
+          },
+          {
+            "label": "Status",
+            "href": "https://status.picaos.com"
+          },
+          {
+            "label": "Blog",
+            "href": "https://www.picaos.com/community/posts"
+          },
+          {
+            "label": "Use Cases",
+            "href": "https://github.com/picahq/awesome-pica"
+          },
+          {
+            "label": "Changelog",
+            "href": "https://www.picaos.com/community/changelog"
+          },
+          {
+            "label": "Creators Program",
+            "href": "https://www.picaos.com/community/creators"
+          }
+        ]
+      },
+      {
+        "header": "Company",
+        "items": [
+          {
+            "label": "Mission",
+            "href": "https://www.picaos.com/community/mission"
+          },
+          {
+            "label": "Values",
+            "href": "https://www.picaos.com/community/values"
+          },
+          {
+            "label": "Team",
+            "href": "https://www.picaos.com/community/team"
+          },
+          {
+            "label": "Careers",
+            "href": "https://www.picaos.com/community/careers"
+          },
+          {
+            "label": "Milestones",
+            "href": "https://www.picaos.com/community/milestones"
+          }
+        ]
+      },
+      {
+        "header": "Legal",
+        "items": [
+          {
+            "label": "Privacy Policy",
+            "href": "https://docs.picaos.com/legal/privacy-policy"
+          },
+          {
+            "label": "Terms of Service",
+            "href": "https://docs.picaos.com/legal/terms-of-service"
+          }
+        ]
+      }
+    ]
+  }
+}
