@@ -57,6 +57,11 @@
       "url": "https://www.picaos.com/community/connectors"
     },
     {
+      "name": "Status",
+      "icon": "signal",
+      "url": "https://status.picaos.com"
+    },
+    {
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://www.picaos.com/community/posts"
@@ -132,6 +137,10 @@
           {
             "label": "Connectors",
             "url": "https://www.picaos.com/community/connectors"
+          },
+          {
+            "label": "Status",
+            "url": "https://status.picaos.com"
           },
           {
             "label": "Blog",
