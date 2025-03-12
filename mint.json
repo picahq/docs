@@ -107,6 +107,12 @@
       ]
     },
     {
+      "group": "Core API",
+      "pages": [
+        "api-reference/core/available-connectors"
+      ]
+    },
+    {
       "group": "Vault API",
       "pages": [
         "api-reference/vault/connections/list",
