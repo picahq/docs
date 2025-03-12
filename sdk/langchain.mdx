@@ -96,6 +96,22 @@ if __name__ == "__main__":
     main()
 ```
 
+## Logging
+
+The Pica LangChain SDK uses the `logging` module to log messages. The log level can be set using the `PICA_LOG_LEVEL` environment variable.
+
+The following log levels are available:
+
+- `debug`
+- `info`
+- `warning`
+- `error`
+- `critical`
+
+```bash
+export PICA_LOG_LEVEL="debug"
+```
+
 ## Examples
 
 <Tabs>
@@ -186,22 +202,6 @@ print(f"Result: {result}")
     ```
   </Tab>
 </Tabs>
-
-## Logging
-
-The Pica LangChain SDK uses the `logging` module to log messages. The log level can be set using the `PICA_LOG_LEVEL` environment variable.
-
-The following log levels are available:
-
-- `debug`
-- `info`
-- `warning`
-- `error`
-- `critical`
-
-```bash
-export PICA_LOG_LEVEL="debug"
-```
 
 ## GitHub
 
