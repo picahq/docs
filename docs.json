@@ -59,7 +59,8 @@
           {
             "group": "Core API",
             "pages": [
-              "api-reference/core/available-connectors"
+              "api-reference/core/available-connectors",
+              "api-reference/core/available-actions"
             ]
           },
           {

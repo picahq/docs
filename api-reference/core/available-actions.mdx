@@ -1,0 +1,83 @@
+---
+title: 'Available Actions'
+api: 'GET https://api.picaos.com/v1/available-actions/{platform}'
+description: 'Get a list of available actions for a given platform'
+---
+
+## Path Parameters
+
+<ParamField path="platform" type="string" required>
+  The connector platform
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="title" type="string">
+  The action title
+</ParamField>
+
+<ParamField query="key" type="string">
+  The action key
+</ParamField>
+
+<ParamField query="method" type="string">
+  The action method
+</ParamField>
+
+<ParamField query="limit" type="number" default="20">
+  The number of actions to return
+</ParamField>
+
+<ParamField query="skip" type="number" default="0">
+  The number of actions to skip
+</ParamField>
+
+## Response
+
+<ResponseField name="actions" type="Action[]">
+  Array of Actions
+</ResponseField>
+
+<RequestExample>
+```bash Example Request
+curl --location --request GET 'https://api.picaos.com/v1/available-actions/exa' \
+--header 'x-pica-secret: YOUR_API_KEY'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+    "type": "Available Actions",
+    "rows": [
+        {
+            "title": "Get Contents",
+            "key": "getContents",
+            "method": "POST",
+            "platform": "exa"
+        },
+        {
+            "title": "Search",
+            "key": "search",
+            "method": "POST",
+            "platform": "exa"
+        },
+        {
+            "title": "Find Similar Links",
+            "key": "findSimilarLinks",
+            "method": "POST",
+            "platform": "exa"
+        },
+        {
+            "title": "Get LLM Answer",
+            "key": "getLlmAnswer",
+            "method": "POST",
+            "platform": "exa"
+        }
+    ],
+    "total": 4,
+    "skip": 0,
+    "limit": 20
+}
+```
+</ResponseExample>

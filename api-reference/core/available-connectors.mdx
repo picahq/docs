@@ -4,27 +4,22 @@ api: 'GET https://api.picaos.com/v1/available-connectors'
 description: 'Get a list of available connectors'
 ---
 
-
 ## Query Parameters
 
-<ParamField query="includeActions" type="boolean" default="false">
-  Boolean to include supported actions in the response for each connector
-</ParamField>
-
 <ParamField query="platform" type="string">
-  The Connector Platform
+  The connector platform
 </ParamField>
 
 <ParamField query="key" type="string">
-  The Connector Key
+  The connector key
 </ParamField>
 
 <ParamField query="name" type="string">
-  The Connector Name
+  The connector name
 </ParamField>
 
 <ParamField query="category" type="string">
-  The Connector Category
+  The connector category
 </ParamField>
 
 <ParamField query="limit" type="number" default="20">
@@ -51,7 +46,7 @@ curl --location --request GET 'https://api.picaos.com/v1/available-connectors' \
 <ResponseExample>
 ```json Response
 {
-    "type": "connection_definition",
+    "type": "Available Connectors",
     "rows": [
         {
             "name": "ElevenLabs",
