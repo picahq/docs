@@ -7,7 +7,7 @@ description: 'List available Connections'
 ## Query Parameters
 
 <ParamField query="key" type="string">
-  The Connection Key
+  The connection key
 </ParamField>
 
 <ParamField query="platformVersion" type="string">
@@ -15,19 +15,19 @@ description: 'List available Connections'
 </ParamField>
 
 <ParamField query="name" type="string">
-  The Connection name
+  The connection name
+</ParamField>
+
+<ParamField query="identityType" type='"user" | "team" | "organization"'>
+  The identity type
 </ParamField>
 
 <ParamField query="identity" type="string">
-  The Connection identifier
-</ParamField>
-
-<ParamField query="identityType" type="string">
-  The Identity type. One of: user, team, organization
+  The connection identifier
 </ParamField>
 
 <ParamField query="platform" type="string">
-  The Connector Platform (e.g. stripe, exa)
+  The connector platform (e.g. stripe, exa)
 </ParamField>
 
 <ParamField query="active" type="boolean" default="true">
@@ -49,3 +49,27 @@ description: 'List available Connections'
 </ResponseField>
 
 <RequestExample>
+```bash cURL
+curl --location --request GET 'https://api.picaos.com/v1/vault/connections' \
+--header 'x-pica-secret: YOUR_API_KEY'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "connections": [
+    {
+      "_id": "conn_123",
+      "platformVersion": "2.0",
+      "name": "My Connection",
+      "key": "connection_key",
+      "identity": "user_123",
+      "identityType": "user",
+      "platform": "salesforce",
+      "active": true
+    }
+  ]
+}
+```
+</ResponseExample>
