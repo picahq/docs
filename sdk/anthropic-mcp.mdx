@@ -1,9 +1,100 @@
 ---
-title: 'Anthropic MCP (soon)'
-description: 'Coming Soon'
-icon: 'clock'
+title: 'Anthropic MCP'
+description: 'A protocol for seamless integration between LLM applications and external data sources'
+icon: 'server'
 ---
 
-<Tip>We're actively working on integrating Anthropic's Model Control Protocol into Pica. Have ideas for other integrations? Share them on our [feature request board](https://www.picaos.com/community/feature-requests)!</Tip>
+<Card title="mcp-server" icon="server" href="https://github.com/picahq/mcp-server" horizontal>
+Install the MCP Server to connect your LLM applications to external data sources
+</Card>
 
 <Info>Want to learn more about Anthropic's Model Control Protocol? [Visit the website](https://www.claudemcp.com) or [read the docs](https://modelcontextprotocol.io/introduction).</Info>
+
+# Setup
+
+Follow the guide below or watch this video for a quickstart:
+
+<iframe
+  width="100%"
+  height="350"
+  src="https://www.youtube.com/embed/JJ62NUEkKAs"
+  title="MCP Server Setup Guide"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
+
+Clone the repository:
+
+```bash
+git clone https://github.com/picahq/mcp-server.git
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Build the project:
+
+```bash
+npm run build
+```
+
+# Installation
+
+To use with [Claude Desktop](https://claude.ai/download), add the server config:
+
+On MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "pica-mcp-server": {
+      "command": "node",
+      "args": [
+        "/path/to/mcp-server/build/index.js"
+      ],
+      "env": {
+        "PICA_SECRET": "YOUR_PICA_SECRET_KEY"
+      }
+    }
+  }
+}
+```
+
+<Tip>You can find your PICA_SECRET_KEY in the [Pica Dashboard](https://app.picaos.com/settings/api-keys).</Tip>
+
+## Debugging
+
+Since MCP servers communicate over stdio, debugging can be challenging. We recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector), which is available as a package script:
+
+```bash
+npm run inspector
+```
+
+The Inspector will provide a URL to access debugging tools in your browser.
+
+## Usage
+
+Once you've added the server config and connected some platforms in the [Pica dashboard](https://app.picaos.com/connections), restart Claude Desktop and try out some examples:
+
+- What connections do I have access to?
+- Send an email using gmail to hello@picaos.com
+- What actions can I perform with google sheets?
+- Create an event in my calendar
+- List 5 users from my postgres users table
+- Send a message in slack to the #general channel with today's weather
+
+## Demo
+
+<iframe
+  width="100%"
+  height="350"
+  src="https://www.youtube.com/embed/0jeasO20PyM"
+  title="MCP Server Demo"
+  frameborder="0"
+></iframe>
