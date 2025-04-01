@@ -6,7 +6,7 @@ icon: 'wand-magic-sparkles'
 
 [![npm version](https://img.shields.io/npm/v/%40picahq%2Fai)](https://npmjs.com/package/@picahq/ai)
 
-<Card title="> @picahq/ai" icon="npm" href="https://npmjs.com/package/@picahq/ai" horizontal>
+<Card title="@picahq/ai" icon="npm" href="https://npmjs.com/package/@picahq/ai" horizontal>
 Install the Pica AI package to unlock powerful tools for the Vercel AI SDK
 </Card>
 
@@ -23,6 +23,7 @@ The Pica SDK can be configured with the following options:
 | identity | `String` | No | None | Filter connections by specific identifier. |
 | identityType | `"user", "team", "organization"` | No | None | Filter connections by identity type. |
 | authkit | Boolean | No | false | If true, the SDK will use Authkit to connect to prompt the user to connect to a platform that they do not currently have access to |
+| knowledgeAgent | Boolean | No | false | If true, the SDK will never execute actions, but will use Pica's knowledge to generate code. If true, use pica.intelligenceTool instead of pica.oneTool |
 
 ```typescript
 const pica = new Pica(process.env.PICA_SECRET_KEY!, {
@@ -149,6 +150,34 @@ curl --location 'http://localhost:3000/api/ai' \
 ```
   </Tab>
 </Tabs>
+
+### AuthKit
+
+The authkit configuration option initiates Pica's AuthKit. When enabled, the SDK will prompt the user to connect to a platform that they do not currently have access to.
+
+<Tabs>
+  <Tab title="Backend">
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, { 
+  authkit: true // Simply pass true to enable AuthKit
+});
+```
+  </Tab>
+  <Tab title="Frontend">
+  </Tab>
+  <Tab title="Hooks">
+  </Tab>
+</Tabs>
+
+### Knowledge Agent
+
+The knowledge agent is a configuration optional that initiates Pica's knowledge agent. When enabled, the knowledge agent will be used to generate code instead of executing actions.
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, { 
+  knowledgeAgent: true
+});
+```
 
 ## Demo
 

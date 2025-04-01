@@ -40,6 +40,7 @@
             "group": "Use Cases",
             "pages": [
               "use-cases/awesome-pica",
+              "use-cases/openai-agents",
               "use-cases/elevenlabs",
               "use-cases/chat-app"
             ]
@@ -61,7 +62,8 @@
             "group": "Core API",
             "pages": [
               "api-reference/core/available-connectors",
-              "api-reference/core/available-actions"
+              "api-reference/core/available-actions",
+              "api-reference/core/create-user"
             ]
           },
           {

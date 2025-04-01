@@ -10,7 +10,7 @@ Documentation is available at [docs.picaos.com](https://docs.picaos.com) and bui
 - **Passthrough API**: Access 6000+ actions through standardized endpoints
 - **Vault API**: Manage your integrations securely through comprehensive connection management
 - **Built-in Authentication**: Robust authentication system with AuthKit for secure API access
-- **Multiple SDK Support**: Integration with popular frameworks including Vercel AI SDK, Anthropic MCP (coming soon), Vapi (coming soon), and Langchain (coming soon)
+- **Multiple SDK Support**: Integration with popular frameworks including Vercel AI SDK, LangChain, MCP, etc.
 
 ## Documentation Development
 
