@@ -120,6 +120,90 @@ export PICA_LOG_LEVEL="debug"
 
 ## Examples
 
+### Code Solutions
+
+<Tabs>
+  <Tab title="Streaming Response">
+    ```python
+import os
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentType
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from pica_langchain import PicaClient, create_pica_agent
+from pica_langchain.models import PicaClientOptions
+
+pica_client = PicaClient(
+        secret=os.environ["PICA_SECRET"],
+        options=PicaClientOptions(
+            connectors=["*"], # Initialize all available connections for this example
+        )
+)
+
+llm_with_handler = ChatOpenAI(
+        temperature=0,
+        model="gpt-4o",
+        streaming=True,
+        callbacks=[StreamingStdOutCallbackHandler()]
+)
+
+agent_with_handler = create_pica_agent(
+        client=pica_client,
+        llm=llm_with_handler,
+        agent_type=AgentType.OPENAI_FUNCTIONS,
+)
+
+for chunk in agent_with_handler.stream({
+        "input": "List three platforms available in Pica."
+    }):
+        print(chunk)
+    ```
+  </Tab>
+  <Tab title="Using AuthKit">
+    ```python
+import os
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentType
+from pica_langchain import PicaClient, create_pica_agent
+from pica_langchain.models import PicaClientOptions
+
+pica_client = PicaClient(
+        secret=os.environ["PICA_SECRET"],
+        options=PicaClientOptions(
+            authkit=True, # Enable AuthKit settings
+            connectors=["*"]
+        )
+)
+
+llm = ChatOpenAI(
+        temperature=0,
+        model="gpt-4o",
+)
+
+# Create an agent with Pica tools
+agent = create_pica_agent(
+        client=pica_client,
+        llm=llm,
+        agent_type=AgentType.OPENAI_FUNCTIONS,
+        return_intermediate_steps=True # Show the intermediate steps
+)
+
+result = agent.invoke({
+        "input": (
+            # This will trigger the promptToConnectPlatform tool 
+            # if the user doesn't have google calendar connected
+            # On your client, you can listen for this tool call and prompt 
+            # the user to connect via the AuthKit
+            "Connect to google calendar"
+        )
+})
+
+print(f"\nWorkflow Result:\n {result}")
+    ```
+  </Tab>
+</Tabs>
+
+### Workflows
+
 <Tabs>
   <Tab title="Star a GitHub repo">
 ```python
