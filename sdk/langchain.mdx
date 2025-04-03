@@ -65,8 +65,8 @@ def main():
         pica_client = PicaClient(
             secret=os.environ["PICA_SECRET"],
             options=PicaClientOptions(
+                connectors=["*"] # Initialize all available connections or pass specific connector keys
                 # server_url="https://my-self-hosted-server.com",
-                # connectors=["connector-key-1", "connector-key-2"]
                 # identity="user-id",
                 # identity_type="user"
             )
@@ -211,7 +211,12 @@ from langchain_openai import ChatOpenAI
 from langchain.agents import AgentType
 from pica_langchain import PicaClient, create_pica_agent
 
-pica_client = PicaClient(secret="YOUR_PICA_SECRET")
+pica_client = PicaClient(
+    secret="YOUR_PICA_SECRET",
+    options=PicaClientOptions(
+        connectors=["*"]
+    )
+)
 
 llm = ChatOpenAI(temperature=0, model="gpt-4o")
 
@@ -237,7 +242,12 @@ from langchain_openai import ChatOpenAI
 from langchain.agents import AgentType
 from pica_langchain import PicaClient, create_pica_agent
 
-pica_client = PicaClient(secret="YOUR_PICA_SECRET")
+pica_client = PicaClient(
+    secret="YOUR_PICA_SECRET",
+    options=PicaClientOptions(
+        connectors=["*"]
+    )
+)
 
 llm = ChatOpenAI(temperature=0, model="gpt-4o")
 
@@ -268,7 +278,12 @@ from langchain_openai import ChatOpenAI
 from langchain.agents import AgentType
 from pica_langchain import PicaClient, create_pica_agent
 
-pica_client = PicaClient(secret="YOUR_PICA_SECRET")
+pica_client = PicaClient(
+    secret="YOUR_PICA_SECRET",
+    options=PicaClientOptions(
+        connectors=["*"]
+    )
+)
 
 llm = ChatOpenAI(temperature=0, model="gpt-4o")
 
