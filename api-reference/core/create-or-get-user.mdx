@@ -1,7 +1,7 @@
 ---
-title: 'Create User'
-api: 'POST https://api.picaos.com/internal/v3/users/create'
-description: 'Create a new user, scoped to your API key'
+title: 'Create or Get User'
+api: 'POST https://api.picaos.com/internal/v3/users/create-or-get'
+description: 'Create a new user, or get an existing user by email'
 ---
 
 ## Body Parameters
@@ -18,7 +18,7 @@ description: 'Create a new user, scoped to your API key'
 
 <RequestExample>
 ```bash cURL
-curl --location --request POST 'https://api.picaos.com/internal/v3/users/create' \
+curl --location --request POST 'https://api.picaos.com/internal/v3/users/create-or-get' \
 --header 'x-pica-secret: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data-raw '{

@@ -63,7 +63,7 @@
             "pages": [
               "api-reference/core/available-connectors",
               "api-reference/core/available-actions",
-              "api-reference/core/create-user"
+              "api-reference/core/create-or-get-user"
             ]
           },
           {
