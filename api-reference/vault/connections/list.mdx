@@ -58,18 +58,35 @@ curl --location --request GET 'https://api.picaos.com/v1/vault/connections' \
 <ResponseExample>
 ```json Response
 {
-  "connections": [
+  "type": "Vault Connections",
+  "rows": [
     {
-      "_id": "conn_123",
-      "platformVersion": "2.0",
-      "name": "My Connection",
-      "key": "connection_key",
-      "identity": "user_123",
-      "identityType": "user",
-      "platform": "salesforce",
-      "active": true
-    }
-  ]
+      "_id": "conn::GC6icwVKcco::Tao3acOXT366-S40uINMxw",
+      "platformVersion": "1.0.0",
+      "name": null,
+      "type": {
+          "api": {}
+      },
+      "key": "test::resend::default::46f75762f34e4962bf5684760f0f9f0e",
+      "environment": "test",
+      "platform": "resend",
+      "identity": "46f75762f34e4962bf5684760f0f9f0e",
+      "identityType": null,
+      "description": "Email API for developers",
+      "createdAt": 1742508720866,
+      "updatedAt": 1742508720866,
+      "updated": false,
+      "version": "1.0.0",
+      "lastModifiedBy": "system",
+      "deleted": false,
+      "active": true,
+      "deprecated": false
+    },
+    ...
+  ],
+  "total": 39,
+  "skip": 0,
+  "limit": 20
 }
 ```
 </ResponseExample>
