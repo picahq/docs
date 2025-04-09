@@ -29,7 +29,7 @@ The `PicaClientOptions` class allows you to configure the Pica client with the f
 | server_url | str | No | https://api.picaos.com | URL for self-hosted Pica server. |
 | connectors | List[str] | No | All available connectors | List of connector keys to filter by. Pass ["*"] to initialize all available connectors, or specific connector keys to filter. If empty, no connections will be initialized. |
 | identity | str | No | None | Filter connections by specific identifier. |
-| identity_type | "user", "team", or "organization" | No | None | Filter connections by identity type. |
+| identity_type | `"user", "team", "project", "organization"` | No | None | Filter connections by identity type. |
 | authkit | Boolean | No | false | If true, the SDK will use Authkit to connect to prompt the user to connect to a platform that they do not currently have access to |
 
 The `create_pica_agent` function allows customizing the following parameters:
