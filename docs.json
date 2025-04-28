@@ -7,6 +7,16 @@
     "light": "#07C983",
     "dark": "#0D9373"
   },
+  "background": {
+    "color": {
+      "dark": "#0a0312"
+    },
+    "decoration": "gradient"
+  },
+  "fonts": {
+    "family": "Geist",
+    "weight": 400
+  },
   "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
@@ -25,7 +35,8 @@
             "group": "Products",
             "pages": [
               "core/one-tool",
-              "core/authkit"
+              "core/authkit",
+              "core/buildkit"
             ]
           },
           {
@@ -33,7 +44,7 @@
             "pages": [
               "sdk/vercel-ai",
               "sdk/langchain",
-              "sdk/anthropic-mcp"
+              "sdk/mcp"
             ]
           },
           {
