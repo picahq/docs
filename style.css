@@ -1,0 +1,12 @@
+#topbar-cta-button a span {
+    background: #FFF;
+    color: #000;
+}
+
+#topbar-cta-button a svg {
+    color: #000;
+}
+
+.rounded {
+    border-radius: 5px;
+}
