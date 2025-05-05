@@ -3,21 +3,20 @@
   "theme": "mint",
   "name": "The Open-Source Catalyst for Autonomous AI",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373"
+    "primary": "#000000",
+    "light": "#FFFFFF",
+    "dark": "#FFFFFF"
   },
   "background": {
     "color": {
-      "dark": "#0a0312"
-    },
-    "decoration": "gradient"
+      "dark": "#000000"
+    }
   },
   "fonts": {
     "family": "Geist",
     "weight": 400
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.ico",
   "navigation": {
     "tabs": [
       {
