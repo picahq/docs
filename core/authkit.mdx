@@ -45,11 +45,14 @@ export async function POST(req: NextRequest) {
   const authKitToken = new AuthKitToken(process.env.PICA_SANDBOX_API_KEY as string);
   
   const token = await authKitToken.create({
-    identity: "user_123", // a meaningful identifier (i.e., userId, teamId or organizationId)
+    identity: "userId", // a meaningful identifier (i.e., userId, teamId or organizationId)
     identityType: "user" // can be either user, team or organization
   });
 
-  return NextResponse.json(token);
+  // Add CORS headers to the response
+  return NextResponse.json(token, {
+    headers: corsHeaders,
+  });
 }
 ```
 
