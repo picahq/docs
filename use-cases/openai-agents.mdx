@@ -57,7 +57,7 @@ async def use_pica_mcp():
 
     params = MCPServerStdioParams({
         "command": "npx",
-        "args": ["-y", "@picahq/pica-mcp"],
+        "args": ["-y", "@picahq/mcp"],
         "env": {"PICA_SECRET": pica_secret}
     })
     
@@ -75,7 +75,7 @@ async def use_pica_mcp():
                 name="Assistant with Pica",
                 instructions=system_prompt,
                 tools=agent_tools,
-                model="gpt-4o",
+                model="gpt-4.1",
                 tool_use_behavior="run_llm_again",
                 mcp_servers=[server]
             )
@@ -178,7 +178,7 @@ async def use_pica_mcp():
     
     params = MCPServerStdioParams({
         "command": "npx",
-        "args": ["-y", "@picahq/pica-mcp"],
+        "args": ["-y", "@picahq/mcp"],
         "env": {"PICA_SECRET": pica_secret}
     })
     
@@ -329,7 +329,7 @@ async def interactive_pica_chat():
     
     params = MCPServerStdioParams({
         "command": "npx",
-        "args": ["-y", "@picahq/pica-mcp"],
+        "args": ["-y", "@picahq/mcp"],
         "env": {"PICA_SECRET": pica_secret}
     })
     

@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "The Open-Source Catalyst for Autonomous AI",
+  "name": "Pica - Instant, reliable access to hundreds of third-party integrations. Zero setup required.",
   "colors": {
     "primary": "#000000",
     "light": "#FFFFFF",
@@ -25,21 +25,19 @@
           {
             "group": "Get Started",
             "pages": [
-              "get-started/introduction",
-              "get-started/quickstart",
-              "get-started/development"
+              "get-started/introduction"
             ]
           },
           {
             "group": "Products",
             "pages": [
-              "core/one-tool",
               "core/authkit",
+              "core/one-tool",
               "core/buildkit"
             ]
           },
           {
-            "group": "SDK",
+            "group": "Agentic SDKs",
             "pages": [
               "sdk/vercel-ai",
               "sdk/langchain",
@@ -73,12 +71,7 @@
             "pages": [
               "api-reference/core/available-connectors",
               "api-reference/core/available-actions",
-              "api-reference/core/create-or-get-user"
-            ]
-          },
-          {
-            "group": "Vault API",
-            "pages": [
+              "api-reference/core/create-or-get-user",
               "api-reference/vault/connections/list",
               "api-reference/vault/connections/delete"
             ]

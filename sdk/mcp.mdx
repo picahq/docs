@@ -32,55 +32,11 @@ Install the MCP Server via Glama
 Pica MCP Server is a server that enables seamless interaction with various third-party services through a standardized interface. 
 This server provides direct access to platform integrations, actions, execution capabilities, and robust code generation capabilities.
 
-## Features
-
-### 🔧 Tools
+## Tools
 - **`list_pica_integrations`** - List all available platforms and your active connections
 - **`get_pica_platform_actions`** - Get available actions for a specific platform
 - **`get_pica_action_knowledge`** - Get detailed documentation for a specific action including parameters and usage
 - **`execute_pica_action`** - Execute API actions with full parameter support
-
-## Key Capabilities
-
-### 🔌 **Platform Integration**
-- Connect to 100+ platforms through Pica
-- Manage multiple connections per platform
-- Access real-time connection status
-
-### 🎯 **Smart Intent Detection**
-- Execute actions immediately (e.g. "read my last gmail email", "send a message to the slack channel #general")
-- Generate integration code (e.g. "build a form to send emails using gmail", "create a UI for messaging")
-- Intelligent context handling
-
-### 🔒 **Enhanced Security**
-- Never exposes secrets in generated code
-- Uses environment variables: `PICA_SECRET`, `PICA_[PLATFORM]_CONNECTION_KEY`
-- Sanitized request configurations for production use
-
-### ⚡ **Direct Execution**
-- Execute actions directly through the MCP interface
-- Support for all HTTP methods (GET, POST, PUT, DELETE, etc.)
-- Handle form data, URL encoding, and JSON payloads
-- Pass path variables, query parameters, and custom headers
-
-### 🔒 **Secure Authentication**
-- All requests authenticated through Pica's secure proxy
-- No need to manage individual platform API keys
-- Environment variable configuration for security
-
-# Setup
-
-Follow the guide below or watch this video for a quickstart:
-
-<iframe
-  width="100%"
-  height="350"
-  src="https://www.youtube.com/embed/JJ62NUEkKAs"
-  title="MCP Server Setup Guide"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowfullscreen
-></iframe>
 
 ## Installation
 
@@ -88,29 +44,7 @@ Follow the guide below or watch this video for a quickstart:
 npm install @picahq/mcp
 ```
 
-### Using npx
-
-You can use this package directly with npx:
-
-```bash
-npx @picahq/mcp
-```
-
-Or install it globally:
-
-```bash
-npm install -g @picahq/mcp
-```
-
-### Installing via Smithery
-
-To install pica for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@picahq/mcp):
-
-```bash
-npx -y @smithery/cli install @picahq/mcp --client claude
-```
-
-### Environment Setup
+## Setup
 
 This server requires a [Pica API key](https://app.picaos.com/settings/api-keys). Set the environment variable:
 
@@ -141,6 +75,14 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
   }
 }
 ```
+
+Try asking Claude:
+- What connections do I have access to?
+- Send an email using gmail to hello@picaos.com
+- What actions can I perform with google sheets?
+- Create an event in my calendar
+- List 5 users from my postgres users table
+- Send a message in slack to the #general channel with today's weather
 
 ### Using Cursor
 
@@ -232,13 +174,15 @@ npm run watch
 }
 ```
 
-Try asking Claude:
-- What connections do I have access to?
-- Send an email using gmail to hello@picaos.com
-- What actions can I perform with google sheets?
-- Create an event in my calendar
-- List 5 users from my postgres users table
-- Send a message in slack to the #general channel with today's weather
+<iframe
+  width="100%"
+  height="350"
+  src="https://www.youtube.com/embed/JJ62NUEkKAs"
+  title="MCP Server Setup Guide"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
 
 ## Deploy to Vercel
 
@@ -258,42 +202,38 @@ You can deploy this MCP server to Vercel for remote access:
    - **For Cursor**: `https://your-project.vercel.app/api/mcp`
    - **For Claude/Cline**: Use `npx mcp-remote https://your-project.vercel.app/api/mcp`
 
-## Debugging
-
-Since MCP servers communicate over stdio, debugging can be challenging. We recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector), which is available as a package script:
-
-```bash
-npm run inspector
-```
-
-The Inspector will provide a URL to access debugging tools in your browser.
-
 ## Examples for Inspiration
 
-### 📋 **Integration Code Generation**
+### Integration Code Generation
+<CardGroup cols={2}>
+  <Card title="Build Email Form" icon="envelope">
+    Create a React form component that can send emails using Gmail with Pica integration
+  </Card>
 
-**Build Email Form:**
-> "Create me a React form component that can send emails using Gmail using Pica"
+  <Card title="Linear Dashboard" icon="chart-line">
+    Build a dashboard to display Linear users and their assigned projects with filtering capabilities
+  </Card>
 
-**Linear Dashboard:**
-> "Create a dashboard that displays Linear users and their assigned projects with filtering options using Pica"
+  <Card title="QuickBooks Table" icon="table">
+    Create a paginatable table component for QuickBooks invoices with search and sort functionality
+  </Card>
 
-**QuickBooks Table:**
-> "Build a paginatable table component that fetches and displays QuickBooks invoices with search and sort using Pica"
+  <Card title="Slack Integration" icon="slack">
+    Develop a form interface for posting scheduled messages to multiple Slack channels
+  </Card>
+</CardGroup>
 
-**Slack Integration:**
-> "Create a page with a form that can post messages to multiple Slack channels with message scheduling using Pica"
+### Direct Action Execution
 
-### 🚀 **Direct Action Execution**
+<CardGroup cols={2}>
+  <Card title="Gmail Examples" icon="envelope">
+    "Get my last 5 emails from Gmail using Pica"
+  </Card>
 
-**Gmail Examples:**
-> "Get my last 5 emails from Gmail using Pica"
-
-**Slack Examples:**
-> "Send a slack message to #general channel: 'Meeting in 10 minutes' using Pica"
-
-**Shopify Examples:**
-> "Get all products from my Shopify store using Pica"
+  <Card title="Slack Examples" icon="slack">
+    "Send a slack message to #general channel: 'Meeting in 10 minutes' using Pica"
+  </Card>
+</CardGroup>
 
 ## API Reference
 
@@ -351,27 +291,6 @@ Execute a Pica action to perform operations on third-party platforms. **Critical
 **Returns:**
 - `requestConfig`: Sanitized request configuration
 - `responseData`: Actual API response from the platform
-
-## Error Handling
-
-The server implements comprehensive error handling:
-
-- ✅ Parameter validation for all tools
-- ✅ Connection verification before execution
-- ✅ Path variable validation and substitution
-- ✅ Graceful handling of API failures
-- ✅ Detailed error messages for debugging
-- ✅ MCP-compliant error responses
-
-## Security
-
-- 🔐 Single environment variable required: `PICA_SECRET`
-- 🛡️ All requests authenticated through Pica's secure proxy
-- 🔒 No direct platform API key management needed
-- 🚫 Secrets never exposed in responses
-- ✅ Request configurations sanitized
-- 🔍 Sensitive data filtered from logs
-- 🛡️ Input validation and sanitization
 
 ## Demo
 

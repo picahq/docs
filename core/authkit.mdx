@@ -1,6 +1,6 @@
 ---
 title: 'AuthKit'
-description: 'A secure, enterprise-grade authentication solution enabling seamless integration of third-party tools and services. Built for organizations requiring robust security, compliance, and scalability.'
+description: "A secure, multi-tenant authentication component that lets your users connect their third-party tools and services directly in your app. Built for SaaS companies that need to authenticate and manage their customers' integrations at scale."
 icon: 'link'
 ---
 
@@ -10,23 +10,32 @@ icon: 'link'
   style={{ borderRadius: '5px' }}
 />
 
-<Tip>
-Key Benefit: Empowers developers to offer seamless and secure tool integrations to their customers through a customizable UI that abstracts away all of the complexity associated with building secure authentication flows, ensuring a smooth onboarding experience while prioritizing security.
-</Tip>
+<Note>
+At Pica, we dogfood our own products. AuthKit powers the connection experience in Pica's dashboard. Create a free account, navigate to the Connected Integrations tab, click the "Add Connection" button, and voilà - you'll see AuthKit in action!
+</Note>
 
 # Overview
 
-Implementing authentication flows that handle every possible error state and edge case across multiple integrations can be a daunting task. AuthKit makes this easy by providing a hosted, pre-built, customizable authentication UI with automatic handling of:
+Think of AuthKit as the "Plaid for integrations". Implementing authentication flows that handle every possible error state and edge case across multiple integrations can be a daunting task. AuthKit makes this easy by providing a hosted, pre-built, customizable authentication UI with automatic handling of:
 
 - Secure authentication via OAuth and API Keys
 - Automatic handling of authentication and refresh tokens
 - Self-hosted OAuth apps (using your Client ID and Client Secret)
 - Customizable branding and white labeling
 
-# QuickStart
+# Setup
 
-## Server
-
+<Steps>
+  <Step title="Install the AuthKit token generator package">
+    ```bash
+    npm install @picahq/authkit-node
+    ```
+  </Step>
+  <Step title="Set your Pica API key as an environment variable">
+    Navigate to the [Pica API keys tab](https://app.picaos.com/settings/api-keys), and create a new API key and set the `PICA_SECRET_KEY` environment variable to the value of the API key.
+  </Step>
+  <Step title="Create an API endpoint to generate a token">
+  For this example, we'll use Next.js and create an API endpoint at `api/authkit`.
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
 import { AuthKitToken } from "@picahq/authkit-node";
@@ -56,21 +65,37 @@ export async function POST(req: NextRequest) {
 }
 ```
 
-## Client
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `identity` | `string` | A meaningful identifier for the user, team, or organization that will own the connection (e.g. userId, teamId, organizationId). This label is how you will identify and filter connections. |
+| `identityType` | `"user"` \| `"team"` \| `"organization"` \| `"project"` | Specifies whether the identity represents a user, team, organization, or project |
+
+  </Step>
+  <Step title="Install the AuthKit client package">
+    ```bash
+    npm install @picahq/authkit
+    ```
+  </Step>
+  <Step title="Create a button to open the AuthKit modal">
 
 ```typescript
 import { useAuthKit } from "@picahq/authkit";
-import { Button } from "@/components/ui/button";
 
 export function AuthKitButton() {
   const { open } = useAuthKit({
     token: {
-      url: "https://api.your-company-name.com/authkit-token",
+      url: "http://localhost:3000/api/authkit",
       headers: {},
     },
-    onSuccess: (connection) => {},
-    onError: (error) => {},
-    onClose: () => {},
+    onSuccess: (connection) => {
+      console.log("Sucessfully created connection: ", connection);
+    },
+    onError: (error) => {
+      console.error("Error creating connection:", error);
+    },
+    onClose: () => {
+      console.log("AuthKit modal closed");
+    },
   });
 
   return (
@@ -80,7 +105,20 @@ export function AuthKitButton() {
   );
 }
 ```
+  </Step>
+  <Step title="Enable the integrations you want visible">
+    Navigate to the [AuthKit tab](https://app.picaos.com/authkit), and toggle the integrations you want to enable in the AuthKit modal. For OAuth integrations, you'll need to provide the Client ID and Client Secret for your app.
+  </Step>
+</Steps>
+
+<Card title="Demo" icon="github" href="https://github.com/picahq/awesome-pica/tree/main/authkit-next-app" horizontal>
+Check out our example Next.js app using AuthKit
+</Card>
+
+# Making requests to authenticated endpoints
+
+Once you've created a connection, you can make requests to the authenticated endpoints of the integration using the [Passthrough API](/api-reference/passthrough) or the [OneTool SDK](/core/one-tool) based on the connection key.
 
 <Info>
-At Pica, we dogfood our own products. AuthKit powers the connection experience in Pica's dashboard. Create a free account, navigate to the OneTool tab, click the "Create Connection" button, and voilà - you'll see AuthKit in action!
+Need help? Email us at [support@picaos.com](mailto:support@picaos.com) and we'll be happy to help you out.
 </Info>
