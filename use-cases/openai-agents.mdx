@@ -281,7 +281,7 @@ class InteractiveRunner:
                 max_turns=self.max_turns_per_interaction,
                 hooks=self.hooks,
                 run_config=RunConfig(
-                    model="gpt-4o",
+                    model="gpt-4.1",
                     model_settings=ModelSettings(max_tokens=4096)
                 )
             )
@@ -347,7 +347,7 @@ async def interactive_pica_chat():
                 name="Assistant with Pica",
                 instructions=system_prompt,
                 tools=agent_tools,
-                model="gpt-4o",
+                model="gpt-4.1",
                 tool_use_behavior="run_llm_again",
                 reset_tool_choice=False,
                 mcp_servers=[server]

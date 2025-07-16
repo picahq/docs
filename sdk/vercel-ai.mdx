@@ -69,12 +69,12 @@ import { Pica } from "@picahq/ai";
 export async function POST(request: Request) {
   const { messages } = await request.json();
 
-  const pica = new Pica(process.env.PICA_SECRET_KEY as string);
+  const pica = new Pica(process.env.PICA_SECRET_KEY!);
 
   const systemPrompt = await pica.generateSystemPrompt();
 
   const stream = streamText({
-    model: openai("gpt-4o"),
+    model: openai("gpt-4.1"),
     system: systemPrompt,
     tools: { ...pica.oneTool },
     messages: convertToCoreMessages(messages),
@@ -113,14 +113,14 @@ app.post("/api/ai", async (req, res) => {
     const { message } = req.body;
 
     // Initialize Pica
-    const pica = new Pica(process.env.PICA_SECRET_KEY);
+    const pica = new Pica(process.env.PICA_SECRET_KEY!);
 
     // Generate the system prompt
     const systemPrompt = await pica.generateSystemPrompt();
 
     // Create the stream
     const { text } = await generateText({
-      model: openai("gpt-4o"),
+      model: openai("gpt-4.1"),
       system: systemPrompt,
       tools: { ...pica.oneTool },
       prompt: message,

@@ -78,7 +78,7 @@ def main():
         
         llm = ChatOpenAI(
             temperature=0,
-            model="gpt-4o",
+            model="gpt-4.1",
         )
 
         # Create an agent with Pica tools
@@ -147,7 +147,7 @@ pica_client.initialize()
 
 llm_with_handler = ChatOpenAI(
         temperature=0,
-        model="gpt-4o",
+        model="gpt-4.1",
         streaming=True,
         callbacks=[StreamingStdOutCallbackHandler()]
 )
@@ -184,7 +184,7 @@ pica_client.initialize()
 
 llm = ChatOpenAI(
         temperature=0,
-        model="gpt-4o",
+        model="gpt-4.1",
 )
 
 # Create an agent with Pica tools
@@ -228,7 +228,7 @@ pica_client = PicaClient(
 
 pica_client.initialize()
 
-llm = ChatOpenAI(temperature=0, model="gpt-4o")
+llm = ChatOpenAI(temperature=0, model="gpt-4.1")
 
 agent = create_pica_agent(
     client=pica_client,
@@ -261,7 +261,7 @@ pica_client = PicaClient(
 
 pica_client.initialize()
 
-llm = ChatOpenAI(temperature=0, model="gpt-4o")
+llm = ChatOpenAI(temperature=0, model="gpt-4.1")
 
 agent = create_pica_agent(
         client=pica_client,
@@ -299,7 +299,7 @@ pica_client = PicaClient(
 
 pica_client.initialize()
 
-llm = ChatOpenAI(temperature=0, model="gpt-4o")
+llm = ChatOpenAI(temperature=0, model="gpt-4.1")
 
 agent = create_pica_agent(
         client=pica_client,

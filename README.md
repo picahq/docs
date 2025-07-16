@@ -8,7 +8,7 @@ Documentation is available at [docs.picaos.com](https://docs.picaos.com) and bui
 
 - **AuthKit**: A secure, multi-tenant authentication component that lets your users connect their third-party tools and services directly in your app.
 - **OneTool SDK**: A single SDK that connects AI agents seamlessly to all APIs and tools, handling schema definitions, authentication, and execution processes automatically
-- **Passthrough API**: Access 17500+ actions through standardized endpoints
+- **Passthrough API**: Access 20,000+ actions through standardized endpoints
 - **BuildKit**: Add integration logic to your app with a single prompt.
 
 ## Documentation Development
