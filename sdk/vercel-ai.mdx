@@ -156,34 +156,6 @@ curl --location 'http://localhost:3000/api/ai' \
   </Tab>
 </Tabs>
 
-### AuthKit
-
-The authkit configuration option initiates Pica's AuthKit. When enabled, the SDK will prompt the user to connect to a platform that they do not currently have access to.
-
-<Tabs>
-  <Tab title="Backend">
-```typescript
-const pica = new Pica(process.env.PICA_SECRET_KEY!, { 
-  authkit: true // Simply pass true to enable AuthKit
-});
-```
-  </Tab>
-  <Tab title="Frontend">
-  </Tab>
-  <Tab title="Hooks">
-  </Tab>
-</Tabs>
-
-### Knowledge Agent
-
-The knowledge agent is a configuration optional that initiates Pica's knowledge agent. When enabled, the knowledge agent will be used to generate code instead of executing actions.
-
-```typescript
-const pica = new Pica(process.env.PICA_SECRET_KEY!, { 
-  knowledgeAgent: true
-});
-```
-
 ## Demo
 
 You can now use the chat interface directly in the [Pica Dashboard](https://app.picaos.com/chat).
