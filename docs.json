@@ -1,7 +1,8 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Pica - Instant, reliable access to hundreds of third-party integrations. Zero setup required.",
+  "name": "Pica",
+  "description": "Instant, reliable access to hundreds of third-party integrations. Zero setup required.",
   "colors": {
     "primary": "#000000",
     "light": "#FFFFFF",
@@ -42,6 +43,12 @@
               "sdk/vercel-ai",
               "sdk/langchain",
               "sdk/mcp"
+            ]
+          },
+          {
+            "group": "Changelog",
+            "pages": [
+              "changelog/product-updates"
             ]
           },
           {
@@ -90,11 +97,6 @@
           "anchor": "Community",
           "href": "https://www.picaos.com/community",
           "icon": "people"
-        },
-        {
-          "anchor": "Changelog",
-          "href": "https://www.picaos.com/community/changelog",
-          "icon": "code-compare"
         },
         {
           "anchor": "Connectors",
