@@ -13,7 +13,7 @@ description: 'Create a new user, or get an existing user by email'
 ## Response
 
 <ResponseField name="user" type="User">
-  The created user object
+  The created user and their secrets
 </ResponseField>
 
 <RequestExample>
@@ -34,8 +34,8 @@ curl --location --request POST 'https://api.picaos.com/internal/v3/users/create-
     "email": "test@example.com",
     "throughput": 100,
     "secrets": {
-        "live": "<USER_LIVE_KEY>",
-        "sandbox": "<USER_SANDBOX_KEY>"
+      "live": "<USER_LIVE_KEY>",
+      "sandbox": "<USER_SANDBOX_KEY>"
     }
 }
 ```
