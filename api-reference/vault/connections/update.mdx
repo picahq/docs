@@ -1,0 +1,37 @@
+---
+title: 'Update Connection'
+api: 'PATCH https://api.picaos.com/v1/vault/connections/{id}'
+description: 'Update a Connection'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The connection ID
+</ParamField>
+
+## Body Parameters
+
+<ParamField body="tags" type="string[]">
+  The connection tags
+</ParamField>
+
+## Response
+
+<ResponseField name="200">
+  Success
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl --location --request PATCH 'https://api.picaos.com/v1/vault/connections/{connection_id}' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "tags": ["new-user", "main"]
+}' \
+--header 'x-pica-secret: YOUR_API_KEY'
+```
+</RequestExample>
+
+<ResponseExample>
+</ResponseExample>

@@ -80,6 +80,8 @@
               "api-reference/core/available-actions",
               "api-reference/core/create-or-get-user",
               "api-reference/vault/connections/list",
+              "api-reference/vault/connections/get",
+              "api-reference/vault/connections/update",
               "api-reference/vault/connections/delete"
             ]
           }
