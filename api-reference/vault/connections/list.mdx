@@ -7,7 +7,7 @@ description: 'List available Connections'
 ## Query Parameters
 
 <ParamField query="key" type="string">
-  The connection key
+  A comma separated list of connection keys
 </ParamField>
 
 <ParamField query="platformVersion" type="string">
@@ -28,6 +28,10 @@ description: 'List available Connections'
 
 <ParamField query="platform" type="string">
   The connector platform (e.g. stripe, exa)
+</ParamField>
+
+<ParamField query="tags" type="string">
+  A comma separated list of tags
 </ParamField>
 
 <ParamField query="active" type="boolean" default="true">
