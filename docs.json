@@ -19,6 +19,35 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Homepage",
+          "icon": "house",
+          "href": "https://picaos.com"
+        },
+        {
+          "anchor": "Community",
+          "icon": "people",
+          "href": "https://www.picaos.com/community"
+        },
+        {
+          "anchor": "Connectors",
+          "icon": "database",
+          "href": "https://www.picaos.com/community/connectors"
+        },
+        {
+          "anchor": "Status",
+          "icon": "signal",
+          "href": "https://status.picaos.com"
+        },
+        {
+          "anchor": "Blog",
+          "icon": "newspaper",
+          "href": "https://www.picaos.com/community/posts"
+        }
+      ]
+    },
     "tabs": [
       {
         "tab": "Documentation",
@@ -87,36 +116,7 @@
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Homepage",
-          "href": "https://picaos.com",
-          "icon": "house"
-        },
-        {
-          "anchor": "Community",
-          "href": "https://www.picaos.com/community",
-          "icon": "people"
-        },
-        {
-          "anchor": "Connectors",
-          "href": "https://www.picaos.com/community/connectors",
-          "icon": "database"
-        },
-        {
-          "anchor": "Status",
-          "href": "https://status.picaos.com",
-          "icon": "signal"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://www.picaos.com/community/posts",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
