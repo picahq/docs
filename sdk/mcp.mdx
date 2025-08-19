@@ -15,28 +15,24 @@ icon: 'server'
 <Info>Want to learn more about Anthropic's Model Control Protocol? [Visit the website](https://www.claudemcp.com) or [read the docs](https://modelcontextprotocol.io/introduction).</Info>
 
 
-<Card title="NPM" icon="npm" href="https://npmjs.com/package/@picahq/mcp" horizontal>
-Download the MCP Server from NPM and install it locally
-</Card>
+<CardGroup cols={3}>
+  <Card title="NPM" icon="npm" href="https://npmjs.com/package/@picahq/mcp">
+    Download the MCP Server from NPM and install it locally
+  </Card>
 
-<Card title="Smithery" icon="server" href="https://smithery.ai/server/@picahq/mcp" horizontal>
-Install the MCP Server via Smithery
-</Card>
+  <Card title="Smithery" icon="server" href="https://smithery.ai/server/@picahq/mcp">
+    Install the MCP Server via Smithery
+  </Card>
 
-<Card title="Glama" icon="server" href="https://glama.ai/mcp/servers/@picahq/mcp" horizontal>
-Install the MCP Server via Glama
-</Card>
+  <Card title="Glama" icon="server" href="https://glama.ai/mcp/servers/@picahq/mcp">
+    Install the MCP Server via Glama
+  </Card>
+</CardGroup>
 
 # Pica MCP Server
 
 Pica MCP Server is a server that enables seamless interaction with various third-party services through a standardized interface. 
 This server provides direct access to platform integrations, actions, execution capabilities, and robust code generation capabilities.
-
-## Tools
-- **`list_pica_integrations`** - List all available platforms and your active connections
-- **`get_pica_platform_actions`** - Get available actions for a specific platform
-- **`get_pica_action_knowledge`** - Get detailed documentation for a specific action including parameters and usage
-- **`execute_pica_action`** - Execute API actions with full parameter support
 
 ## Installation
 
@@ -83,6 +79,14 @@ Try asking Claude:
 - Create an event in my calendar
 - List 5 users from my postgres users table
 - Send a message in slack to the #general channel with today's weather
+
+<iframe
+  width="100%"
+  height="350"
+  src="https://www.youtube.com/embed/yc0x7GokM2k"
+  title="MCP Server with Claude Desktop"
+  frameborder="0"
+></iframe>
 
 ### Using Cursor
 
@@ -234,13 +238,3 @@ You can deploy this MCP server to Vercel for remote access:
     "Send a slack message to #general channel: 'Meeting in 10 minutes' using Pica"
   </Card>
 </CardGroup>
-
-## Demo
-
-<iframe
-  width="100%"
-  height="350"
-  src="https://www.youtube.com/embed/0jeasO20PyM"
-  title="MCP Server Demo"
-  frameborder="0"
-></iframe>
