@@ -35,11 +35,6 @@
           "anchor": "Status",
           "icon": "signal",
           "href": "https://status.picaos.com"
-        },
-        {
-          "anchor": "Blog",
-          "icon": "newspaper",
-          "href": "https://www.picaos.com/community/posts"
         }
       ]
     },
@@ -109,6 +104,13 @@
               "api-reference/vault/connections/delete"
             ]
           }
+        ]
+      },
+      {
+        "tab": "Blog",
+        "pages": [
+          "blog/overview",
+          "blog/blogs/sales-agent-mcp"
         ]
       }
     ]
