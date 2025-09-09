@@ -1,0 +1,106 @@
+### Set up a starter project
+
+Choose your preferred framework and follow the setup steps to get your starter project up and running.
+
+<Tabs>
+  <Tab title="Vercel AI SDK" icon="/images/vercel.svg">
+    <Card>
+      1. Clone and install dependencies.
+      ```bash Clone Repository
+      git clone https://github.com/picahq/buildkit-vercel-ai-starter.git && cd buildkit-vercel-ai-starter
+      ```
+      ```bash Install Dependencies
+      npm install
+      ```
+
+      2. Set up environment variables.
+      ```text .env.local (root directory)
+      OPENAI_API_KEY=your_openai_api_key_here
+      ```
+
+      3. Run the development server.
+      ```bash Start Server
+      npm run dev
+      ```
+
+      4. Open your browser.
+      <p>Navigate to http://localhost:3000 to see the chat interface.</p>
+    </Card>
+  </Tab>
+  <Tab title="LangChain" icon="/images/langchain-icon.svg">
+    <Card>
+      1. Clone the repository.
+      ```bash Clone Repository
+      git clone https://github.com/picahq/buildkit-langchain-starter.git && cd buildkit-langchain-starter
+      ```
+
+      2. Create & activate virtual environment.
+      ```bash macOS/Linux
+      python -m venv venv && source venv/bin/activate
+      ```
+      ```bash Windows
+      python -m venv venv && venv\Scripts\activate
+      ```
+
+      3. Install dependencies.
+      ```bash Install Requirements
+      pip install -r requirements.txt
+      ```
+
+      4. Configure OpenAI
+      ```bash Copy Environment File
+      cp .env.example .env
+      ```
+
+      5. Set up environment variables.
+      ```text .env (root directory)
+      OPENAI_API_KEY=your_openai_api_key_here
+      ```
+
+      6. Run the backend server.
+      ```bash Start Server
+      python -m src.backend
+      ```
+
+      7. Open your browser.
+      <p>Visit http://localhost:8000 to use the chat interface.</p>
+    </Card>
+  </Tab>
+  <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
+    <Card>
+      Set up the MCP Server starter for building custom Model Context Protocol servers:
+
+      1. Clone the repository.
+      ```bash Clone Repository
+      git clone https://github.com/picahq/buildkit-mcp-starter.git && cd buildkit-mcp-starter
+      ```
+
+      2. Install dependencies.
+      ```bash Install Dependencies
+      Install Dependencies
+      ```
+
+      3. Build the project.
+      ```bash Build Project
+      npm run build
+      ```
+
+      4. Run the server.
+      ```bash Development Mode
+      npm run dev
+      ```
+      <p>The server will start and listen for MCP requests.You should see: </p><p>`MCP Server running on http://localhost:3000/mcp`</p>
+
+      5. Test with MCP Inspector.
+      <p>The easiest way to test your MCP server is using the official MCP Inspector.</p>
+      ```bash Start Inspector
+      npx @modelcontextprotocol/inspector
+      ```
+      This will:
+      - Start the MCP Inspector proxy server.
+      - Open your browser automatically.
+      - Show you the Inspector interface.
+    </Card>
+  </Tab>
+</Tabs>
+

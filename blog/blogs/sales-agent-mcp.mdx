@@ -1,0 +1,37 @@
+---
+title: Sales Agent MCP
+description: 👋 Follow this tutorial to build a simple Sales Agent with MCP that connects Attio, Gmail, and Slack — all in under 5 minutes.
+---
+
+import InstallMcpServer from '/snippets/install-mcp-server.mdx';
+import ConnectAccounts from '/snippets/connect-accounts.mdx';
+import { AddConnections } from '/snippets/add-connections.jsx';
+import SetupStarterProject from '/snippets/setup-project.mdx';
+import AddRules from '/snippets/add-rules.mdx';
+import PromptLlm from '/snippets/prompt-llm.mdx';
+
+### What we'll do:
+
+1. Install the Pica MCP Server.
+2. Connect your Attio, Gmail, and Slack account.
+3. Set up a starter MCP project.
+4. Add some rules for the LLMs to understand BuildKit.
+5. Prompt the LLM to build your tool.
+
+<InstallMcpServer />
+
+<ConnectAccounts platformNames='Attio, Gmail, and Slack accounts'/>
+<Columns cols={2}>
+  <AddConnections platforms={[{'name': 'Attio', 'code': 'attio'}, {'name': 'Gmail', 'code': 'gmail'}, {'name': 'Slack', 'code': 'slack'}]} />
+</Columns>
+<Frame>
+  <img src="/images/new-connection.gif"  alt="Add a new connection"/>
+</Frame>
+
+<SetupStarterProject />
+
+<AddRules />
+
+<PromptLlm prompt={'Create me a tool called fetchGmailEmails in my Vercel AI SDK agent for fetching my Gmail unread emails and returning the content using BuildKit'}/>
+
+

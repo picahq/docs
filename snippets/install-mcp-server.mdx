@@ -1,0 +1,105 @@
+### Install the Pica MCP Server
+
+First, let's add the Pica MCP Server to your development environment. Select your preferred tool and follow the instructions.
+
+<Tabs>
+  <Tab title="Cursor" icon="/images/cursor.svg">
+    <Card>
+      In the Cursor menu, select "MCP Settings" and update the MCP JSON file to include the following:
+      ```json MCP Settings
+      {
+        "mcpServers": {
+          "pica": {
+            "command": "npx",
+            "args": ["@picahq/mcp"],
+            "env": {
+              "PICA_SECRET": "your-pica-secret-key"
+            }
+          }
+        }
+      }
+      ```
+      <Note>Replace `your-pica-secret-key` with your actual Pica Secret Key from the link below.</Note>
+    </Card>
+  </Tab>
+  <Tab title="Claude Code" icon="/images/claude.svg">
+    <Card>
+      If you're on a paid Claude plan, you can add the server via the command line:
+      ```bash Terminal Command
+      claude mcp add pica --env PICA_SECRET=your-pica-secret-key -- npx @picahq/mcp
+      ```
+      Now you can run through the following:
+      1. Run claude in your terminal to start the Claude Code CLI.
+      2. Run `/mcp` to see your list of MCP servers.
+      3. See pica listed there!
+      4. Select it and go through the auth flow to enable the Pica MCP server in your claude code sessions!
+
+      <Note>Replace `your-pica-secret-key` with your actual Pica Secret Key from the link below.</Note>
+    </Card>
+  </Tab>
+  <Tab title="Windsurf" icon="/images/windsurf.svg">
+    <Card>
+      You can add the Pica MCP server through the Windsurf UI or by editing the configuration file directly:
+      #### Method 1: Windsurf UI
+      1. Open Windsurf Settings.
+      2. Under Cascade, find "Model Context Protocol Servers".
+      3. Select "Add Server" and paste the relevant snippet for your OS below.
+
+      #### Method 2: Direct Configuration
+      Alternatively, edit your `~/.codeium/windsurf/mcp_config.json` file directly:
+
+      ```json macOS/Linux
+      {
+        "mcpServers": {
+          "pica": {
+            "command": "npx",
+            "args": ["@picahq/mcp"],
+            "env": {
+              "PICA_SECRET": "your-pica-secret-key"
+            }
+          }
+        }
+      }
+      ```
+
+      ```json Windows
+      {
+        "mcpServers": {
+          "pica": {
+            "command": "cmd",
+            "args": ["/c", "npx", "@picahq/mcp"],
+            "env": {
+              "PICA_SECRET": "your-pica-secret-key"
+            }
+          }
+        }
+      }
+      ```
+
+      ```json Windows WSL
+      {
+        "mcpServers": {
+          "pica": {
+            "command": "wsl",
+            "args": ["npx", "@picahq/mcp"],
+            "env": {
+              "PICA_SECRET": "your-pica-secret-key"
+            }
+          }
+        }
+      }
+      ```
+
+      <Note>Replace `your-pica-secret-key` with your actual Pica Secret Key from the link below.</Note>
+    </Card>
+  </Tab>
+</Tabs>
+
+<Card
+  title="Grab your API Key"
+  href="https://app.picaos.com/settings/api-keys"
+  arrow="true"
+  cta="Get API Key"
+>
+  Navigate to your Pica dashboard to access your API keys.
+</Card>

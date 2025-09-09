@@ -1,0 +1,30 @@
+import {CodeBlock} from "@mintlify/components";
+
+### Prompt the LLM to build your tool
+
+<Tabs>
+  <Tab title="Vercel AI SDK" icon="/images/vercel.svg">
+    <Card>
+      Copy this prompt to build the Vercel AI SDK tool:
+      <CodeBlock title="text" filename="Vercel AI SDK Tool">
+        {prompt}
+      </CodeBlock>
+    </Card>
+  </Tab>
+  <Tab title="LangChain" icon="/images/langchain-icon.svg">
+    <Card>
+      Copy this prompt to build the LangChain tool:
+      <CodeBlock title="text" filename="LangChain Tool">
+        {prompt}
+      </CodeBlock>
+    </Card>
+  </Tab>
+  <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
+    <Card>
+      Copy this prompt to build a the MCP server tool:
+      <CodeBlock title="text" filename="MCP Server Tool">
+        {prompt}
+      </CodeBlock>
+    </Card>
+  </Tab>
+</Tabs>
