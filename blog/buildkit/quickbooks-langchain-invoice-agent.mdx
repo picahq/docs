@@ -76,8 +76,5 @@ import PromptLlm from '/snippets/prompt-llm.mdx';
 Copy this prompt to build the LangChain tool:
 
 <CodeBlock title="text" filename="LangChain Tool Prompt">
-Create me a tool called createQuickBooksInvoice in my LangChain agent for creating an invoice in QuickBooks and returning the content using BuildKit. 
-
-- It should only require the customer id and the line items (item name, quantity, unit price, and description).
-- There must be guardrails that the tool will only create an invoice if the invoice amount is less than $20000.
+Create me a tool called createQuickBooksInvoice in my LangChain agent for creating an invoice in QuickBooks and returning the content using BuildKit. The invoice should only be created if the invoice amount is less than $20000.
 </CodeBlock>
