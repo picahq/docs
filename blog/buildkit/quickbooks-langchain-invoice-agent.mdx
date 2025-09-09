@@ -33,12 +33,18 @@ import PromptLlm from '/snippets/prompt-llm.mdx';
     ```bash Clone Repository
     git clone https://github.com/picahq/buildkit-langchain-starter.git && cd buildkit-langchain-starter
     ```
-    ```bash macOS/Linux
-    python -m venv venv && source venv/bin/activate
-    ```
-    ```bash Windows
-    python -m venv venv && venv\Scripts\activate
-    ```
+    <Tabs>
+      <Tab title="macOS/Linux">
+        ```bash
+        python -m venv venv && source venv/bin/activate
+        ```
+      </Tab>
+      <Tab title="Windows">
+        ```bash
+        python -m venv venv && venv\Scripts\activate
+        ```
+      </Tab>
+    </Tabs>
   </Step>
 
   <Step title="Install dependencies and configure">
@@ -72,6 +78,6 @@ Copy this prompt to build the LangChain tool:
 <CodeBlock title="text" filename="LangChain Tool Prompt">
 Create me a tool called createQuickBooksInvoice in my LangChain agent for creating an invoice in QuickBooks and returning the content using BuildKit. 
 
-- It should only require the customer id and the line items (item name, item id, quantity, unit price, and description).
+- It should only require the customer id and the line items (item name, quantity, unit price, and description).
 - There must be guardrails that the tool will only create an invoice if the invoice amount is less than $20000.
 </CodeBlock>
