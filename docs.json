@@ -19,6 +19,13 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
+    "anchors": [
+      {
+        "anchor": "Blo1g",
+        "icon": "newspaper",
+        "href": "https://docs.picaos.com/blog/overview"
+      }
+    ],
     "global": {
       "anchors": [
         {
@@ -35,11 +42,6 @@
           "anchor": "Status",
           "icon": "signal",
           "href": "https://status.picaos.com"
-        },
-        {
-          "anchor": "Blog",
-          "icon": "newspaper",
-          "href": "https://www.picaos.com/community/posts"
         }
       ]
     },
@@ -107,6 +109,24 @@
               "api-reference/vault/connections/get",
               "api-reference/vault/connections/update",
               "api-reference/vault/connections/delete"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Blog",
+        "groups": [
+          {
+            "group": "Blog Posts",
+            "pages": [
+              "blog/overview"
+            ]
+          },
+          {
+            "group": "BuildKit",
+            "pages": [
+              "blog/buildkit/sales-agent-mcp",
+              "blog/buildkit/quickbooks-langchain-invoice-agent"
             ]
           }
         ]
