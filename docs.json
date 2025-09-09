@@ -19,6 +19,13 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
+    "anchors": [
+      {
+        "anchor": "Blo1g",
+        "icon": "newspaper",
+        "href": "https://docs.picaos.com/blog/overview"
+      }
+    ],
     "global": {
       "anchors": [
         {
@@ -108,9 +115,20 @@
       },
       {
         "tab": "Blog",
-        "pages": [
-          "blog/overview",
-          "blog/blogs/sales-agent-mcp"
+        "groups": [
+          {
+            "group": "Blog Posts",
+            "pages": [
+              "blog/overview"
+            ]
+          },
+          {
+            "group": "BuildKit",
+            "pages": [
+              "blog/buildkit/sales-agent-mcp",
+              "blog/buildkit/quickbooks-langchain-invoice-agent"
+            ]
+          }
         ]
       }
     ]

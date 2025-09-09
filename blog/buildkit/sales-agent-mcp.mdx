@@ -1,5 +1,5 @@
 ---
-title: Sales Agent MCP
+title: Build a Sales Agent MCP Server
 description: 👋 Follow this tutorial to build a simple Sales Agent with MCP that connects Attio, Gmail, and Slack — all in under 5 minutes.
 ---
 
@@ -21,8 +21,8 @@ import PromptLlm from '/snippets/prompt-llm.mdx';
 <InstallMcpServer />
 
 <ConnectAccounts platformNames='Attio, Gmail, and Slack accounts'/>
-<Columns cols={2}>
-  <AddConnections platforms={[{'name': 'Attio', 'code': 'attio'}, {'name': 'Gmail', 'code': 'gmail'}, {'name': 'Slack', 'code': 'slack'}]} />
+<Columns cols={1}>
+  <AddConnections platforms={[{'name': 'Gmail', 'code': 'gmail'}, {'name': 'Attio', 'code': 'attio'}, {'name': 'Slack', 'code': 'slack'}]} />
 </Columns>
 <Frame>
   <img src="/images/new-connection.gif"  alt="Add a new connection"/>
@@ -33,5 +33,3 @@ import PromptLlm from '/snippets/prompt-llm.mdx';
 <AddRules />
 
 <PromptLlm prompt={'Create me a tool called fetchGmailEmails in my Vercel AI SDK agent for fetching my Gmail unread emails and returning the content using BuildKit'}/>
-
-
