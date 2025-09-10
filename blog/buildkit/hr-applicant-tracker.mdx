@@ -19,6 +19,52 @@ import PromptLlm from '/snippets/prompt-llm.mdx';
 <ConnectAccounts platformNames='Gmail and Notion accounts'/>
 <AddConnections platforms={[{'name': 'Gmail', 'code': 'gmail'}, {'name': 'Notion', 'code': 'notion'}]} />
 
+### Required Environment Variables
+
+You'll need these connection keys in your environment:
+
+```bash Environment Setup
+GMAIL_CONNECTION_KEY=your_gmail_connection_key
+NOTION_CONNECTION_KEY=your_notion_connection_key
+OPENAI_API_KEY=your_openai_api_key
+PICA_API_KEY=your_pica_api_key
+```
+
+### Notion Database Setup
+
+The system will create two linked databases in your Notion workspace:
+
+<Tabs>
+  <Tab title="Job Applications Database">
+    **Database Name:** "Job Applications"
+    
+    **Properties:**
+    - Candidate Name (Title)
+    - Email (Email)
+    - Phone (Phone)
+    - Role Category (Select: Software, Business, Sales, Marketing, Operations)
+    - Application Date (Date)
+    - Resume Content (Rich Text)
+    - Skills (Multi-select)
+    - Experience Level (Select: Entry, Mid, Senior)
+    - Status (Select: New, Reviewed, Tasks Sent, In Progress, Completed)
+    - Tasks (Relation to "Tasks" database)
+  </Tab>
+  
+  <Tab title="Application Tasks Database">
+    **Database Name:** "Application Tasks"
+    
+    **Properties:**
+    - Task Name (Title)
+    - Application (Relation to Job Applications)
+    - Task Type (Select: Technical Challenge, Case Study, Presentation, Assessment)
+    - Due Date (Date)
+    - Status (Select: Assigned, In Progress, Submitted, Reviewed, Completed)
+    - Instructions (Rich Text)
+    - Submission Link (URL)
+  </Tab>
+</Tabs>
+
 <SetupStarterProject />
 
 <AddRules />
