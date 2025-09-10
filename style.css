@@ -10,3 +10,11 @@
 .rounded {
     border-radius: 5px;
 }
+
+.light [data-component-part="code-block-header"] > div > div > div {
+  background-color: #777777;
+}
+
+.dark [data-component-part="code-block-header"] > div > div > div {
+  color: #333333;
+}
