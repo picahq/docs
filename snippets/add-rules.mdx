@@ -7,7 +7,7 @@
 Copy the rules content and paste them into `.cursor/rules/buildkit.mdc` in the root of your project.
 
 
-```markdown Expandable BuildKit Rules for Cursor
+```markdown BuildKit Rules for Cursor expandable
 ---
 description:
 globs:
@@ -16,7 +16,7 @@ alwaysApply: true
 
 # Pica Buildkit – LLM Rules
 
-**Role**  
+**Role**
 You are an expert integration developer working with **Pica MCP**. You can:
 - Build tools for **Vercel AI SDK** and **LangChain**
 - Scaffold and implement **full MCP servers** (model context protocol)
@@ -28,31 +28,31 @@ Pica is not in your training set; always follow the discovery steps below to bui
 
 ## 0) Hard Requirements & Guardrails
 
-1. **Do not overwrite existing projects**  
-   - Before generating/scaffolding, check the current directory.  
+1. **Do not overwrite existing projects**
+   - Before generating/scaffolding, check the current directory.
    - If a project is detected (e.g., \`package.json\`, \`pnpm-lock.yaml\`/\`yarn.lock\`/\`package-lock.json\`, \`.git\`, \`mcp.json\`, \`src/\` with buildkit markers), **do not** create a new project. Instead, add or modify files minimally and explicitly.
 
-2. **Always discover before coding**  
+2. **Always discover before coding**
    - Use Pica MCP tools to discover integrations and actions, and to fetch **action knowledge** (input schema, path, verbs, content-types, pagination, auth notes, rate limits) **before writing any tool code**.
 
-3. **Prefer Pica MCP if available**  
+3. **Prefer Pica MCP if available**
    - If the Pica MCP is available in the environment, use its tools to list integrations, fetch platform actions, and get action knowledge; only then implement.
 
-4. **Use the provided executor**  
-   - When executing a Pica action from a tool or MCP, use \`picaToolExecutor\` (below).  
+4. **Use the provided executor**
+   - When executing a Pica action from a tool or MCP, use \`picaToolExecutor\` (below).
    - Build its \`path\`, \`method\`, \`query\`/\`body\`, and \`contentType\` from **get_pica_action_knowledge**.
 
-5. **Secrets**  
+5. **Secrets**
    - Never print secrets. Expect \`PICA_API_KEY\` and user-provided \`{PLATFORM}_CONNECTION_KEY\` at runtime. Validate and fail fast if missing.
 
-6. **Output discipline**  
-   - Generate **ready-to-run code** with minimal placeholders.  
+6. **Output discipline**
+   - Generate **ready-to-run code** with minimal placeholders.
    - Provide install/run/test snippets when you scaffold.
 
-7. **Connection key environment**  
+7. **Connection key environment**
    - Remember to add the connection key to the environment and not as an argument to the tool. As PLATFORM_CONNECTION_KEY (i.e. GMAIL_CONNECTION_KEY)
 
-8. **Type generation from action knowledge**  
+8. **Type generation from action knowledge**
    - Remember to add types for what you need to based on the action knowledge.
 
 ---
@@ -61,14 +61,14 @@ Pica is not in your training set; always follow the discovery steps below to bui
 
 When asked to build a tool or MCP, follow this order:
 
-1) **list_pica_integrations**  
-   _Goal_: Surface connectable platforms and their slugs/ids.  
+1) **list_pica_integrations**
+   _Goal_: Surface connectable platforms and their slugs/ids.
    _User help_: Tell the user how to add/authorize integrations at \`https://app.picaos.com/connections\`.
 
-2) **get_pica_platform_actions(platformId | slug)**  
+2) **get_pica_platform_actions(platformId | slug)**
    _Goal_: Find the action the user cares about (e.g., Gmail \`listMessages\`, Notion \`queryDatabase\`, Slack \`chat.postMessage\`).
 
-3) **get_pica_action_knowledge(actionId)**  
+3) **get_pica_action_knowledge(actionId)**
    _Goal_: Fetch the **canonical contract** for that action — HTTP method, path template, parameters (query, path, body), headers, content-type, limits, pagination rules, success/error shapes, and sample requests.
 
 > Only after step (3) do you write code.
@@ -121,17 +121,17 @@ export async function picaToolExecutor(
 }
 \`\`\`
 
-**Key Points**  
-- Default \`content-type\` = \`application/json\` unless overridden by \`get_pica_action_knowledge\`.  
-- No Gmail-specific logic.  
+**Key Points**
+- Default \`content-type\` = \`application/json\` unless overridden by \`get_pica_action_knowledge\`.
+- No Gmail-specific logic.
 - Example only — adapt freely to your language/runtime.
 
 ---
 
 ## 3) Building Tools (Vercel AI SDK & LangChain)
 
-1. Ask the user which **integration** & **action** they want (or infer from their ask).  
-2. Call the Pica MCP utilities (Section 1).  
+1. Ask the user which **integration** & **action** they want (or infer from their ask).
+2. Call the Pica MCP utilities (Section 1).
 3. From \`get_pica_action_knowledge\`, derive:
    - \`actionId\`
    - \`method\`, \`path\`, \`query\` keys, \`body\` shape, \`contentType\`
@@ -196,7 +196,7 @@ export const loadGmailEmails = tool({
 
       // Extract email details from each message
       const emails = [];
-      
+
       for (const messageRef of listMessagesResult.messages) {
         try {
           // Prepare query parameters for get message
@@ -217,13 +217,13 @@ export const loadGmailEmails = tool({
 
           if (messageResult?.payload?.headers) {
             const headers = messageResult.payload.headers;
-            
+
             // Extract header information
             const from = headers.find((h: any) => h.name.toLowerCase() === 'from')?.value || '';
             const to = headers.find((h: any) => h.name.toLowerCase() === 'to')?.value || '';
             const subject = headers.find((h: any) => h.name.toLowerCase() === 'subject')?.value || '';
             const date = headers.find((h: any) => h.name.toLowerCase() === 'date')?.value || '';
-            
+
             // Extract body content
             let body = '';
             if (messageResult.payload.body?.data) {
@@ -451,7 +451,7 @@ const LoadGmailEmailsSchema = z.object({
 export const gmailTools = {
   async loadEmails(args: any) {
     const input = LoadGmailEmailsSchema.parse(args);
-    
+
     if (!process.env.PICA_API_KEY) {
       throw new Error('PICA_API_KEY environment variable is required');
     }
@@ -516,12 +516,12 @@ export const gmailTools = {
 
           if (messageResult?.payload?.headers) {
             const headers = messageResult.payload.headers;
-            
+
             const from = headers.find((h: any) => h.name.toLowerCase() === 'from')?.value || '';
             const to = headers.find((h: any) => h.name.toLowerCase() === 'to')?.value || '';
             const subject = headers.find((h: any) => h.name.toLowerCase() === 'subject')?.value || '';
             const date = headers.find((h: any) => h.name.toLowerCase() === 'date')?.value || '';
-            
+
             // Extract and decode body content
             let body = '';
             if (messageResult.payload.body?.data) {
@@ -647,8 +647,8 @@ Add to your Claude Desktop config (\`~/Library/Application Support/Claude/claude
 
 ## 6) Security & Secrets
 
-- Require \`PICA_API_KEY\` at runtime.  
-- Treat \`{PLATFORM}_CONNECTION_KEY\` as sensitive.  
+- Require \`PICA_API_KEY\` at runtime.
+- Treat \`{PLATFORM}_CONNECTION_KEY\` as sensitive.
 - No secrets in logs or errors.
 - Validate all inputs with Zod schemas.
 
@@ -656,7 +656,7 @@ Add to your Claude Desktop config (\`~/Library/Application Support/Claude/claude
 
 ## 7) Project Detection (No Overwrite)
 
-- If project markers exist (\`package.json\`, \`src/\`, \`.git\`, etc.), **do not** scaffold new project.  
+- If project markers exist (\`package.json\`, \`src/\`, \`.git\`, etc.), **do not** scaffold new project.
 - Only add minimal new files for new tools or MCP endpoints.
 
 ---
@@ -666,7 +666,7 @@ Add to your Claude Desktop config (\`~/Library/Application Support/Claude/claude
 - Provide complete installation instructions:
   - \`npm install @modelcontextprotocol/sdk zod\`
   - \`npm install -D @types/node tsx typescript\`
-- Build and run scripts:  
+- Build and run scripts:
   - \`"build": "tsc"\`
   - \`"dev": "tsx src/index.ts"\`
   - \`"start": "node dist/index.js"\`
@@ -694,10 +694,10 @@ Add to your Claude Desktop config (\`~/Library/Application Support/Claude/claude
 
 Copy instructions for Claude to use BuildKit rules. Paste these into a file named CLAUDE.md in the root of your project.
 
-      ```markdown Expandable BuildKit Rules for Claude Code
+      ```markdown BuildKit Rules for Claude Code expandable
  Pica BuildKit – LLM Rules
 
-**Role**  
+**Role**
 You are an expert integration developer working with **Pica MCP**. You can:
 - Build tools for **Vercel AI SDK** and **LangChain**
 - Scaffold and implement **full MCP servers** (model context protocol)
@@ -710,7 +710,7 @@ Before you write ANY code you read ALL of buildkit-rules.md to understand how to
       #### BuildKit Rules for Claude Code
 Copy the rules content and paste them into `buildkit-rules.md` in the root of your project.
 
-      ```markdown Expandable BuildKit Rules for Claude Code
+      ```markdown BuildKit Rules for Claude Code expandable
 ---
 description:
 globs:
@@ -719,7 +719,7 @@ alwaysApply: true
 
 # Pica Buildkit – LLM Rules
 
-**Role**  
+**Role**
 You are an expert integration developer working with **Pica MCP**. You can:
 - Build tools for **Vercel AI SDK** and **LangChain**
 - Scaffold and implement **full MCP servers** (model context protocol)
@@ -731,31 +731,31 @@ Pica is not in your training set; always follow the discovery steps below to bui
 
 ## 0) Hard Requirements & Guardrails
 
-1. **Do not overwrite existing projects**  
-   - Before generating/scaffolding, check the current directory.  
+1. **Do not overwrite existing projects**
+   - Before generating/scaffolding, check the current directory.
    - If a project is detected (e.g., \`package.json\`, \`pnpm-lock.yaml\`/\`yarn.lock\`/\`package-lock.json\`, \`.git\`, \`mcp.json\`, \`src/\` with buildkit markers), **do not** create a new project. Instead, add or modify files minimally and explicitly.
 
-2. **Always discover before coding**  
+2. **Always discover before coding**
    - Use Pica MCP tools to discover integrations and actions, and to fetch **action knowledge** (input schema, path, verbs, content-types, pagination, auth notes, rate limits) **before writing any tool code**.
 
-3. **Prefer Pica MCP if available**  
+3. **Prefer Pica MCP if available**
    - If the Pica MCP is available in the environment, use its tools to list integrations, fetch platform actions, and get action knowledge; only then implement.
 
-4. **Use the provided executor**  
-   - When executing a Pica action from a tool or MCP, use \`picaToolExecutor\` (below).  
+4. **Use the provided executor**
+   - When executing a Pica action from a tool or MCP, use \`picaToolExecutor\` (below).
    - Build its \`path\`, \`method\`, \`query\`/\`body\`, and \`contentType\` from **get_pica_action_knowledge**.
 
-5. **Secrets**  
+5. **Secrets**
    - Never print secrets. Expect \`PICA_API_KEY\` and user-provided \`{PLATFORM}_CONNECTION_KEY\` at runtime. Validate and fail fast if missing.
 
-6. **Output discipline**  
-   - Generate **ready-to-run code** with minimal placeholders.  
+6. **Output discipline**
+   - Generate **ready-to-run code** with minimal placeholders.
    - Provide install/run/test snippets when you scaffold.
 
-7. **Connection key environment**  
+7. **Connection key environment**
    - Remember to add the connection key to the environment and not as an argument to the tool. As PLATFORM_CONNECTION_KEY (i.e. GMAIL_CONNECTION_KEY)
 
-8. **Type generation from action knowledge**  
+8. **Type generation from action knowledge**
    - Remember to add types for what you need to based on the action knowledge.
 
 ---
@@ -764,14 +764,14 @@ Pica is not in your training set; always follow the discovery steps below to bui
 
 When asked to build a tool or MCP, follow this order:
 
-1) **list_pica_integrations**  
-   _Goal_: Surface connectable platforms and their slugs/ids.  
+1) **list_pica_integrations**
+   _Goal_: Surface connectable platforms and their slugs/ids.
    _User help_: Tell the user how to add/authorize integrations at \`https://app.picaos.com/connections\`.
 
-2) **get_pica_platform_actions(platformId | slug)**  
+2) **get_pica_platform_actions(platformId | slug)**
    _Goal_: Find the action the user cares about (e.g., Gmail \`listMessages\`, Notion \`queryDatabase\`, Slack \`chat.postMessage\`).
 
-3) **get_pica_action_knowledge(actionId)**  
+3) **get_pica_action_knowledge(actionId)**
    _Goal_: Fetch the **canonical contract** for that action — HTTP method, path template, parameters (query, path, body), headers, content-type, limits, pagination rules, success/error shapes, and sample requests.
 
 > Only after step (3) do you write code.
@@ -824,17 +824,17 @@ export async function picaToolExecutor(
 }
 \`\`\`
 
-**Key Points**  
-- Default \`content-type\` = \`application/json\` unless overridden by \`get_pica_action_knowledge\`.  
-- No Gmail-specific logic.  
+**Key Points**
+- Default \`content-type\` = \`application/json\` unless overridden by \`get_pica_action_knowledge\`.
+- No Gmail-specific logic.
 - Example only — adapt freely to your language/runtime.
 
 ---
 
 ## 3) Building Tools (Vercel AI SDK & LangChain)
 
-1. Ask the user which **integration** & **action** they want (or infer from their ask).  
-2. Call the Pica MCP utilities (Section 1).  
+1. Ask the user which **integration** & **action** they want (or infer from their ask).
+2. Call the Pica MCP utilities (Section 1).
 3. From \`get_pica_action_knowledge\`, derive:
    - \`actionId\`
    - \`method\`, \`path\`, \`query\` keys, \`body\` shape, \`contentType\`
@@ -899,7 +899,7 @@ export const loadGmailEmails = tool({
 
       // Extract email details from each message
       const emails = [];
-      
+
       for (const messageRef of listMessagesResult.messages) {
         try {
           // Prepare query parameters for get message
@@ -920,13 +920,13 @@ export const loadGmailEmails = tool({
 
           if (messageResult?.payload?.headers) {
             const headers = messageResult.payload.headers;
-            
+
             // Extract header information
             const from = headers.find((h: any) => h.name.toLowerCase() === 'from')?.value || '';
             const to = headers.find((h: any) => h.name.toLowerCase() === 'to')?.value || '';
             const subject = headers.find((h: any) => h.name.toLowerCase() === 'subject')?.value || '';
             const date = headers.find((h: any) => h.name.toLowerCase() === 'date')?.value || '';
-            
+
             // Extract body content
             let body = '';
             if (messageResult.payload.body?.data) {
@@ -1154,7 +1154,7 @@ const LoadGmailEmailsSchema = z.object({
 export const gmailTools = {
   async loadEmails(args: any) {
     const input = LoadGmailEmailsSchema.parse(args);
-    
+
     if (!process.env.PICA_API_KEY) {
       throw new Error('PICA_API_KEY environment variable is required');
     }
@@ -1219,12 +1219,12 @@ export const gmailTools = {
 
           if (messageResult?.payload?.headers) {
             const headers = messageResult.payload.headers;
-            
+
             const from = headers.find((h: any) => h.name.toLowerCase() === 'from')?.value || '';
             const to = headers.find((h: any) => h.name.toLowerCase() === 'to')?.value || '';
             const subject = headers.find((h: any) => h.name.toLowerCase() === 'subject')?.value || '';
             const date = headers.find((h: any) => h.name.toLowerCase() === 'date')?.value || '';
-            
+
             // Extract and decode body content
             let body = '';
             if (messageResult.payload.body?.data) {
@@ -1350,8 +1350,8 @@ Add to your Claude Desktop config (\`~/Library/Application Support/Claude/claude
 
 ## 6) Security & Secrets
 
-- Require \`PICA_API_KEY\` at runtime.  
-- Treat \`{PLATFORM}_CONNECTION_KEY\` as sensitive.  
+- Require \`PICA_API_KEY\` at runtime.
+- Treat \`{PLATFORM}_CONNECTION_KEY\` as sensitive.
 - No secrets in logs or errors.
 - Validate all inputs with Zod schemas.
 
@@ -1359,7 +1359,7 @@ Add to your Claude Desktop config (\`~/Library/Application Support/Claude/claude
 
 ## 7) Project Detection (No Overwrite)
 
-- If project markers exist (\`package.json\`, \`src/\`, \`.git\`, etc.), **do not** scaffold new project.  
+- If project markers exist (\`package.json\`, \`src/\`, \`.git\`, etc.), **do not** scaffold new project.
 - Only add minimal new files for new tools or MCP endpoints.
 
 ---
@@ -1369,7 +1369,7 @@ Add to your Claude Desktop config (\`~/Library/Application Support/Claude/claude
 - Provide complete installation instructions:
   - \`npm install @modelcontextprotocol/sdk zod\`
   - \`npm install -D @types/node tsx typescript\`
-- Build and run scripts:  
+- Build and run scripts:
   - \`"build": "tsc"\`
   - \`"dev": "tsx src/index.ts"\`
   - \`"start": "node dist/index.js"\`
@@ -1397,7 +1397,7 @@ Add to your Claude Desktop config (\`~/Library/Application Support/Claude/claude
 
 Copy the rules content and paste them into `.windsurf/rules/buildkit.md` in the root of your project.
 
-      ```markdown Expandable BuildKit Rules for Windsurf
+      ```markdown BuildKit Rules for Windsurf expandable
 ---
 trigger: always_on
 description: How to use BuildKit
@@ -1406,7 +1406,7 @@ globs:
 
 # Pica Buildkit – LLM Rules
 
-**Role**  
+**Role**
 You are an expert integration developer working with **Pica MCP**. You can:
 - Build tools for **Vercel AI SDK** and **LangChain**
 - Scaffold and implement **full MCP servers** (model context protocol)
@@ -1418,27 +1418,27 @@ Pica is not in your training set; always follow the discovery steps below to bui
 
 ## 0) Hard Requirements & Guardrails
 
-1. **Do not overwrite existing projects**  
-   - Before generating/scaffolding, check the current directory.  
+1. **Do not overwrite existing projects**
+   - Before generating/scaffolding, check the current directory.
    - If a project is detected (e.g., \`package.json\`, \`pnpm-lock.yaml\`/\`yarn.lock\`/\`package-lock.json\`, \`.git\`, \`mcp.json\`, \`src/\` with buildkit markers), **do not** create a new project. Instead, add or modify files minimally and explicitly.
 
-2. **Always discover before coding**  
+2. **Always discover before coding**
    - Use Pica MCP tools to discover integrations and actions, and to fetch **action knowledge** (input schema, path, verbs, content-types, pagination, auth notes, rate limits) **before writing any tool code**.
 
-3. **Prefer Pica MCP if available**  
+3. **Prefer Pica MCP if available**
    - If the Pica MCP is available in the environment, use its tools to list integrations, fetch platform actions, and get action knowledge; only then implement.
 
-4. **Use the provided executor**  
-   - When executing a Pica action from a tool or MCP, use \`picaToolExecutor\` (below).  
+4. **Use the provided executor**
+   - When executing a Pica action from a tool or MCP, use \`picaToolExecutor\` (below).
    - Build its \`path\`, \`method\`, \`query\`/\`body\`, and \`contentType\` from **get_pica_action_knowledge**.
 
-5. **Secrets**  
+5. **Secrets**
    - Never print secrets. Expect \`PICA_API_KEY\` and user-provided \`{PLATFORM}_CONNECTION_KEY\` at runtime. Validate and fail fast if missing.
 
-6. **Connection key environment**  
+6. **Connection key environment**
    - Remember to add the connection key to the environment and not as an argument to the tool. As PLATFORM_CONNECTION_KEY (i.e. GMAIL_CONNECTION_KEY)
 
-7. **Type generation from action knowledge**  
+7. **Type generation from action knowledge**
    - Remember to add types for what you need to based on the action knowledge.
 
 ---
@@ -1454,13 +1454,13 @@ get_pica_integrations()
 
 ### Step 2: Get available actions for a platform
 \`\`\`
-get_pica_platform_actions(platform_name)  
+get_pica_platform_actions(platform_name)
 // e.g., platform_name = "gmail" | "hubspot" | "asana" | ...
 \`\`\`
 
 ### Step 3: Get action knowledge for implementation
 \`\`\`
-get_pica_action_knowledge(platform_name, action_id)  
+get_pica_action_knowledge(platform_name, action_id)
 // Gets: JSON schema, auth requirements, path template, rate limits
 \`\`\`
 
@@ -1478,31 +1478,31 @@ import { z } from 'zod';
 const picaToolExecutor = async (args) => {
   const { PICA_API_KEY } = process.env;
   if (!PICA_API_KEY) throw new Error('PICA_API_KEY not found');
-  
+
   const { platform, path, method, query, body, contentType, connectionKey } = args;
-  
+
   const url = new URL(\`https://app.picaos.com/api/v1/integrations/\${platform}/actions\`);
   if (query) {
     Object.entries(query).forEach(([k, v]) => url.searchParams.append(k, v));
   }
-  
+
   const headers = {
     'Authorization': \`Bearer \${PICA_API_KEY}\`,
     'X-Connection-Key': connectionKey,
   };
-  
+
   if (contentType) headers['Content-Type'] = contentType;
-  
+
   const config = { method, headers };
   if (body && method !== 'GET') {
     config.body = contentType?.includes('json') ? JSON.stringify(body) : body;
   }
-  
+
   const response = await fetch(url, config);
   if (!response.ok) {
     throw new Error(\`Pica API error: \${response.status} \${response.statusText}\`);
   }
-  
+
   return response.json();
 };
 
@@ -1544,7 +1544,7 @@ export const gmailLangChainTool = new DynamicStructuredTool({
     const result = await picaToolExecutor({
       platform: 'gmail',
       path: '/gmail/v1/users/me/messages',
-      method: 'GET', 
+      method: 'GET',
       query: { q: 'is:unread', maxResults: maxResults.toString() },
       connectionKey: process.env.GMAIL_CONNECTION_KEY,
     });
@@ -1595,7 +1595,7 @@ my-integration-mcp/
 #!/usr/bin/env node
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { 
+import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
@@ -1627,7 +1627,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
-  
+
   switch (name) {
     case 'fetch_emails':
       return {
@@ -1660,7 +1660,7 @@ main().catch(console.error);
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES2022", 
+    "module": "ES2022",
     "moduleResolution": "node",
     "outDir": "./build",
     "rootDir": "./src",
