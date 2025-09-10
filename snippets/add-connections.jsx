@@ -4,13 +4,15 @@ export const AddConnections = ({ platforms }) => {
   return (
     <>
       {platforms.map((platform) => (
-        <Card
-          title={`Add ${platform.name} Connection`}
-          href={`https://app.picaos.com/connections#open=${platform.code}`}
-          arrow="true"
-          key={platform.code}
-        >
-        </Card>
+        <Columns cols={1}>
+          <Card
+            title={`Add ${platform.name} Connection`}
+            href={`https://app.picaos.com/connections#open=${platform.code}`}
+            arrow="true"
+            key={platform.code}
+          >
+          </Card>
+        </Columns>
       ))}
     </>
   );

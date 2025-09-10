@@ -7,6 +7,7 @@ import WhatWeWillDo from '/snippets/what-we-will-do.mdx';
 import InstallMcpServer from '/snippets/install-mcp-server.mdx';
 import ConnectAccounts from '/snippets/connect-accounts.mdx';
 import { AddConnections } from '/snippets/add-connections.jsx';
+import NewConnectionDemo from '/snippets/new-connection-demo.mdx';
 import SetupStarterProject from '/snippets/setup-project.mdx';
 import AddRules from '/snippets/add-rules.mdx';
 import PromptLlm from '/snippets/prompt-llm.mdx';
@@ -16,12 +17,8 @@ import PromptLlm from '/snippets/prompt-llm.mdx';
 <InstallMcpServer />
 
 <ConnectAccounts platformNames='Attio, Gmail, and Slack accounts'/>
-<Columns cols={1}>
-  <AddConnections platforms={[{'name': 'Gmail', 'code': 'gmail'}, {'name': 'Attio', 'code': 'attio'}, {'name': 'Slack', 'code': 'slack'}]} />
-</Columns>
-<Frame>
-  <img src="/images/new-connection.gif"  alt="Add a new connection"/>
-</Frame>
+<AddConnections platforms={[{'name': 'Gmail', 'code': 'gmail'}, {'name': 'Attio', 'code': 'attio'}, {'name': 'Slack', 'code': 'slack'}]} />
+<NewConnectionDemo />
 
 <SetupStarterProject />
 
