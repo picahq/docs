@@ -1,0 +1,215 @@
+import { Card, Tabs } from "@mintlify/components";
+import { Tab } from "@headlessui/react";
+
+### Prompt the LLM to build your tool
+
+<Tabs>
+  <Tab title="Vercel AI SDK" icon="/images/vercel.svg">
+    <Card>
+      Copy this prompt to build the Vercel AI SDK tool:
+      ```markdown Vercel AI SDK Agent Prompt expandable
+      # Vercel AI SDK Agent Prompt (Sales Agent)
+
+      For **Vercel AI SDK, BuildKit & Pica**:
+      Create a comprehensive Vercel AI SDK agent with multiple tools for automated lead qualification and follow-up using BuildKit and Pica integrations (Gmail, Attio, and Slack). The agent should:
+
+      ---
+
+      ## TOOLS NEEDED
+      1. **fetchLeadEmails** – Fetch Gmail emails from the last 24 hours with sales-related keywords in subject or body ("demo request", "pricing", "trial", "partnership", "interested").
+      2. **extractLeadDetails** – Parse and structure lead information (name, email, company, message, role if available) from email body.
+      3. **createAttioContact** – Create or update a contact in Attio with enriched lead details.
+      4. **scoreLead** – Use GPT to analyze the lead’s email and assign a qualification score (Hot, Warm, Cold) based on keywords and context.
+      5. **postSlackNotification** – Post a structured message in Slack channel `{{SLACK_CHANNEL_ID}}` with:
+      - Lead details (name, company, email, qualification score, original message)
+      - Suggested next steps (send deck, schedule demo, share pricing, etc.)
+      6. **generateEmailDraft** – Generate a personalized Gmail draft reply tailored to the lead’s message and qualification level.
+
+      ---
+
+      ## ATTIO DATABASE STRUCTURE
+      - **Contacts Database**
+      * Name (Text)
+      * Email (Email)
+      * Company (Text)
+      * Role (Text)
+      * Message (Rich Text)
+      * Lead Score (Select: Hot, Warm, Cold)
+      * Source (Default: Gmail)
+      * Created Date (Date)
+
+      ---
+
+      ## WORKFLOW
+      1. Fetch new inbound sales-related emails from Gmail (last 24 hours).
+      2. Extract lead details (handle different email structures, signatures, forwarded threads).
+      3. Enrich and store/update the contact in Attio CRM.
+      4. Use GPT to analyze lead’s intent and assign qualification score.
+      5. Post Slack notification in `{{SLACK_CHANNEL_ID}}` with lead details + suggested next action.
+      6. Generate a personalized Gmail draft reply based on score and message context.
+
+      ---
+
+      ## ENVIRONMENT VARIABLES NEEDED
+      - GMAIL_CONNECTION_KEY
+      - ATTIO_CONNECTION_KEY
+      - SLACK_CONNECTION_KEY
+      - OPENAI_API_KEY
+      - PICA_API_KEY
+
+      ---
+
+      ## INTELLIGENT BEHAVIOR
+      - Detect lead intent (pricing, demo request, partnership, general interest).
+      - Assign appropriate lead score (Hot = immediate follow-up, Warm = nurture, Cold = archive).
+      - Suggest next actions for sales reps directly in Slack.
+      - Prevent duplicate contacts in Attio (merge/update if already exists).
+      - Ensure robust error handling, retries, and logging for all API calls.
+
+      ## EXECUTION POLICY
+      - The agent should execute the full workflow automatically without asking for confirmations at each step.
+      - Only prompt the user if required data is missing (e.g., no Slack channel ID provided, missing email address, or incomplete lead details).
+      - Default to autonomous execution with safe fallbacks and logging for transparency.
+      ```
+      <Note>Be sure to update `{{SLACK_CHANNEL_ID}}` with the target Slack channel ID for posting messages.</Note>
+    </Card>
+  </Tab>
+  <Tab title="LangChain" icon="/images/langchain-icon.svg">
+    <Card>
+      Copy this prompt to build the LangChain tool:
+      ```markdown LangChain Tool Suite expandable
+      # LangChain Tool Suite Prompt (Sales Agent)
+
+      For **LangChain, BuildKit & Pica**:
+      Create a comprehensive LangChain tool suite with multiple tools for automated lead qualification and follow-up using BuildKit and Pica integrations (Gmail, Attio, and Slack). The tool suite should:
+
+      ---
+
+      ## CORE TOOLS
+      1. **fetchLeadEmails** – Fetch Gmail emails from the last 24 hours with sales-related keywords.
+      2. **extractLeadDetails** – Parse and structure lead information (name, email, company, message, role if available).
+      3. **createAttioContact** – Create or update a contact in Attio with enriched lead details.
+      4. **scoreLead** – Analyze lead emails using GPT to assign qualification scores (Hot, Warm, Cold).
+      5. **postSlackNotification** – Post structured messages in Slack channel `{{SLACK_CHANNEL_ID}}` with lead details and suggested actions.
+      6. **generateEmailDraft** – Generate a personalized Gmail draft reply based on lead content and score.
+
+      ---
+
+      ## ATTIO DATABASE STRUCTURE
+      - **Contacts Database**
+      * Name (Text)
+      * Email (Email)
+      * Company (Text)
+      * Role (Text)
+      * Message (Rich Text)
+      * Lead Score (Select: Hot, Warm, Cold)
+      * Source (Default: Gmail)
+      * Created Date (Date)
+
+      ---
+
+      ## WORKFLOW
+      1. Fetch new inbound sales-related emails from Gmail.
+      2. Extract structured lead details from emails.
+      3. Enrich and store/update the contact in Attio.
+      4. Use GPT to analyze intent and assign lead score.
+      5. Post notifications to Slack channel `{{SLACK_CHANNEL_ID}}`.
+      6. Generate Gmail draft replies tailored to the lead and score.
+
+      ---
+
+      ## ENVIRONMENT VARIABLES NEEDED
+      - GMAIL_CONNECTION_KEY
+      - ATTIO_CONNECTION_KEY
+      - SLACK_CONNECTION_KEY
+      - OPENAI_API_KEY
+      - PICA_API_KEY
+
+      ---
+
+      ## INTELLIGENT BEHAVIOR
+      - Detect lead intent automatically.
+      - Assign appropriate qualification scores.
+      - Suggest actionable next steps in Slack.
+      - Prevent duplicates in Attio.
+      - Comprehensive error handling, retries, and logging for all operations.
+
+      ## EXECUTION POLICY
+      - The agent should execute the full workflow automatically without asking for confirmations at each step.
+      - Only prompt the user if required data is missing (e.g., no Slack channel ID provided, missing email address, or incomplete lead details).
+      - Default to autonomous execution with safe fallbacks and logging for transparency.
+      ```
+      <Note>Be sure to update `{{SLACK_CHANNEL_ID}}` with the target Slack channel ID for posting messages.</Note>
+    </Card>
+  </Tab>
+  <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
+    <Card>
+      Copy this prompt to build a the MCP server tool:
+      ```markdown MCP Server expandable
+      # MCP Server (Sales Agent)
+
+      For **Attio, Gmail & Slack**:
+      Create a comprehensive Sales Agent MCP server with multiple tools for automated lead qualification and follow-up using BuildKit and Pica integrations (Attio, Gmail, and Slack). The agent should:
+
+      ---
+
+      ## TOOLS NEEDED
+      1. **fetchLeadEmails** – Fetch Gmail emails from the last 24 hours with sales-related keywords in subject or body (`"demo request"`, `"pricing"`, `"trial"`, `"partnership"`, `"interested"`).
+      2. **extractLeadDetails** – Parse and structure lead information (name, email, company, message, role if available) from email body.
+      3. **createAttioContact** – Create or update a contact in Attio with enriched lead details.
+      4. **scoreLead** – Use GPT to analyze the lead’s email and assign a qualification score (Hot, Warm, Cold) based on keywords and context.
+      5. **postSlackNotification** – Post a structured message in Slack channel **`{{SLACK_CHANNEL_ID}}`** with:
+      - Lead details (name, company, email, qualification score, original message)
+      - Suggested next steps (send deck, schedule demo, share pricing, etc.)
+      6. **generateEmailDraft** – Generate a personalized Gmail draft reply tailored to the lead’s message and qualification level.
+
+      ---
+
+      ## ATTIO DATABASE STRUCTURE
+      - **Contacts Database**
+      * Name (Text)
+      * Email (Email)
+      * Company (Text)
+      * Role (Text)
+      * Message (Rich Text)
+      * Lead Score (Select: Hot, Warm, Cold)
+      * Source (Default: Gmail)
+      * Created Date (Date)
+
+      ---
+
+      ## WORKFLOW
+      1. Fetch new inbound sales-related emails from Gmail (last 24 hours).
+      2. Extract lead details (handle different email structures, signatures, forwarded threads).
+      3. Enrich and store/update the contact in Attio CRM.
+      4. Use GPT to analyze lead’s intent and assign qualification score.
+      5. Post Slack notification in **`{{SLACK_CHANNEL_ID}}`** with lead details + suggested next action.
+      6. Generate a personalized Gmail draft reply based on score and message context.
+
+      ---
+
+      ## ENVIRONMENT VARIABLES NEEDED
+      - `GMAIL_CONNECTION_KEY`
+      - `ATTIO_CONNECTION_KEY`
+      - `SLACK_CONNECTION_KEY`
+      - `OPENAI_API_KEY`
+      - `PICA_API_KEY`
+
+      ---
+
+      ## INTELLIGENT BEHAVIOR
+      - Detect lead intent (pricing, demo request, partnership, general interest).
+      - Assign appropriate lead score (Hot = immediate follow-up, Warm = nurture, Cold = archive).
+      - Suggest next actions for sales reps directly in Slack.
+      - Prevent duplicate contacts in Attio (merge/update if already exists).
+      - Ensure robust error handling, retries, and logging for all API calls.
+
+      ## EXECUTION POLICY
+      - The agent should execute the full workflow automatically without asking for confirmations at each step.
+      - Only prompt the user if required data is missing (e.g., no Slack channel ID provided, missing email address, or incomplete lead details).
+      - Default to autonomous execution with safe fallbacks and logging for transparency.
+      ```
+      <Note>Be sure to update `{{SLACK_CHANNEL_ID}}` with the target Slack channel ID for posting messages.</Note>
+    </Card>
+  </Tab>
+</Tabs>
