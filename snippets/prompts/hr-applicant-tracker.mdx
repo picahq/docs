@@ -17,11 +17,11 @@ import { Tab } from "@headlessui/react";
       2. extractResumeContent - Extract structured resume data (name, email, phone, skills, experience) from email body
       3. analyzeResumeWithGPT - Use OpenAI GPT-4 to analyze resume content and extract structured information
       4. generatePersonalizedTasks - Create role-specific tasks based on candidate skills and job requirements  
-      5. createNotionJobApplication - Create Notion page in "Job Applications" database with candidate info
-      6. createNotionTasks - Create task pages in Notion linked to the job application
+      5. createNotionJobApplication - Create Notion page in "Job Applications" database with candidate info and embedded task fields
+      6. updateJobApplicationWithTasks - Update job application page with generated tasks (no separate task database needed)
       7. sendAutomatedResponse - Send personalized email response with task instructions
 
-      NOTION DATABASE STRUCTURE:
+      NOTION DATABASE STRUCTURE (Single Database Approach):
       - Database Name: "Job Applications"
       - Properties:
         * Candidate Name (Title)
@@ -33,15 +33,26 @@ import { Tab } from "@headlessui/react";
         * Skills (Multi-select)
         * Experience Level (Select: Entry, Mid, Senior)
         * Status (Select: New, Reviewed, Tasks Sent, In Progress, Completed)
-        * Tasks (Relation to "Tasks" database)
+        * Task 1 Title (Text)
+        * Task 1 Type (Select: Technical Challenge, Case Study, Presentation, Assessment, Interview Prep)
+        * Task 1 Deadline (Date)
+        * Task 1 Instructions (Text)
+        * Task 2 Title (Text)
+        * Task 2 Type (Select: Technical Challenge, Case Study, Presentation, Assessment, Interview Prep)
+        * Task 2 Deadline (Date)
+        * Task 2 Instructions (Text)
+        * Task 3 Title (Text)
+        * Task 3 Type (Select: Technical Challenge, Case Study, Presentation, Assessment, Interview Prep)
+        * Task 3 Deadline (Date)
+        * Task 3 Instructions (Text)
 
       WORKFLOW:
       1. Fetch emails with subjects containing: "application", "resume", "job", "position", "opportunity", "applying for"
       2. Extract resume content from email body (handle PDF attachments if possible)
       3. Use GPT-4 to structure the resume data and categorize the role
-      4. Generate 3-5 personalized tasks based on role category and candidate skills
-      5. Create Notion page for candidate with all extracted info
-      6. Create linked task pages in Notion
+      4. Generate 3 personalized tasks based on role category and candidate skills
+      5. Create Notion page for candidate with all extracted info and empty task fields
+      6. Update the same page with generated task information (embedded approach)
       7. Send automated email with task instructions and next steps
 
       ENVIRONMENT VARIABLES NEEDED:
@@ -54,9 +65,10 @@ import { Tab } from "@headlessui/react";
       - Detect job role category from resume content
       - Generate role-appropriate tasks (coding challenges for software, case studies for business, etc.)
       - Handle different resume formats and email structures
+      - Store all information in a single Notion page for better organization
       - Provide comprehensive error handling and logging
       ```
-      <Note>The system will automatically categorize roles and generate appropriate tasks based on the candidate's profile.</Note>
+      <Note>The system stores tasks directly in the job application page, eliminating database relationship complexity.</Note>
     </Card>
   </Tab>
   <Tab title="LangChain" icon="/images/langchain-icon.svg">
@@ -72,8 +84,9 @@ import { Tab } from "@headlessui/react";
       2. ResumeContentExtractor - Tool that extracts structured resume data from email content
       3. GPTResumeAnalyzer - Tool that uses OpenAI to analyze and categorize resume content
       4. TaskGenerator - Tool that generates role-specific tasks based on candidate profile
-      5. NotionJobTracker - Tool that creates and manages Notion pages for job applications
-      6. AutomatedEmailResponder - Tool that sends personalized response emails
+      5. NotionJobTracker - Tool that creates Notion pages with embedded task information
+      6. JobApplicationTaskUpdater - Tool that updates job application pages with task details
+      7. AutomatedEmailResponder - Tool that sends personalized response emails
 
       LANGCHAIN IMPLEMENTATION REQUIREMENTS:
       - Use LangChain's tool decorator and structured input/output schemas
@@ -89,10 +102,13 @@ import { Tab } from "@headlessui/react";
       - Marketing: Look for digital marketing, campaigns, SEO, social media keywords
       - Operations: Look for process improvement, logistics, supply chain keywords
 
-      NOTION STRUCTURE:
-      Create two linked databases:
-      1. "Job Applications" database with candidate information
-      2. "Application Tasks" database with role-specific tasks linked to applications
+      SIMPLIFIED NOTION STRUCTURE (Single Database):
+      Create one "Job Applications" database with embedded task fields:
+      - Candidate information fields (name, email, phone, etc.)
+      - Task 1 fields (title, type, deadline, instructions)
+      - Task 2 fields (title, type, deadline, instructions)  
+      - Task 3 fields (title, type, deadline, instructions)
+      - This eliminates complex database relationships and property matching issues
 
       TASK GENERATION BY ROLE:
       - Software: Coding challenge, system design, code review task
@@ -101,9 +117,9 @@ import { Tab } from "@headlessui/react";
       - Marketing: Campaign proposal, content creation, analytics interpretation
       - Operations: Process optimization, workflow design, efficiency analysis
 
-      Use Pica integrations for Gmail, Notion, and email sending. Ensure the tool can handle various resume formats and email structures.
+      Use Pica integrations for Gmail, Notion, and email sending. The embedded task approach ensures no database relationship errors and simpler data management.
       ```
-      <Note>The LangChain tools will intelligently process applications and generate role-specific tasks.</Note>
+      <Note>The LangChain tools use an embedded task structure for simplified data management and error-free processing.</Note>
     </Card>
   </Tab>
   <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
@@ -112,47 +128,50 @@ import { Tab } from "@headlessui/react";
       ```markdown MCP Server expandable
       # Complete MCP HR Processing Server
 
-      Create a complete MCP (Model Context Protocol) server for automated job application processing with Pica integrations. The server should provide tools for the entire job application workflow.
+      Create a complete MCP (Model Context Protocol) server for automated job application processing with Pica integrations. The server should provide tools for the entire job application workflow using a simplified single-database approach.
 
       MCP SERVER STRUCTURE:
       - Server name: "job-application-processor"
       - Version: "1.0.0"  
-      - Description: "MCP server for automated job application processing with resume analysis and Notion tracking"
+      - Description: "MCP server for automated job application processing with resume analysis and embedded task tracking"
 
       TOOLS TO IMPLEMENT:
       1. fetch_job_emails - Fetch Gmail emails with job application indicators
       2. extract_resume_data - Extract structured information from resume content
       3. analyze_candidate_profile - Use GPT-4 to analyze and categorize candidates
       4. generate_role_tasks - Create personalized tasks based on role and skills
-      5. create_notion_application - Create job application page in Notion
-      6. create_notion_tasks - Create linked task pages for candidates
+      5. create_notion_application - Create job application page with embedded task fields
+      6. update_application_tasks - Update the same page with generated task information
       7. send_candidate_response - Send automated email with task instructions
       8. update_application_status - Update Notion page status as process progresses
 
-      NOTION DATABASE DESIGN:
-      Main Database: "Job Applications"
+      SIMPLIFIED NOTION DATABASE DESIGN (Single Database):
+      Main Database: "Job Applications" (No separate task database needed)
       Properties:
       - Candidate Name (title)
       - Email (email)
       - Phone (phone)
       - Role Category (select: Software, Business, Sales, Marketing, Operations, Other)
       - Application Date (date)
-      - Resume Summary (rich text)
+      - Resume Content (rich text)
       - Key Skills (multi-select)
-      - Experience Level (select: Entry Level, Mid Level, Senior Level, Executive)
-      - Current Status (select: New Application, Under Review, Tasks Assigned, In Progress, Completed, Rejected)
-      - Source (text) - which email/channel they applied through
-      - Tasks (relation to Tasks database)
-
-      Tasks Database: "Application Tasks"
-      Properties:
-      - Task Name (title)
-      - Application (relation to Job Applications)
-      - Task Type (select: Technical Challenge, Case Study, Presentation, Assessment, Interview)
-      - Due Date (date)
-      - Status (select: Assigned, In Progress, Submitted, Reviewed, Completed)
-      - Instructions (rich text)
-      - Submission Link (url)
+      - Experience Level (select: Entry, Mid, Senior)
+      - Status (select: New, Reviewed, Tasks Sent, In Progress, Completed)
+      - Fit Score (number)
+      
+      Task Fields (Embedded in same database):
+      - Task 1 Title (text)
+      - Task 1 Type (select: Technical Challenge, Case Study, Presentation, Assessment, Interview Prep)
+      - Task 1 Deadline (date)
+      - Task 1 Instructions (text)
+      - Task 2 Title (text)
+      - Task 2 Type (select: Technical Challenge, Case Study, Presentation, Assessment, Interview Prep)
+      - Task 2 Deadline (date)
+      - Task 2 Instructions (text)
+      - Task 3 Title (text)
+      - Task 3 Type (select: Technical Challenge, Case Study, Presentation, Assessment, Interview Prep)
+      - Task 3 Deadline (date)
+      - Task 3 Instructions (text)
 
       ROLE-SPECIFIC TASK TEMPLATES:
       Software Roles:
@@ -174,11 +193,19 @@ import { Tab } from "@headlessui/react";
       1. Monitor Gmail for new applications (keywords: application, resume, applying, position, job, opportunity)
       2. Extract candidate information using intelligent parsing
       3. Use GPT-4 to categorize role and analyze qualifications
-      4. Generate 3-5 personalized tasks based on role category and candidate background
-      5. Create Notion application page with all candidate data
-      6. Create linked task pages with specific instructions
+      4. Generate 3 personalized tasks based on role category and candidate background
+      5. Create Notion application page with all candidate data and empty task fields
+      6. Update the same page with generated task information (no separate database needed)
       7. Send automated email with task details and submission instructions
       8. Update application status throughout the process
+
+      ADVANTAGES OF EMBEDDED APPROACH:
+      - No database relationship complexity
+      - No property name mismatches between databases
+      - Simpler API calls and error handling
+      - All candidate information in one place
+      - Easier to view and manage applications
+      - Better performance (no cross-database queries)
 
       ERROR HANDLING:
       - Handle malformed emails gracefully
@@ -186,6 +213,7 @@ import { Tab } from "@headlessui/react";
       - Retry mechanisms for API failures
       - Comprehensive logging for debugging
       - Validation for all extracted data
+      - Simplified error tracking with single database
 
       ENVIRONMENT REQUIREMENTS:
       - PICA_API_KEY for Pica integration
@@ -193,9 +221,9 @@ import { Tab } from "@headlessui/react";
       - NOTION_CONNECTION_KEY for database operations
       - OPENAI_API_KEY for resume analysis
 
-      The MCP server should be production-ready with proper TypeScript types, comprehensive error handling, and detailed logging for monitoring the job application processing pipeline.
+      The MCP server should be production-ready with proper TypeScript types, comprehensive error handling, and detailed logging. The embedded task approach eliminates common Notion integration issues and provides a cleaner, more maintainable solution.
       ```
-      <Note>The MCP server will handle the entire job application workflow with comprehensive error handling and logging.</Note>
+      <Note>The MCP server uses embedded tasks in a single database, eliminating relationship complexity and ensuring reliable operation.</Note>
     </Card>
   </Tab>
 </Tabs>
