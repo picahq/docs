@@ -1,0 +1,201 @@
+import { Card, Tabs } from "@mintlify/components";
+import { Tab } from "@headlessui/react";
+
+### Prompt the LLM to build your tool
+
+<Tabs>
+  <Tab title="Vercel AI SDK" icon="/images/vercel.svg">
+    <Card>
+      Copy this prompt to build the Vercel AI SDK tool:
+      ```markdown Vercel AI SDK Agent Prompt expandable
+      # Vercel AI SDK Agent Prompt (HR Applicant Tracker)
+
+      Create a comprehensive Vercel AI SDK agent with multiple tools for automated job application processing using BuildKit and Pica integrations. The agent should:
+
+      TOOLS NEEDED:
+      1. fetchJobApplicationEmails - Fetch Gmail emails from last 24 hours with job application keywords in subject
+      2. extractResumeContent - Extract structured resume data (name, email, phone, skills, experience) from email body
+      3. analyzeResumeWithGPT - Use OpenAI GPT-4 to analyze resume content and extract structured information
+      4. generatePersonalizedTasks - Create role-specific tasks based on candidate skills and job requirements  
+      5. createNotionJobApplication - Create Notion page in "Job Applications" database with candidate info
+      6. createNotionTasks - Create task pages in Notion linked to the job application
+      7. sendAutomatedResponse - Send personalized email response with task instructions
+
+      NOTION DATABASE STRUCTURE:
+      - Database Name: "Job Applications"
+      - Properties:
+        * Candidate Name (Title)
+        * Email (Email)
+        * Phone (Phone)  
+        * Role Category (Select: Software, Business, Sales, Marketing, Operations)
+        * Application Date (Date)
+        * Resume Content (Rich Text)
+        * Skills (Multi-select)
+        * Experience Level (Select: Entry, Mid, Senior)
+        * Status (Select: New, Reviewed, Tasks Sent, In Progress, Completed)
+        * Tasks (Relation to "Tasks" database)
+
+      WORKFLOW:
+      1. Fetch emails with subjects containing: "application", "resume", "job", "position", "opportunity", "applying for"
+      2. Extract resume content from email body (handle PDF attachments if possible)
+      3. Use GPT-4 to structure the resume data and categorize the role
+      4. Generate 3-5 personalized tasks based on role category and candidate skills
+      5. Create Notion page for candidate with all extracted info
+      6. Create linked task pages in Notion
+      7. Send automated email with task instructions and next steps
+
+      ENVIRONMENT VARIABLES NEEDED:
+      - GMAIL_CONNECTION_KEY
+      - NOTION_CONNECTION_KEY  
+      - OPENAI_API_KEY
+      - PICA_API_KEY
+
+      Make the system intelligent enough to:
+      - Detect job role category from resume content
+      - Generate role-appropriate tasks (coding challenges for software, case studies for business, etc.)
+      - Handle different resume formats and email structures
+      - Provide comprehensive error handling and logging
+      ```
+      <Note>The system will automatically categorize roles and generate appropriate tasks based on the candidate's profile.</Note>
+    </Card>
+  </Tab>
+  <Tab title="LangChain" icon="/images/langchain-icon.svg">
+    <Card>
+      Copy this prompt to build the LangChain tool:
+      ```markdown LangChain Tool Suite expandable
+      # LangChain HR Processing Tools
+
+      Create a comprehensive LangChain tool suite for automated job application processing using Pica integrations. Build the following tools:
+
+      CORE TOOLS:
+      1. JobApplicationEmailFetcher - LangChain tool that fetches Gmail emails from last 24 hours with job application keywords
+      2. ResumeContentExtractor - Tool that extracts structured resume data from email content
+      3. GPTResumeAnalyzer - Tool that uses OpenAI to analyze and categorize resume content
+      4. TaskGenerator - Tool that generates role-specific tasks based on candidate profile
+      5. NotionJobTracker - Tool that creates and manages Notion pages for job applications
+      6. AutomatedEmailResponder - Tool that sends personalized response emails
+
+      LANGCHAIN IMPLEMENTATION REQUIREMENTS:
+      - Use LangChain's tool decorator and structured input/output schemas
+      - Implement proper error handling with LangChain's error types
+      - Use LangChain's memory system to track application processing state
+      - Integrate with LangChain agents for orchestrating the workflow
+      - Support streaming responses for real-time processing updates
+
+      JOB ROLE CATEGORIZATION:
+      - Software: Look for programming languages, frameworks, technical skills
+      - Business: Look for MBA, business analysis, strategy, consulting keywords  
+      - Sales: Look for CRM, sales targets, client management, revenue keywords
+      - Marketing: Look for digital marketing, campaigns, SEO, social media keywords
+      - Operations: Look for process improvement, logistics, supply chain keywords
+
+      NOTION STRUCTURE:
+      Create two linked databases:
+      1. "Job Applications" database with candidate information
+      2. "Application Tasks" database with role-specific tasks linked to applications
+
+      TASK GENERATION BY ROLE:
+      - Software: Coding challenge, system design, code review task
+      - Business: Case study analysis, market research, strategy presentation  
+      - Sales: Sales pitch creation, CRM scenario, client outreach plan
+      - Marketing: Campaign proposal, content creation, analytics interpretation
+      - Operations: Process optimization, workflow design, efficiency analysis
+
+      Use Pica integrations for Gmail, Notion, and email sending. Ensure the tool can handle various resume formats and email structures.
+      ```
+      <Note>The LangChain tools will intelligently process applications and generate role-specific tasks.</Note>
+    </Card>
+  </Tab>
+  <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
+    <Card>
+      Copy this prompt to build the MCP server tool:
+      ```markdown MCP Server expandable
+      # Complete MCP HR Processing Server
+
+      Create a complete MCP (Model Context Protocol) server for automated job application processing with Pica integrations. The server should provide tools for the entire job application workflow.
+
+      MCP SERVER STRUCTURE:
+      - Server name: "job-application-processor"
+      - Version: "1.0.0"  
+      - Description: "MCP server for automated job application processing with resume analysis and Notion tracking"
+
+      TOOLS TO IMPLEMENT:
+      1. fetch_job_emails - Fetch Gmail emails with job application indicators
+      2. extract_resume_data - Extract structured information from resume content
+      3. analyze_candidate_profile - Use GPT-4 to analyze and categorize candidates
+      4. generate_role_tasks - Create personalized tasks based on role and skills
+      5. create_notion_application - Create job application page in Notion
+      6. create_notion_tasks - Create linked task pages for candidates
+      7. send_candidate_response - Send automated email with task instructions
+      8. update_application_status - Update Notion page status as process progresses
+
+      NOTION DATABASE DESIGN:
+      Main Database: "Job Applications"
+      Properties:
+      - Candidate Name (title)
+      - Email (email)
+      - Phone (phone)
+      - Role Category (select: Software, Business, Sales, Marketing, Operations, Other)
+      - Application Date (date)
+      - Resume Summary (rich text)
+      - Key Skills (multi-select)
+      - Experience Level (select: Entry Level, Mid Level, Senior Level, Executive)
+      - Current Status (select: New Application, Under Review, Tasks Assigned, In Progress, Completed, Rejected)
+      - Source (text) - which email/channel they applied through
+      - Tasks (relation to Tasks database)
+
+      Tasks Database: "Application Tasks"
+      Properties:
+      - Task Name (title)
+      - Application (relation to Job Applications)
+      - Task Type (select: Technical Challenge, Case Study, Presentation, Assessment, Interview)
+      - Due Date (date)
+      - Status (select: Assigned, In Progress, Submitted, Reviewed, Completed)
+      - Instructions (rich text)
+      - Submission Link (url)
+
+      ROLE-SPECIFIC TASK TEMPLATES:
+      Software Roles:
+      - Coding Challenge: "Complete a [language] coding challenge focusing on [specific skills from resume]"
+      - System Design: "Design a scalable system for [relevant use case]"
+      - Code Review: "Review and improve this code snippet with focus on [candidate's expertise area]"
+
+      Business Roles:
+      - Case Study: "Analyze this business scenario and provide strategic recommendations"
+      - Market Analysis: "Research and present findings on [relevant industry] market trends"
+      - Process Improvement: "Identify inefficiencies and propose solutions for this business process"
+
+      Sales Roles:
+      - Sales Pitch: "Create a pitch for [product] targeting [specific customer segment]"
+      - CRM Strategy: "Design a customer acquisition strategy for [industry]"
+      - Objection Handling: "Develop responses to common objections in [sales context]"
+
+      WORKFLOW AUTOMATION:
+      1. Monitor Gmail for new applications (keywords: application, resume, applying, position, job, opportunity)
+      2. Extract candidate information using intelligent parsing
+      3. Use GPT-4 to categorize role and analyze qualifications
+      4. Generate 3-5 personalized tasks based on role category and candidate background
+      5. Create Notion application page with all candidate data
+      6. Create linked task pages with specific instructions
+      7. Send automated email with task details and submission instructions
+      8. Update application status throughout the process
+
+      ERROR HANDLING:
+      - Handle malformed emails gracefully
+      - Provide fallback categorization for unclear roles
+      - Retry mechanisms for API failures
+      - Comprehensive logging for debugging
+      - Validation for all extracted data
+
+      ENVIRONMENT REQUIREMENTS:
+      - PICA_API_KEY for Pica integration
+      - GMAIL_CONNECTION_KEY for email access
+      - NOTION_CONNECTION_KEY for database operations
+      - OPENAI_API_KEY for resume analysis
+
+      The MCP server should be production-ready with proper TypeScript types, comprehensive error handling, and detailed logging for monitoring the job application processing pipeline.
+      ```
+      <Note>The MCP server will handle the entire job application workflow with comprehensive error handling and logging.</Note>
+    </Card>
+  </Tab>
+</Tabs>

@@ -1,0 +1,119 @@
+---
+title: Build an Automated HR Applicant Tracker
+description: 🚀 Create an intelligent system that automatically processes job applications, analyzes resumes with LLM, generates personalized tasks, and tracks candidates in Notion.
+
+---
+
+import WhatWeWillDo from '/snippets/what-we-will-do.mdx';
+import InstallMcpServer from '/snippets/install-mcp-server.mdx';
+import ConnectAccounts from '/snippets/connect-accounts.mdx';
+import { AddConnections } from '/snippets/add-connections.jsx';
+import NewConnectionDemo from '/snippets/new-connection-demo.mdx';
+import SetupStarterProject from '/snippets/setup-project.mdx';
+import AddRules from '/snippets/add-rules.mdx';
+import Prompts from '/snippets/prompts/hr-applicant-tracker.mdx';
+
+<WhatWeWillDo platformNames='Gmail, Notion accounts' projectType='Vercel AI SDK'/>
+
+<InstallMcpServer />
+<ConnectAccounts platformNames='Gmail and Notion accounts'/>
+<AddConnections platforms={[{'name': 'Gmail', 'code': 'gmail'}, {'name': 'Notion', 'code': 'notion'}]} />
+
+### Required Environment Variables
+
+You'll need these connection keys in your environment:
+
+```bash Environment Setup
+GMAIL_CONNECTION_KEY=your_gmail_connection_key
+NOTION_CONNECTION_KEY=your_notion_connection_key
+OPENAI_API_KEY=your_openai_api_key
+PICA_API_KEY=your_pica_api_key
+```
+
+### Notion Database Setup
+
+The system will create two linked databases in your Notion workspace:
+
+<Tabs>
+  <Tab title="Job Applications Database">
+    **Database Name:** "Job Applications"
+    
+    **Properties:**
+    - Candidate Name (Title)
+    - Email (Email)
+    - Phone (Phone)
+    - Role Category (Select: Software, Business, Sales, Marketing, Operations)
+    - Application Date (Date)
+    - Resume Content (Rich Text)
+    - Skills (Multi-select)
+    - Experience Level (Select: Entry, Mid, Senior)
+    - Status (Select: New, Reviewed, Tasks Sent, In Progress, Completed)
+    - Tasks (Relation to "Tasks" database)
+  </Tab>
+  
+  <Tab title="Application Tasks Database">
+    **Database Name:** "Application Tasks"
+    
+    **Properties:**
+    - Task Name (Title)
+    - Application (Relation to Job Applications)
+    - Task Type (Select: Technical Challenge, Case Study, Presentation, Assessment)
+    - Due Date (Date)
+    - Status (Select: Assigned, In Progress, Submitted, Reviewed, Completed)
+    - Instructions (Rich Text)
+    - Submission Link (URL)
+  </Tab>
+</Tabs>
+
+<SetupStarterProject />
+
+<AddRules />
+
+<Prompts />
+
+## Benefits
+
+<CardGroup cols={2}>
+  <Card title="Time Savings" icon="clock">
+    **80% reduction in manual processing**
+    
+    Automate resume screening, candidate tracking, and initial communications
+  </Card>
+  
+  <Card title="Consistent Evaluation" icon="scale">
+    **Standardized assessment process**
+    
+    AI-powered role categorization and task generation ensures fair, consistent candidate evaluation
+  </Card>
+  
+  <Card title="Organized Tracking" icon="list-check">
+    **Complete candidate lifecycle**
+    
+    From application to task completion, track every step in Notion with automated status updates
+  </Card>
+  
+  <Card title="Professional Experience" icon="star">
+    **Improved candidate experience**
+    
+    Prompt, personalized responses with clear next steps and task instructions
+  </Card>
+</CardGroup>
+
+## Expand Your HR Automation
+
+Ready to build more HR tools? Explore these additional integrations:
+
+<CardGroup cols={2}>
+  <Card title="Calendar Scheduling" icon="calendar">
+    Integrate with Calendly or Google Calendar for interview scheduling
+  </Card>
+  
+  <Card title="Slack Notifications" icon="slack">
+    Get real-time notifications in Slack for new applications and task submissions
+  </Card>
+  
+</CardGroup>
+
+🚀 **Ready for more?** Browse our catalog of 25,000+ actions across 150+ integrations to expand your HR automation pipeline!
+
+[Explore All Integrations →](https://app.picaos.com/tools)
