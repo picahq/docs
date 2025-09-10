@@ -65,6 +65,11 @@ import { Tab } from "@headlessui/react";
       - Suggest next actions for sales reps directly in Slack.
       - Prevent duplicate contacts in Attio (merge/update if already exists).
       - Ensure robust error handling, retries, and logging for all API calls.
+
+      ## EXECUTION POLICY
+      - The agent should execute the full workflow automatically without asking for confirmations at each step.
+      - Only prompt the user if required data is missing (e.g., no Slack channel ID provided, missing email address, or incomplete lead details).
+      - Default to autonomous execution with safe fallbacks and logging for transparency.
       ```
       <Note>Be sure to update `{{SLACK_CHANNEL_ID}}` with the target Slack channel ID for posting messages.</Note>
     </Card>
@@ -128,6 +133,11 @@ import { Tab } from "@headlessui/react";
       - Suggest actionable next steps in Slack.
       - Prevent duplicates in Attio.
       - Comprehensive error handling, retries, and logging for all operations.
+
+      ## EXECUTION POLICY
+      - The agent should execute the full workflow automatically without asking for confirmations at each step.
+      - Only prompt the user if required data is missing (e.g., no Slack channel ID provided, missing email address, or incomplete lead details).
+      - Default to autonomous execution with safe fallbacks and logging for transparency.
       ```
       <Note>Be sure to update `{{SLACK_CHANNEL_ID}}` with the target Slack channel ID for posting messages.</Note>
     </Card>
@@ -193,6 +203,11 @@ import { Tab } from "@headlessui/react";
       - Suggest next actions for sales reps directly in Slack.
       - Prevent duplicate contacts in Attio (merge/update if already exists).
       - Ensure robust error handling, retries, and logging for all API calls.
+
+      ## EXECUTION POLICY
+      - The agent should execute the full workflow automatically without asking for confirmations at each step.
+      - Only prompt the user if required data is missing (e.g., no Slack channel ID provided, missing email address, or incomplete lead details).
+      - Default to autonomous execution with safe fallbacks and logging for transparency.
       ```
       <Note>Be sure to update `{{SLACK_CHANNEL_ID}}` with the target Slack channel ID for posting messages.</Note>
     </Card>
