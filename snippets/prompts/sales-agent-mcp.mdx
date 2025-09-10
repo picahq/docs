@@ -8,208 +8,342 @@ import { Tab } from "@headlessui/react";
     <Card>
       Copy this prompt to build the Vercel AI SDK tool:
       ```markdown Vercel AI SDK Agent Prompt expandable
-      # Vercel AI SDK Agent Prompt (Sales Agent)
+      ## Vercel AI SDK: Sales Agent (BuildKit + Pica)
 
-      For **Vercel AI SDK, BuildKit & Pica**:
-      Create a comprehensive Vercel AI SDK agent with multiple tools for automated lead qualification and follow-up using BuildKit and Pica integrations (Gmail, Attio, and Slack). The agent should:
+      This agent automates lead qualification and follow‑up using Gmail, Attio, and Slack via Pica. It is triggered by sending `/sales` in the chat.
 
-      ---
+      ## Critical Integration Rules
+      - Do not hard-code API paths, HTTP methods, content types, or action IDs.
+      - Always discover action contracts at runtime using Pica MCP utilities:
+      1) list available actions for a platform
+      2) fetch action knowledge for the chosen action (method, path template, params, content-type, pagination, rate limits, examples)
+      - Build requests using the discovered contract with `picaToolExecutor` (passthrough), not static values.
+      - Validate required environment variables at runtime and fail fast if missing.
 
-      ## TOOLS NEEDED
-      1. **fetchLeadEmails** – Fetch Gmail emails from the last 24 hours with sales-related keywords in subject or body ("demo request", "pricing", "trial", "partnership", "interested").
-      2. **extractLeadDetails** – Parse and structure lead information (name, email, company, message, role if available) from email body.
-      3. **createAttioContact** – Create or update a contact in Attio with enriched lead details.
-      4. **scoreLead** – Use GPT to analyze the lead’s email and assign a qualification score (Hot, Warm, Cold) based on keywords and context.
-      5. **postSlackNotification** – Post a structured message in Slack channel `{{SLACK_CHANNEL_ID}}` with:
-      - Lead details (name, company, email, qualification score, original message)
-      - Suggested next steps (send deck, schedule demo, share pricing, etc.)
-      6. **generateEmailDraft** – Generate a personalized Gmail draft reply tailored to the lead’s message and qualification level.
+      ### Discovery Flow (per tool call)
+      1. Use Pica to list platform actions (e.g., gmail, attio, slack).
+      2. Select the specific action by title/key (e.g., "List User Messages", "Get Message", "Create Draft", "List Objects", "List Attributes", "Create Attribute", "Assert Person Record", "chat.postMessage").
+      3. Use action knowledge to derive method, path, query/body schema, and content type.
+      4. Execute via `picaToolExecutor` using the derived values.
 
-      ---
+      ### Tools
+      0) listAttioObjects
+      - Purpose: List all Attio objects and dynamically resolve the correct People-like object identifier (slug/ID) instead of hardcoding "people".
+      - Strategy: Prefer exact slug match for `people`; else case-insensitive match on title/slug containing "people"; else ask user or fail with a clear message.
+      - Discovery: Resolve Attio action for "List Objects" at runtime and use returned identifiers in subsequent calls.
 
-      ## ATTIO DATABASE STRUCTURE
-      - **Contacts Database**
-      * Name (Text)
-      * Email (Email)
-      * Company (Text)
-      * Role (Text)
-      * Message (Rich Text)
-      * Lead Score (Select: Hot, Warm, Cold)
-      * Source (Default: Gmail)
-      * Created Date (Date)
+      1) fetchLeadEmails
+      - Purpose: Fetch Gmail emails from the last 24 hours with sales keywords.
+      - Filter: `after:YYYY/MM/DD` and keywords: "demo request", "pricing", "trial", "partnership", "interested" in subject or body.
+      - Discovery: Resolve Gmail action for "List User Messages" at runtime; apply `q` and `maxResults` per the action contract.
 
-      ---
+      2) getGmailMessage
+      - Purpose: Load full Gmail message details by id.
+      - Discovery: Resolve Gmail action for "Get Message" at runtime; include `format=full` and `metadataHeaders` as supported.
 
-      ## WORKFLOW
-      1. Fetch new inbound sales-related emails from Gmail (last 24 hours).
-      2. Extract lead details (handle different email structures, signatures, forwarded threads).
-      3. Enrich and store/update the contact in Attio CRM.
-      4. Use GPT to analyze lead’s intent and assign qualification score.
-      5. Post Slack notification in `{{SLACK_CHANNEL_ID}}` with lead details + suggested next action.
-      6. Generate a personalized Gmail draft reply based on score and message context.
+      3) verifyAttioAttributes
+      - Purpose: Ensure required People attributes exist in Attio; create missing ones automatically before any upserts.
+      - Dynamic object selection: Use `listAttioObjects` to determine the correct People object identifier; then list/create attributes on that identifier.
+      - Discovery:
+      - Resolve Attio action for "List Attributes" on the resolved object identifier.
+      - Resolve Attio action for "Create Attribute" on the resolved object identifier.
+      - Required attributes and slug/type mapping (logical intent, not hard-coded contract):
+      - Name → `name` (personal-name; usually system-provided)
+      - Email → `email_addresses` (email-address; system)
+      - Company → `company` (record-reference; config.allowed_objects: ["companies"])
+      - Role → `title` (text)
+      - Message → `description` (text)
+      - Lead Score → `lead-score` (text)
+      - Source → `source` (text)
+      - Created Date → `created-date` (timestamp)
+      - Creation must satisfy fields required by the discovered contract (description, flags, default_value with required `template`, and `config`).
 
-      ---
+      4) extractLeadDetails
+      - Purpose: Parse and structure lead info from email body.
+      - Output: `{ name?, email?, company?, role?, message }`
+      - Behavior: Uses GPT extraction; handles signatures/forwards; falls back to raw body.
 
-      ## ENVIRONMENT VARIABLES NEEDED
-      - GMAIL_CONNECTION_KEY
-      - ATTIO_CONNECTION_KEY
-      - SLACK_CONNECTION_KEY
-      - OPENAI_API_KEY
-      - PICA_API_KEY
+      5) upsertAttioPerson
+      - Purpose: Create/update contact in Attio with lead details and score.
+      - Discovery: Resolve Attio action for "Assert Person Record" at runtime and upsert with `matching_attribute=email_addresses` (use discovered query schema).
+      - Body keys: `name`, `email_addresses`, `company` (domains or record id), `title` (role), `description` (message), `lead-score`, `source`, `created-date`.
 
-      ---
+      6) scoreLead
+      - Purpose: Classify the lead as Hot / Warm / Cold using GPT.
+      - Criteria:
+      - Hot: explicit demo/pricing/call ASAP, strong buying signals
+      - Warm: general interest, exploring, timeline soon
+      - Cold: vague, non-buyer, unrelated
 
-      ## INTELLIGENT BEHAVIOR
-      - Detect lead intent (pricing, demo request, partnership, general interest).
-      - Assign appropriate lead score (Hot = immediate follow-up, Warm = nurture, Cold = archive).
-      - Suggest next actions for sales reps directly in Slack.
-      - Prevent duplicate contacts in Attio (merge/update if already exists).
-      - Ensure robust error handling, retries, and logging for all API calls.
+      7) postSlackNotification
+      - Purpose: Post a structured message to Slack channel with lead details and suggested next steps.
+      - Discovery: Resolve Slack action for `chat.postMessage` at runtime; send `{ channel, text, blocks }` according to the contract.
 
-      ## EXECUTION POLICY
-      - The agent should execute the full workflow automatically without asking for confirmations at each step.
-      - Only prompt the user if required data is missing (e.g., no Slack channel ID provided, missing email address, or incomplete lead details).
-      - Default to autonomous execution with safe fallbacks and logging for transparency.
+      8) generateEmailDraft
+      - Purpose: Generate a personalized reply and create a Gmail draft.
+      - Discovery: Resolve Gmail action for "Create Draft" at runtime; submit `{ message: { raw: base64url(RFC822) } }` if required by the contract.
+
+      ## Attio Database Structure
+      - Contacts
+      - Name (Text)
+      - Email (Email)
+      - Company (Text)
+      - Role (Text)
+      - Message (Rich Text)
+      - Lead Score (Select: Hot, Warm, Cold)
+      - Source (Default: Gmail)
+      - Created Date (Date)
+
+      Note: Attio attributes use snake_case. Mappings used by the agent:
+      - Role → `title`
+      - Message → `description`
+      - Lead Score → `lead_score`
+      - Source → `source`
+      - Created Date is automatic; do not set explicitly.
+
+      ## Workflow
+      1. Resolve People object identifier via `listAttioObjects`.
+      2. Verify attributes on that object; create missing ones (via discovered Attio actions).
+      3. Fetch new inbound sales-related emails from Gmail (last 24 hours, keywords; via discovered Gmail actions).
+      4. For each message:
+      - Load full message and extract a clean text body.
+      - Extract lead details (name/email/company/role/message) with GPT.
+      - If email missing, derive from `From` header.
+      - Score the lead (Hot/Warm/Cold) with GPT.
+      - Upsert contact in Attio using discovered Assert Person contract.
+      - Post Slack notification to the configured channel with suggested next steps.
+      - Generate a tailored Gmail draft reply.
+
+      ## Environment Variables
+      - `PICA_API_KEY`
+      - `OPENAI_API_KEY`
+      - `GMAIL_CONNECTION_KEY`
+      - `ATTIO_CONNECTION_KEY`
+      - `SLACK_CONNECTION_KEY`
+      - `SLACK_CHANNEL_ID`
+
+      ## Intelligent Behavior
+      - Detect intent: pricing, demo request, partnership, general interest.
+      - Assign score: Hot (immediate follow-up), Warm (nurture), Cold (archive/low priority).
+      - Suggest next steps in Slack per score:
+      - Hot: schedule demo, share pricing deck, propose times <24h
+      - Warm: product overview, case studies, propose call this week
+      - Cold: thank you + resources, reminder to follow up later
+      - Prevent duplicates via Attio Assert (merge on email).
+      - Robust error handling, retries, and logging.
+
+      ## Implementation Notes
+      - Command trigger: User sends `/sales` to run the workflow.
+      - Message parsing: Support `content` (string | array), `parts` (array), or `text` fields to read user input robustly.
+      - Chat response: For `/sales`, stream a proper assistant message to the UI using `toUIMessageStreamResponse()` (not a plain JSON Response).
+      - Pica executor: Use a centralized helper that accepts `{ path, method, query/body, contentType }` derived from action knowledge (no hard-coded values).
+      - Gmail filters: Always pass filtering via `q` (date + keywords) and limit with `maxResults` as supported by discovered contract.
+      - Gmail body extraction: Prefer `payload.body.data` then walk parts for `text/plain`; fallback to `snippet`.
+      - Draft creation: Build an RFC822 message and Base64URL-encode into `message.raw` if required by the discovered contract.
+      - Attio attributes: Verify/create before upsert with safe defaults, correct `default_value.template`, and required `description` on the dynamically-resolved People object identifier.
+
+      ## Security & Limits
+      - Fail fast if required env vars are missing.
+      - Do not print secrets.
+      - Respect Gmail and Slack rate limits; keep message sizes reasonable.
+
+      ## Invocation
+      - Development chat UI: send `/sales` to execute.
+      - Output: A streamed assistant message summarizing processed messages and per-lead results, with Slack posts sent and Gmail drafts created.
       ```
-      <Note>Be sure to update `{{SLACK_CHANNEL_ID}}` with the target Slack channel ID for posting messages.</Note>
     </Card>
   </Tab>
   <Tab title="LangChain" icon="/images/langchain-icon.svg">
     <Card>
       Copy this prompt to build the LangChain tool:
       ```markdown LangChain Tool Suite expandable
-      # LangChain Tool Suite Prompt (Sales Agent)
+      ## LangChain Tool Suite: Sales Agent (BuildKit + Pica)
 
-      For **LangChain, BuildKit & Pica**:
-      Create a comprehensive LangChain tool suite with multiple tools for automated lead qualification and follow-up using BuildKit and Pica integrations (Gmail, Attio, and Slack). The tool suite should:
+      This LangChain Tool Suite automates lead qualification and follow‑up using Gmail, Attio, and Slack via Pica.
 
-      ---
+      ## Critical Integration Rules
+      - Do not hard-code API paths, HTTP methods, content types, or action IDs.
+      - Always discover action contracts at runtime using Pica MCP utilities:
+      1) list available actions for a platform
+      2) fetch action knowledge for the chosen action (method, path template, params, content-type, pagination, rate limits, examples)
+      - Build requests using the discovered contract with a shared `picaToolExecutor` (passthrough), not static values.
+      - Validate required environment variables at runtime and fail fast if missing.
 
-      ## CORE TOOLS
-      1. **fetchLeadEmails** – Fetch Gmail emails from the last 24 hours with sales-related keywords.
-      2. **extractLeadDetails** – Parse and structure lead information (name, email, company, message, role if available).
-      3. **createAttioContact** – Create or update a contact in Attio with enriched lead details.
-      4. **scoreLead** – Analyze lead emails using GPT to assign qualification scores (Hot, Warm, Cold).
-      5. **postSlackNotification** – Post structured messages in Slack channel `{{SLACK_CHANNEL_ID}}` with lead details and suggested actions.
-      6. **generateEmailDraft** – Generate a personalized Gmail draft reply based on lead content and score.
+      ### Discovery Flow (per tool call)
+      1. Use Pica to list platform actions (e.g., gmail, attio, slack).
+      2. Select the specific action by title/key (e.g., "List User Messages", "Get Message", "Create Draft", "List Objects", "List Attributes", "Create Attribute", "Assert Person Record", "chat.postMessage").
+      3. Use action knowledge to derive method, path, query/body schema, and content type.
+      4. Execute via `picaToolExecutor` using the derived values.
 
-      ---
+      ### Tools
+      0) listAttioObjects
+      - Purpose: List all Attio objects and dynamically resolve the correct People-like object identifier (slug/ID) instead of hardcoding "people".
+      - Strategy: Prefer exact slug match for `people`; else case-insensitive match on title/slug containing "people"; else ask user or fail with a clear message.
 
-      ## ATTIO DATABASE STRUCTURE
-      - **Contacts Database**
-      * Name (Text)
-      * Email (Email)
-      * Company (Text)
-      * Role (Text)
-      * Message (Rich Text)
-      * Lead Score (Select: Hot, Warm, Cold)
-      * Source (Default: Gmail)
-      * Created Date (Date)
+      1) fetchLeadEmails
+      - Purpose: Fetch Gmail emails from the last 24 hours with sales keywords.
+      - Filter: `after:YYYY/MM/DD` and keywords: "demo request", "pricing", "trial", "partnership", "interested" in subject or body.
 
-      ---
+      2) getGmailMessage
+      - Purpose: Load full Gmail message details by id.
 
-      ## WORKFLOW
-      1. Fetch new inbound sales-related emails from Gmail.
-      2. Extract structured lead details from emails.
-      3. Enrich and store/update the contact in Attio.
-      4. Use GPT to analyze intent and assign lead score.
-      5. Post notifications to Slack channel `{{SLACK_CHANNEL_ID}}`.
-      6. Generate Gmail draft replies tailored to the lead and score.
+      3) verifyAttioAttributes
+      - Purpose: Ensure required People attributes exist in Attio; create missing ones automatically before any upserts.
+      - Dynamic object selection: Use `listAttioObjects` to determine the correct People object identifier; then list/create attributes on that identifier.
+      - Required attributes and slug/type mapping:
+      - Name → `name` (personal-name; usually system-provided)
+      - Email → `email_addresses` (email-address; system)
+      - Company → `company` (record-reference; config.allowed_objects: ["companies"])
+      - Role → `title` (text)
+      - Message → `description` (text)
+      - Lead Score → `lead_score` (text)
+      - Source → `source` (text)
+      - Created Date is automatic; do not set explicitly.
 
-      ---
+      4) extractLeadDetails
+      - Purpose: Parse and structure lead info from email body.
+      - Output: `{ name?, email?, company?, role?, message }`
+      - Behavior: Uses an LLM extraction; handles signatures/forwards; falls back to raw body.
 
-      ## ENVIRONMENT VARIABLES NEEDED
-      - GMAIL_CONNECTION_KEY
-      - ATTIO_CONNECTION_KEY
-      - SLACK_CONNECTION_KEY
-      - OPENAI_API_KEY
-      - PICA_API_KEY
+      5) upsertAttioPerson
+      - Purpose: Create/update contact in Attio with lead details and score.
+      - Query: include `matching_attribute=email_addresses` as required by discovered schema.
+      - Body keys: `name`, `email_addresses`, `company` (domains or record id), `title` (role), `description` (message), `lead_score`, `source`.
 
-      ---
+      6) scoreLead
+      - Purpose: Classify the lead as Hot / Warm / Cold using an LLM.
 
-      ## INTELLIGENT BEHAVIOR
-      - Detect lead intent automatically.
-      - Assign appropriate qualification scores.
-      - Suggest actionable next steps in Slack.
-      - Prevent duplicates in Attio.
-      - Comprehensive error handling, retries, and logging for all operations.
+      7) postSlackNotification
+      - Purpose: Post a structured message to Slack channel with lead details and suggested next steps.
 
-      ## EXECUTION POLICY
-      - The agent should execute the full workflow automatically without asking for confirmations at each step.
-      - Only prompt the user if required data is missing (e.g., no Slack channel ID provided, missing email address, or incomplete lead details).
-      - Default to autonomous execution with safe fallbacks and logging for transparency.
+      8) generateEmailDraft
+      - Purpose: Generate a personalized reply and create a Gmail draft.
+
+      ## Attio Database Structure
+      - Contacts
+      - Name (Text)
+      - Email (Email)
+      - Company (Text)
+      - Role (Text)
+      - Message (Rich Text)
+      - Lead Score (Select: Hot, Warm, Cold)
+      - Source (Default: Gmail)
+      - Created Date (Date)
+
+      Note: Attio attributes use snake_case. Mappings used by the suite:
+      - Role → `title`
+      - Message → `description`
+      - Lead Score → `lead_score`
+      - Source → `source`
+      - Created Date is automatic; do not set explicitly.
+
+      ## Workflow
+      1. Resolve People object identifier via `listAttioObjects`.
+      2. Verify attributes on that object; create missing ones.
+      3. Fetch new inbound sales-related emails from Gmail (last 24 hours, keywords).
+      4. For each message: extract body, parse lead details, derive missing email from headers if needed, score, upsert in Attio, post Slack notification, create Gmail draft.
+
+      ## Environment Variables
+      - `PICA_API_KEY`
+      - `OPENAI_API_KEY`
+      - `GMAIL_CONNECTION_KEY`
+      - `ATTIO_CONNECTION_KEY`
+      - `SLACK_CONNECTION_KEY`
+      - `SLACK_CHANNEL_ID`
+
+      ## Implementation Notes
+      - Use `picaToolExecutor` with dynamically discovered `{ path, method, query/body, contentType }`.
+      - If a full URL is returned by discovery, extract and use only its pathname as the passthrough path.
+      - Apply Gmail `q` and `maxResults` correctly; extract Gmail body by preferring `payload.body.data`, then walking parts; fallback to `snippet`.
+      - Upserts use `matching_attribute=email_addresses` and snake_case attribute slugs.
+      - Handle errors and rate limits gracefully.
       ```
-      <Note>Be sure to update `{{SLACK_CHANNEL_ID}}` with the target Slack channel ID for posting messages.</Note>
     </Card>
   </Tab>
   <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
     <Card>
       Copy this prompt to build a the MCP server tool:
       ```markdown MCP Server expandable
-      # MCP Server (Sales Agent)
+      ## MCP Server: Sales Agent Tools (BuildKit + Pica)
 
-      For **Attio, Gmail & Slack**:
-      Create a comprehensive Sales Agent MCP server with multiple tools for automated lead qualification and follow-up using BuildKit and Pica integrations (Attio, Gmail, and Slack). The agent should:
+      This MCP server exposes tools to automate lead qualification and follow‑up using Gmail, Attio, and Slack via Pica.
 
-      ---
+      ## Critical Integration Rules
+      - Do not hard-code API paths, HTTP methods, content types, or action IDs.
+      - Always discover action contracts at runtime using Pica MCP utilities:
+      1) list available actions for a platform
+      2) fetch action knowledge for the chosen action (method, path template, params, content-type, pagination, rate limits, examples)
+      - Build requests using the discovered contract with a shared `picaToolExecutor` (passthrough), not static values.
+      - Validate required environment variables at runtime and fail fast if missing.
 
-      ## TOOLS NEEDED
-      1. **fetchLeadEmails** – Fetch Gmail emails from the last 24 hours with sales-related keywords in subject or body (`"demo request"`, `"pricing"`, `"trial"`, `"partnership"`, `"interested"`).
-      2. **extractLeadDetails** – Parse and structure lead information (name, email, company, message, role if available) from email body.
-      3. **createAttioContact** – Create or update a contact in Attio with enriched lead details.
-      4. **scoreLead** – Use GPT to analyze the lead’s email and assign a qualification score (Hot, Warm, Cold) based on keywords and context.
-      5. **postSlackNotification** – Post a structured message in Slack channel **`{{SLACK_CHANNEL_ID}}`** with:
-      - Lead details (name, company, email, qualification score, original message)
-      - Suggested next steps (send deck, schedule demo, share pricing, etc.)
-      6. **generateEmailDraft** – Generate a personalized Gmail draft reply tailored to the lead’s message and qualification level.
+      ### Discovery Flow (per tool call)
+      1. Use Pica to list platform actions (e.g., gmail, attio, slack).
+      2. Select the specific action by title/key (e.g., "List User Messages", "Get Message", "Create Draft", "List Objects", "List Attributes", "Create Attribute", "Assert Person Record", "chat.postMessage").
+      3. Use action knowledge to derive method, path, query/body schema, and content type.
+      4. Execute via `picaToolExecutor` using the derived values.
 
-      ---
+      ### Tools (MCP)
+      - list_attio_objects
+      - fetch_lead_emails
+      - get_gmail_message
+      - verify_attio_attributes
+      - extract_lead_details
+      - upsert_attio_person
+      - score_lead
+      - post_slack_notification
+      - generate_email_draft
 
-      ## ATTIO DATABASE STRUCTURE
-      - **Contacts Database**
-      * Name (Text)
-      * Email (Email)
-      * Company (Text)
-      * Role (Text)
-      * Message (Rich Text)
-      * Lead Score (Select: Hot, Warm, Cold)
-      * Source (Default: Gmail)
-      * Created Date (Date)
+      Tool behaviors mirror the Vercel/LangChain specs:
+      - `list_attio_objects`: resolve People-like object identifier dynamically (prefer slug `people`, else contains "people").
+      - `fetch_lead_emails`: last 24h, apply `q` and `maxResults` via contract.
+      - `get_gmail_message`: load full message with `format=full`, `metadataHeaders` as supported.
+      - `verify_attio_attributes`: list/create attributes on the resolved object identifier; required slugs: `title`, `description`, `lead_score`, `source`, `company` (record-reference).
+      - `extract_lead_details`: parse `{ name?, email?, company?, role?, message }` using an LLM.
+      - `upsert_attio_person`: upsert with `matching_attribute=email_addresses`; body keys include `name`, `email_addresses`, `company`, `title`, `description`, `lead_score`, `source`.
+      - `score_lead`: Hot/Warm/Cold classification.
+      - `post_slack_notification`: post structured summary + next steps to channel.
+      - `generate_email_draft`: create Gmail draft from RFC822 base64url `message.raw`.
 
-      ---
+      ## Attio Database Structure
+      - Contacts
+      - Name (Text)
+      - Email (Email)
+      - Company (Text)
+      - Role (Text)
+      - Message (Rich Text)
+      - Lead Score (Select: Hot, Warm, Cold)
+      - Source (Default: Gmail)
+      - Created Date (Date)
 
-      ## WORKFLOW
-      1. Fetch new inbound sales-related emails from Gmail (last 24 hours).
-      2. Extract lead details (handle different email structures, signatures, forwarded threads).
-      3. Enrich and store/update the contact in Attio CRM.
-      4. Use GPT to analyze lead’s intent and assign qualification score.
-      5. Post Slack notification in **`{{SLACK_CHANNEL_ID}}`** with lead details + suggested next action.
-      6. Generate a personalized Gmail draft reply based on score and message context.
+      Note: Attio attributes use snake_case. Mappings used by the server:
+      - Role → `title`
+      - Message → `description`
+      - Lead Score → `lead_score`
+      - Source → `source`
+      - Created Date is automatic; do not set explicitly.
 
-      ---
+      ## Workflow (Suggested Orchestration Tool)
+      1. Resolve People object identifier via `list_attio_objects`.
+      2. Verify attributes on that object; create missing ones.
+      3. Fetch new inbound sales-related emails from Gmail (last 24 hours, keywords).
+      4. For each message: extract body, parse lead details, derive missing email from headers if needed, score, upsert in Attio, post Slack notification, create Gmail draft.
 
-      ## ENVIRONMENT VARIABLES NEEDED
+      ## Environment Variables
+      - `PICA_API_KEY`
+      - `OPENAI_API_KEY`
       - `GMAIL_CONNECTION_KEY`
       - `ATTIO_CONNECTION_KEY`
       - `SLACK_CONNECTION_KEY`
-      - `OPENAI_API_KEY`
-      - `PICA_API_KEY`
+      - `SLACK_CHANNEL_ID`
 
-      ---
-
-      ## INTELLIGENT BEHAVIOR
-      - Detect lead intent (pricing, demo request, partnership, general interest).
-      - Assign appropriate lead score (Hot = immediate follow-up, Warm = nurture, Cold = archive).
-      - Suggest next actions for sales reps directly in Slack.
-      - Prevent duplicate contacts in Attio (merge/update if already exists).
-      - Ensure robust error handling, retries, and logging for all API calls.
-
-      ## EXECUTION POLICY
-      - The agent should execute the full workflow automatically without asking for confirmations at each step.
-      - Only prompt the user if required data is missing (e.g., no Slack channel ID provided, missing email address, or incomplete lead details).
-      - Default to autonomous execution with safe fallbacks and logging for transparency.
+      ## Implementation Notes
+      - Provide strict input schemas (zod) per tool.
+      - Use `picaToolExecutor` with dynamically discovered `{ path, method, query/body, contentType }`.
+      - If a full URL is returned by discovery, extract and use only its pathname as the passthrough path.
+      - Apply Gmail `q` and `maxResults` correctly; extract Gmail body by preferring `payload.body.data`, then walking parts; fallback to `snippet`.
+      - Upserts use `matching_attribute=email_addresses` and snake_case attribute slugs.
+      - Handle errors and rate limits gracefully and return structured MCP responses.
       ```
-      <Note>Be sure to update `{{SLACK_CHANNEL_ID}}` with the target Slack channel ID for posting messages.</Note>
     </Card>
   </Tab>
 </Tabs>
