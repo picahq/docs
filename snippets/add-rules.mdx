@@ -1,9 +1,11 @@
+import { Header } from '/snippets/header.jsx';
+
 ### Add some rules for the LLMs to understand BuildKit
 
 <Tabs>
   <Tab title="Cursor" icon="/images/cursor.svg">
     <Card>
-      #### BuildKit Rules for Cursor
+    <Header size={4} text='BuildKit Rules for Cursor'/>
 Copy the rules content and paste them into `.cursor/rules/buildkit.mdc` in the root of your project.
 
 
@@ -690,7 +692,7 @@ Add to your Claude Desktop config (\`~/Library/Application Support/Claude/claude
   </Tab>
   <Tab title="Claude Code" icon="/images/claude.svg">
     <Card>
-      #### CLAUDE.md
+      <Header size={4} text='CLAUDE.md'/>
 
 Copy instructions for Claude to use BuildKit rules. Paste these into a file named CLAUDE.md in the root of your project.
 
@@ -707,7 +709,7 @@ Before you write ANY code you read ALL of buildkit-rules.md to understand how to
       ```
     </Card>
     <Card>
-      #### BuildKit Rules for Claude Code
+    <Header size={4} text='BuildKit Rules for Claude Code'/>
 Copy the rules content and paste them into `buildkit-rules.md` in the root of your project.
 
       ```markdown BuildKit Rules for Claude Code expandable
@@ -1393,7 +1395,7 @@ Add to your Claude Desktop config (\`~/Library/Application Support/Claude/claude
   </Tab>
   <Tab title="Windsurf" icon="/images/windsurf.svg">
     <Card>
-      #### BuildKit Rules for Windsurf
+      <Header size={4} text='BuildKit Rules for Windsurf'/>
 
 Copy the rules content and paste them into `.windsurf/rules/buildkit.md` in the root of your project.
 

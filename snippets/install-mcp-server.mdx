@@ -1,3 +1,5 @@
+import { Header } from '/snippets/header.jsx';
+
 ### Install the Pica MCP Server
 
 First, let's add the Pica MCP Server to your development environment. Select your preferred tool and follow the instructions.
@@ -40,12 +42,12 @@ First, let's add the Pica MCP Server to your development environment. Select you
   <Tab title="Windsurf" icon="/images/windsurf.svg">
     <Card>
       You can add the Pica MCP server through the Windsurf UI or by editing the configuration file directly:
-      #### Method 1: Windsurf UI
+      <Header size={4} text='Method 1: Windsurf UI'/>
       1. Open Windsurf Settings.
       2. Under Cascade, find "Model Context Protocol Servers".
       3. Select "Add Server" and paste the relevant snippet for your OS below.
 
-      #### Method 2: Direct Configuration
+      <Header size={4} text='Method 2: Direct Configuration'/>
       Alternatively, edit your `~/.codeium/windsurf/mcp_config.json` file directly:
 
       ```json macOS/Linux
