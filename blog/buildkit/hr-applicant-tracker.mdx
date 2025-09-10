@@ -30,6 +30,21 @@ OPENAI_API_KEY=your_openai_api_key
 PICA_API_KEY=your_pica_api_key
 ```
 
+### Using the System
+
+Once your system is set up, you can use natural language prompts to process job applications. Here's an example prompt format:
+
+```
+Process today's job applications - fetch emails, analyze candidates, create Notion pages, generate tasks, and send response emails using the notion db id: {your_notion_database_id}
+```
+
+Replace `{your_notion_database_id}` with your actual Notion database ID. This command will:
+- Fetch new job application emails from Gmail
+- Analyze candidate resumes and extract key information
+- Create pages in your Notion Job Applications database
+- Generate appropriate tasks based on the role
+- Send automated response emails to candidates
+
 ### Notion Database Setup
 
 The system will create two linked databases in your Notion workspace:
