@@ -1,18 +1,14 @@
 ---
-title: "Waiting List App"
-description: "Build a waiting list app with real-time signups and automatic welcome emails using Pica + InstantDB + Next.js."
+title: "InstantDB Waitlist App"
+description: "Build a waitlist app using InstantDB with real-time signups, automatic welcome emails, and admin dashboard in minutes."
 icon: 'list'
 ---
 
 <img
-  src="../images/pica-thumbnail.png"
-  alt="ElevenLabs"
+  src="/images/tutorials/instantdb-waitlist-app.png"
+  alt="InstantDB Waitlist App"
   style={{ borderRadius: '5px' }}
 />
-
-🚀 Building Apps with InstantDB is Easier Than Ever
-
-👋 Follow this tutorial to build a waiting list app with real-time signups and automatic welcome emails using Pica + InstantDB + Next.js.
 
 Most apps today need two things:
 
@@ -55,10 +51,6 @@ With this stack, you can build:
 - A user signs up → their info appears in your dashboard instantly.
 - At the same time → they get a personalized Gmail welcome email.
 - All this with **less than 150 lines of code**.
-
-<Info>
-💡 Full demo app (including an admin panel with live stats & signup table) will be available here: `Comming Soon`
-</Info>
 
 ## Step-by-step build with prompts
 
@@ -105,8 +97,8 @@ PICA_GMAIL_CONNECTION_KEY=
 </Accordion>
 
 2. Get values from:
-   * **Pica API keys**: [https://app.picaos.com/settings/api-keys](https://app.picaos.com/settings/api-keys)
-   * **Pica Gmail connection**: [https://app.picaos.com/connections](https://app.picaos.com/connections)
+   * [**Pica API keys**](https://app.picaos.com/settings/api-keys)
+   * [**Pica Gmail connection**](https://app.picaos.com/connections)
       * **Instant DB APP ID**: Go to your instant db dashbaord to get this ID.
 </Step>
 
@@ -376,8 +368,23 @@ Use this prompt in **Cursor** to generate the admin page and dashboard table wit
 Create an admin page at app/admin/page.tsx and a dashboard component. Display a table of signups with columns: name, email, interest, status, createdAt. Add a status filter (all | pending | notified | confirmed). Provide per-row actions to set status to 'confirmed' or back to 'pending' using InstantDB; implement optimistic updates and graceful error recovery.
 ```
 </Accordion>
+<img
+  src="../images/tutorials/instantdb-waitlist-app-admin.png"
+  alt="InstantDB Waitlist App Admin"
+  style={{ borderRadius: '5px' }}
+/>
 </Step>
 </Steps>
+
+<Check>Great job! You've built a waitlist app with real-time signups, automatic welcome emails, and an admin dashboard to manage it all.</Check>
+
+<Card
+  title="Source Code"
+  icon="github"
+  href="https://github.com/picahq/awesome-pica/tree/main/instantdb-waitlist-app"
+>
+  View the complete source code for this example on GitHub
+</Card>
 
 **References:** 
 - [Pica API Keys](https://app.picaos.com/settings/api-keys)

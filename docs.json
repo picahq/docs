@@ -21,7 +21,7 @@
   "navigation": {
     "anchors": [
       {
-        "anchor": "Blo1g",
+        "anchor": "Blog",
         "icon": "newspaper",
         "href": "https://docs.picaos.com/blog/overview"
       }
@@ -76,16 +76,6 @@
             "pages": [
               "changelog/product-updates"
             ]
-          },
-          {
-            "group": "Use Cases",
-            "pages": [
-              "use-cases/awesome-pica",
-              "use-cases/openai-agents",
-              "use-cases/elevenlabs",
-              "use-cases/chat-app",
-              "use-cases/instantdb-waitlist-app"
-            ]
           }
         ]
       },
@@ -120,7 +110,8 @@
           {
             "group": "Blog Posts",
             "pages": [
-              "blog/overview"
+              "blog/overview",
+              "blog/awesome-pica"
             ]
           },
           {
@@ -129,6 +120,15 @@
               "blog/buildkit/sales-agent-mcp",
               "blog/buildkit/quickbooks-langchain-invoice-agent",
               "blog/buildkit/hr-applicant-tracker"
+            ]
+          },
+          {
+            "group": "Use Cases",
+            "pages": [
+              "blog/use-cases/openai-agents",
+              "blog/use-cases/elevenlabs",
+              "blog/use-cases/chat-app",
+              "blog/use-cases/instantdb-waitlist-app"
             ]
           }
         ]
