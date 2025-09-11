@@ -83,7 +83,8 @@
               "use-cases/awesome-pica",
               "use-cases/openai-agents",
               "use-cases/elevenlabs",
-              "use-cases/chat-app"
+              "use-cases/chat-app",
+              "use-cases/instantdb-waitlist-app"
             ]
           }
         ]
