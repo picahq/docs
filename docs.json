@@ -120,7 +120,7 @@
               "blog/buildkit/sales-agent-mcp",
               "blog/buildkit/quickbooks-langchain-invoice-agent",
               "blog/buildkit/hr-applicant-tracker",
-              "blog/buildkit/day-summary-mcp",
+              "blog/buildkit/day-summary-mcp"
             ]
           },
           {
