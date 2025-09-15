@@ -117,6 +117,7 @@
           {
             "group": "BuildKit",
             "pages": [
+              "blog/buildkit/day-summary-mcp",
               "blog/buildkit/sales-agent-mcp",
               "blog/buildkit/quickbooks-langchain-invoice-agent",
               "blog/buildkit/hr-applicant-tracker"

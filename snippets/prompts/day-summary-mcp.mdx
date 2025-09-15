@@ -1,0 +1,26 @@
+import { Card, Tabs } from "@mintlify/components";
+import { Tab } from "@headlessui/react";
+
+### Prompt the LLM to build your tool
+
+<Tabs>
+  <Tab title="Agent Prompt" icon="/images/claude.svg">
+    <Card>
+      Copy this prompt:
+      ```markdown Agent Prompt expandable
+      Create me a tool called sendDailySummary in my agent for sending a daily summary of today’s Google Calendar events and unread Gmail emails to a Slack channel using Pica, and return the result using BuildKit.
+      ```
+
+      ## Environment Variables
+      - `PICA_API_KEY`
+      - `OPENAI_API_KEY`
+      - `GMAIL_CONNECTION_KEY`
+      - `GOOGLE_CALENDAR_CONNECTION_KEY`
+      - `SLACK_CONNECTION_KEY`
+      
+      Note: Provide the Slack channel as an input parameter (e.g., `slackChannel`).
+    </Card>
+  </Tab>
+</Tabs>
+
+
