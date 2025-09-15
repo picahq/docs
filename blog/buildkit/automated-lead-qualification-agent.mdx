@@ -1,0 +1,152 @@
+---
+title: Build an Automated Lead Qualification Agent
+description: 🚀 Create an intelligent system that automatically processes incoming lead inquiry emails, qualifies them using AI, adds qualified leads to HubSpot CRM, and notifies your sales team via Slack for immediate follow-up.
+
+---
+
+import WhatWeWillDo from '/snippets/what-we-will-do.mdx';
+import InstallMcpServer from '/snippets/install-mcp-server.mdx';
+import ConnectAccounts from '/snippets/connect-accounts.mdx';
+import { AddConnections } from '/snippets/add-connections.jsx';
+import NewConnectionDemo from '/snippets/new-connection-demo.mdx';
+import SetupStarterProject from '/snippets/setup-project.mdx';
+import AddRules from '/snippets/add-rules.mdx';
+import Prompts from '/snippets/prompts/automated-lead-qualification-agent.mdx';
+
+<WhatWeWillDo platformNames='Gmail, HubSpot, and Slack accounts' projectType='MCP'/>
+
+<InstallMcpServer />
+<ConnectAccounts platformNames='Gmail, HubSpot, and Slack accounts'/>
+<AddConnections platforms={[{'name': 'Gmail', 'code': 'gmail'}, {'name': 'HubSpot', 'code': 'hubspot'}, {'name': 'Slack', 'code': 'slack'}]} />
+
+### Required Environment Variables
+
+You'll need these connection keys in your environment:
+
+```bash Environment Setup
+GMAIL_CONNECTION_KEY=your_gmail_connection_key
+HUBSPOT_CONNECTION_KEY=your_hubspot_connection_key
+SLACK_CONNECTION_KEY=your_slack_connection_key
+OPENAI_API_KEY=your_openai_api_key
+PICA_API_KEY=your_pica_api_key
+```
+
+### Key Actions Used
+
+This automation leverages 4 core actions across the three platforms:
+
+<CardGroup cols={2}>
+  <Card title="Gmail: List User Messages" icon="envelope">
+    Fetches recent emails with the "Leads" label for processing
+  </Card>
+  
+  <Card title="HubSpot: Create Contact" icon="user-plus">
+    Creates new contact records for qualified leads with extracted information
+  </Card>
+  
+  <Card title="HubSpot: Retrieve Contacts" icon="search">
+    Checks for existing contacts to prevent duplicates
+  </Card>
+  
+  <Card title="Slack: Post Message" icon="message">
+    Sends formatted notifications to the sales team channel
+  </Card>
+</CardGroup>
+
+### Using the System
+
+Once your system is set up, you can use this prompt to process lead inquiries:
+
+```
+Qualify today's lead inquiry emails from Gmail: for each email with the "Leads" label, extract sender details and qualify based on high intent signals (mentions budget over $5K, urgent timeline, specific product interest); if qualified with score >7/10, create a new contact in HubSpot with extracted information and lead source "Email Inquiry"; then send a Slack notification to #sales-leads channel with lead summary, qualification reasoning, and HubSpot contact link. Only process emails from the last 24 hours.
+```
+
+### Qualification Criteria
+
+The AI evaluates leads based on these factors:
+
+<AccordionGroup>
+  <Accordion title="High-Value Indicators (Score +2-3 points each)">
+    - Mentions specific budget amount over $5,000
+    - Indicates urgent timeline (immediate, ASAP, this week/month)
+    - References specific products/services by name
+    - Includes company name and professional email domain
+    - Mentions existing pain points or current solutions
+  </Accordion>
+  
+  <Accordion title="Medium-Value Indicators (Score +1-2 points each)">
+    - General budget discussion without specific amounts
+    - Mentions timeline within 3-6 months
+    - Professional language and detailed inquiry
+    - Includes contact phone number
+    - References competitors or market research
+  </Accordion>
+  
+  <Accordion title="Low-Value Indicators (Score 0-1 points each)">
+    - Generic inquiry templates
+    - No timeline mentioned
+    - Personal email addresses only
+    - Vague or very brief messages
+    - No budget or price sensitivity mentioned
+  </Accordion>
+</AccordionGroup>
+
+<SetupStarterProject />
+
+<AddRules />
+
+<Prompts />
+
+## Benefits
+
+<CardGroup cols={2}>
+  <Card title="Instant Lead Response" icon="zap">
+    **Process leads within minutes**
+    
+    Automatically qualify and route hot leads to your sales team before competitors respond
+  </Card>
+  
+  <Card title="Consistent Qualification" icon="target">
+    **AI-powered scoring system**
+    
+    Eliminate human bias with standardized qualification criteria applied to every lead
+  </Card>
+  
+  <Card title="Zero Lead Loss" icon="shield-check">
+    **Complete lead capture**
+    
+    Never miss a qualified lead with automated processing and CRM integration
+  </Card>
+  
+  <Card title="Sales Team Efficiency" icon="users">
+    **Focus on high-value prospects**
+    
+    Pre-qualified leads with context help sales teams prioritize their outreach efforts
+  </Card>
+</CardGroup>
+
+## Advanced Customization
+
+Ready to enhance your lead qualification? Consider these additions:
+
+<CardGroup cols={2}>
+  <Card title="Lead Scoring Webhooks" icon="webhook">
+    Set up HubSpot workflows to trigger additional actions based on lead scores
+  </Card>
+  
+  <Card title="Calendar Integration" icon="calendar">
+    Automatically book discovery calls for high-scoring leads using Calendly
+  </Card>
+  
+  <Card title="Email Sequences" icon="mail-bulk">
+    Trigger personalized email sequences in HubSpot based on lead qualification
+  </Card>
+  
+  <Card title="CRM Enrichment" icon="database">
+    Enhance contact records with additional data from LinkedIn or company databases
+  </Card>
+</CardGroup>
+
+🚀 **Ready for more?** Browse our catalog of 25,000+ actions across 150+ integrations to expand your lead qualification pipeline!
+
+[Explore All Integrations →](https://app.picaos.com/tools)
