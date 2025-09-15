@@ -1,0 +1,169 @@
+import { Card, Tabs } from "@mintlify/components";
+import { Tab } from "@headlessui/react";
+
+### Prompt the LLM to build your tool
+
+<Tabs>
+  <Tab title="Vercel AI SDK" icon="/images/vercel.svg">
+    <Card>
+      Copy this prompt to build the Vercel AI SDK tool:
+      ```markdown Vercel AI SDK Agent Prompt expandable
+      ## Vercel AI SDK: Gmail Drafts Tool (BuildKit + Pica)
+
+      This agent automates fetching unread Gmail emails and drafting personalized replies using Pica MCP. It is triggered by sending `/reply-unread` in the chat.
+
+      ## Critical Integration Rules
+      - Do not hard-code API paths, HTTP methods, content types, or action IDs.
+      - Always discover action contracts at runtime using Pica MCP utilities:
+      1) list available actions for Gmail
+      2) fetch action knowledge for the chosen action (method, path template, params, content-type, pagination, rate limits, examples)
+      - Build requests using the discovered contract with `picaToolExecutor` (passthrough), not static values.
+      - Validate required environment variables at runtime and fail fast if missing.
+
+      ### Discovery Flow (per tool call)
+      1. Use Pica to list Gmail actions.
+      2. Select the specific action by title/key (e.g., "List and View Read or Unread Emails", "Create Draft", "Get User Profile").
+      3. Use action knowledge to derive method, path, query/body schema, and content type.
+      4. Execute via `picaToolExecutor` using the derived values.
+
+      ### Tools
+      1) FetchUnreadEmails
+      - Purpose: Fetch N unread Gmail emails (default 5).
+      - Discovery: Use "List and View Read or Unread Emails" action; pass `label: 'UNREAD'` and `numberOfEmails`.
+
+      2) GetUserProfile
+      - Purpose: Fetch the current user's Gmail profile to personalize the signature.
+      - Discovery: Use "Get User Profile" action; path `/users/me/profile`.
+
+      3) GenerateReplyDraft
+      - Purpose: Generate a concise, friendly reply using an LLM. End with `Regards, [User Name]` if available, else `Regards.`
+      - Compose an RFC822 message, Base64URL-encode, and submit as `message.raw` to the "Create Draft" action.
+
+      ### Workflow
+      1. Fetch N unread emails from Gmail.
+      2. Fetch user profile for signature.
+      3. For each email:
+      - Generate a reply with the correct signature.
+      - Create a Gmail draft using the discovered contract.
+
+      ### Environment Variables
+      - `PICA_API_KEY`
+      - `OPENAI_API_KEY`
+      - `GMAIL_CONNECTION_KEY`
+
+      ### Implementation Notes
+      - Use `picaToolExecutor` with dynamically discovered `{ path, method, query/body, contentType }`.
+      - If a full URL is returned by discovery, extract and use only its pathname as the passthrough path.
+      - Handle errors and rate limits gracefully.
+      - Command trigger: User sends `/reply-unread` to run the workflow.
+      - Output: A streamed assistant message summarizing processed messages and per-draft results.
+      ```
+    </Card>
+  </Tab>
+  <Tab title="LangChain" icon="/images/langchain-icon.svg">
+    <Card>
+      Copy this prompt to build the LangChain tool:
+      ```markdown LangChain Tool Suite expandable
+      ## LangChain Tool Suite: Gmail Drafts Tool (BuildKit + Pica)
+
+      This LangChain Tool Suite automates fetching unread Gmail emails and drafting personalized replies using Pica MCP.
+
+      ## Critical Integration Rules
+      - Do not hard-code API paths, HTTP methods, content types, or action IDs.
+      - Always discover action contracts at runtime using Pica MCP utilities:
+      1) list available actions for Gmail
+      2) fetch action knowledge for the chosen action (method, path template, params, content-type, pagination, rate limits, examples)
+      - Build requests using the discovered contract with a shared `picaToolExecutor` (passthrough), not static values.
+      - Validate required environment variables at runtime and fail fast if missing.
+
+      ### Discovery Flow (per tool call)
+      1. Use Pica to list Gmail actions.
+      2. Select the specific action by title/key (e.g., "List and View Read or Unread Emails", "Create Draft", "Get User Profile").
+      3. Use action knowledge to derive method, path, query/body schema, and content type.
+      4. Execute via `picaToolExecutor` using the derived values.
+
+      ### Tools
+      1) fetchUnreadEmails
+      - Purpose: Fetch N unread Gmail emails (default 5).
+      - Discovery: Use "List and View Read or Unread Emails" action; pass `label: 'UNREAD'` and `numberOfEmails`.
+
+      2) getUserProfile
+      - Purpose: Fetch the current user's Gmail profile to personalize the signature.
+      - Discovery: Use "Get User Profile" action; path `/users/me/profile`.
+
+      3) generateReplyDraft
+      - Purpose: Generate a concise, friendly reply using an LLM. End with `Regards, [User Name]` if available, else `Regards.`
+      - Compose an RFC822 message, Base64URL-encode, and submit as `message.raw` to the "Create Draft" action.
+
+      ### Workflow
+      1. Fetch N unread emails from Gmail.
+      2. Fetch user profile for signature.
+      3. For each email:
+      - Generate a reply with the correct signature.
+      - Create a Gmail draft using the discovered contract.
+
+      ### Environment Variables
+      - `PICA_API_KEY`
+      - `OPENAI_API_KEY`
+      - `GMAIL_CONNECTION_KEY`
+
+      ### Implementation Notes
+      - Use `picaToolExecutor` with dynamically discovered `{ path, method, query/body, contentType }`.
+      - If a full URL is returned by discovery, extract and use only its pathname as the passthrough path.
+      - Handle errors and rate limits gracefully.
+      ```
+    </Card>
+  </Tab>
+  <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
+    <Card>
+      Copy this prompt to build the MCP server tool:
+      ```markdown MCP Server expandable
+      ## MCP Server: Gmail Drafts Tool (BuildKit + Pica)
+
+      This MCP server exposes tools to automate fetching unread Gmail emails and drafting personalized replies using Pica MCP.
+
+      ## Critical Integration Rules
+      - Do not hard-code API paths, HTTP methods, content types, or action IDs.
+      - Always discover action contracts at runtime using Pica MCP utilities:
+      1) list available actions for Gmail
+      2) fetch action knowledge for the chosen action (method, path template, params, content-type, pagination, rate limits, examples)
+      - Build requests using the discovered contract with a shared `picaToolExecutor` (passthrough), not static values.
+      - Validate required environment variables at runtime and fail fast if missing.
+
+      ### Discovery Flow (per tool call)
+      1. Use Pica to list Gmail actions.
+      2. Select the specific action by title/key (e.g., "List and View Read or Unread Emails", "Create Draft", "Get User Profile").
+      3. Use action knowledge to derive method, path, query/body schema, and content type.
+      4. Execute via `picaToolExecutor` using the derived values.
+
+      ### Tools (MCP)
+      - fetch_unread_emails
+      - get_user_profile
+      - generate_reply_draft
+
+      #### Tool behaviors:
+      - `fetch_unread_emails`: Use "List and View Read or Unread Emails" action; pass `label: 'UNREAD'` and `numberOfEmails`.
+      - `get_user_profile`: Use "Get User Profile" action; path `/users/me/profile`.
+      - `generate_reply_draft`: Generate a concise, friendly reply using an LLM. End with `Regards, [User Name]` if available, else `Regards.` Compose an RFC822 message, Base64URL-encode, and submit as `message.raw` to the "Create Draft" action.
+
+      ### Workflow
+      1. Fetch N unread emails from Gmail.
+      2. Fetch user profile for signature.
+      3. For each email:
+      - Generate a reply with the correct signature.
+      - Create a Gmail draft using the discovered contract.
+
+      ### Environment Variables
+      - `PICA_API_KEY`
+      - `OPENAI_API_KEY`
+      - `GMAIL_CONNECTION_KEY`
+
+      ### Implementation Notes
+      - Provide strict input schemas (zod) per tool.
+      - Use `picaToolExecutor` with dynamically discovered `{ path, method, query/body, contentType }`.
+      - If a full URL is returned by discovery, extract and use only its pathname as the passthrough path.
+      - Handle errors and rate limits gracefully and return structured MCP responses.
+      ```
+    </Card>
+  </Tab>
+</Tabs>
