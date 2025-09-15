@@ -1,0 +1,170 @@
+import { Card, Tabs } from "@mintlify/components";
+import { Tab } from "@headlessui/react";
+
+### Prompt the LLM to build your tool
+
+<Tabs>
+  <Tab title="MCP" icon="/images/model-context-protocol.svg">
+    <Card>
+      Copy this prompt to build the MCP Lead Qualification Agent:
+      ```markdown MCP Agent Prompt expandable
+      # MCP Agent Prompt (Automated Lead Qualification Agent)
+
+      Create a comprehensive MCP agent with multiple tools for automated lead qualification using BuildKit and Pica integrations. The agent should:
+
+      TOOLS NEEDED:
+      1. fetchLeadEmails - Fetch Gmail emails from last 24 hours with "Leads" label
+      2. extractLeadInformation - Extract structured lead data (name, email, company, phone, budget, timeline) from email content
+      3. qualifyLeadWithAI - Use AI to score leads based on qualification criteria (budget, timeline, intent, company size)
+      4. checkExistingContact - Search HubSpot for existing contacts to prevent duplicates
+      5. createHubSpotContact - Create new contact in HubSpot with extracted lead information
+      6. sendSlackNotification - Send formatted notification to sales team with lead details and HubSpot link
+
+      QUALIFICATION SCORING CRITERIA:
+      - High-Value Indicators (+2-3 points each):
+        * Mentions specific budget over $5,000
+        * Indicates urgent timeline (immediate, ASAP, this week/month)
+        * References specific products/services by name
+        * Includes company name and professional email domain
+        * Mentions existing pain points or current solutions
+      
+      - Medium-Value Indicators (+1-2 points each):
+        * General budget discussion without specific amounts
+        * Mentions timeline within 3-6 months
+        * Professional language and detailed inquiry
+        * Includes contact phone number
+        * References competitors or market research
+      
+      - Low-Value Indicators (0-1 points each):
+        * Generic inquiry templates
+        * No timeline mentioned
+        * Personal email addresses only
+        * Vague or very brief messages
+        * No budget or price sensitivity mentioned
+
+      HUBSPOT CONTACT STRUCTURE:
+      - First Name
+      - Last Name
+      - Email (Primary)
+      - Company Name
+      - Phone Number
+      - Lead Source: "Email Inquiry"
+      - Lead Status: "New"
+      - Lead Score: (AI qualification score 1-10)
+      - Notes: (AI qualification reasoning)
+
+      SLACK NOTIFICATION FORMAT:
+      🎯 **New Qualified Lead** (Score: X/10)
+      
+      **Contact:** [Name] at [Company]
+      **Email:** [email] | **Phone:** [phone]
+      **Budget:** [extracted budget info]
+      **Timeline:** [extracted timeline]
+      
+      **Qualification Reasoning:**
+      [AI explanation of why this lead scored X/10]
+      
+      **Next Actions:**
+      - [ ] Review HubSpot contact: [HubSpot URL]
+      - [ ] Send personalized follow-up within 2 hours
+      - [ ] Schedule discovery call if appropriate
+      
+      **Original Message:**
+      [First 200 characters of email...]
+
+      WORKFLOW:
+      1. Fetch emails with "Leads" label from last 24 hours
+      2. For each email:
+         - Extract lead information (name, email, company, phone, budget indicators, timeline)
+         - Score lead using AI qualification criteria (1-10 scale)
+         - If score >= 7/10:
+           * Check HubSpot for existing contact by email
+           * If new contact: Create HubSpot contact with extracted data
+           * If existing: Update with new lead score and notes
+           * Send Slack notification to #sales-leads channel
+         - If score < 7/10: Log as unqualified lead for review
+
+      ERROR HANDLING:
+      - Skip emails that can't be parsed or are clearly spam
+      - Handle duplicate contacts gracefully
+      - Retry failed API calls up to 3 times
+      - Log all actions for audit trail
+
+      CUSTOMIZATION OPTIONS:
+      - Adjustable qualification score threshold (default: 7/10)
+      - Configurable Slack channel (#sales-leads)
+      - Custom HubSpot properties based on business needs
+      - Flexible email label filtering ("Leads", "Inquiries", etc.)
+
+      The agent should process all qualifying leads efficiently while maintaining data quality and providing actionable insights to the sales team.
+      ```
+    </Card>
+  </Tab>
+  
+  <Tab title="Vercel AI SDK" icon="/images/vercel-ai-sdk.svg">
+    <Card>
+      Copy this prompt to build the Vercel AI SDK tool:
+      ```markdown Vercel AI SDK Agent Prompt expandable
+      # Vercel AI SDK Agent Prompt (Automated Lead Qualification Agent)
+
+      Create a comprehensive Vercel AI SDK agent with multiple tools for automated lead qualification using BuildKit and Pica integrations. The agent should:
+
+      TOOLS NEEDED:
+      1. fetchLeadEmails - Fetch Gmail emails from last 24 hours with "Leads" label
+      2. extractLeadInformation - Extract structured lead data from email content
+      3. qualifyLeadWithAI - Score leads using AI qualification criteria
+      4. checkExistingContact - Search HubSpot for existing contacts
+      5. createHubSpotContact - Create new contact in HubSpot
+      6. sendSlackNotification - Send formatted notification to sales team
+
+      QUALIFICATION SCORING (1-10 scale):
+      - Budget mentioned over $5K: +3 points
+      - Urgent timeline (immediate/ASAP): +3 points
+      - Specific product interest: +2 points
+      - Professional email domain: +2 points
+      - Detailed inquiry: +2 points
+      - Company name provided: +1 point
+      - Phone number included: +1 point
+
+      WORKFLOW:
+      1. Fetch recent emails with "Leads" label
+      2. Extract and score each lead using AI
+      3. For qualified leads (score >= 7):
+         - Check for existing HubSpot contact
+         - Create new contact if needed
+         - Send Slack notification with lead details
+      4. Log all actions for audit trail
+
+      The agent should qualify leads quickly and route high-value prospects to the sales team immediately.
+      ```
+    </Card>
+  </Tab>
+  
+  <Tab title="LangChain" icon="/images/langchain.svg">
+    <Card>
+      Copy this prompt to build the LangChain tool:
+      ```markdown LangChain Agent Prompt expandable
+      # LangChain Agent Prompt (Automated Lead Qualification Agent)
+
+      Create a LangChain agent with tools for automated lead qualification using BuildKit and Pica integrations:
+
+      TOOLS NEEDED:
+      1. GmailLeadFetcher - Retrieve emails with "Leads" label
+      2. LeadQualifier - AI-powered lead scoring and extraction
+      3. HubSpotContactManager - Create/update contacts
+      4. SlackNotifier - Send team notifications
+
+      QUALIFICATION LOGIC:
+      - High intent signals: budget mentions, urgency, specific needs
+      - Score threshold: 7/10 for qualification
+      - Automatic CRM entry for qualified leads
+      - Real-time Slack alerts for sales team
+
+      WORKFLOW:
+      Email → AI Qualification → HubSpot Contact → Slack Alert
+
+      The agent should streamline lead processing and ensure no qualified prospects are missed.
+      ```
+    </Card>
+  </Tab>
+</Tabs>
