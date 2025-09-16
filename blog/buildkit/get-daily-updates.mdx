@@ -12,12 +12,12 @@ import SetupStarterProject from '/snippets/setup-project.mdx';
 import AddRules from '/snippets/add-rules.mdx';
 import Prompts from '/snippets/prompts/day-summary-mcp.mdx';
 
-<WhatWeWillDo platformNames='Google Calendar, Gmail, and Slack accounts' projectType='MCP'/>
+<WhatWeWillDo platformNames='Linear and Google Sheets accounts' projectType='MCP'/>
 
 <InstallMcpServer />
 
-<ConnectAccounts platformNames='Google Calendar, Gmail, and Slack accounts'/>
-<AddConnections platforms={[{'name': 'Gmail', 'code': 'gmail'}, { 'name': 'Google Calendar', 'code': 'google-calendar' }, {'name': 'Slack', 'code': 'slack'}]} />
+<ConnectAccounts platformNames='Linear, Google-Sheets'/>
+<AddConnections platforms={[{'name': 'Linear', 'code': 'linear'}, {'name': 'Google Sheets', 'code': 'google-sheets'}]} />
 <NewConnectionDemo />
 
 <SetupStarterProject />
