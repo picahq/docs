@@ -1,0 +1,303 @@
+import { Card, Tabs } from "@mintlify/components";
+import { Tab } from "@headlessui/react";
+
+### Prompt the LLM to build your tool
+
+<Tabs>
+  <Tab title="Vercel AI SDK" icon="/images/vercel.svg">
+    <Card>
+      Copy this prompt to build the Vercel AI SDK tool:
+      ```markdown Smart Home Data Hub Prompt expandable
+      # Smart Home Data Hub - Complete Vercel AI SDK Implementation
+
+      Create a comprehensive Smart Home Data Hub using Vercel AI SDK, Pica MCP integrations, and TypeScript. This system monitors weather conditions, logs environmental data to Google Sheets, and sends intelligent email reports.
+
+      ## CRITICAL PATH REQUIREMENTS
+
+      **MOST IMPORTANT**: All Pica API paths must NOT include `/v4/` prefix. Use only:
+      - ✅ `spreadsheets/${spreadsheetId}/values/${range}:append` 
+      - ✅ `spreadsheets/${spreadsheetId}/values/${range}`
+      - ❌ Never use: `/v4/spreadsheets/...` (causes path duplication errors)
+
+      ## REQUIRED TOOLS TO BUILD
+
+      ### 1. fetchWeatherData.ts
+      **Purpose**: Fetch comprehensive weather data from wttr.in
+      **Key Features**:
+      - Location input with flexible formats (City,State or City,Country)
+      - JSON format response with structured environmental data
+      - Extract: temperature, humidity, pressure, wind, UV index, visibility, cloud cover, precipitation
+      - Include current conditions, forecast, and astronomical data
+      - Proper error handling and location validation
+
+      **Pica Integration**:
+      - Platform: `wttr-in`
+      - Action ID: Use "Get Weather Data" action
+      - Path: `/${encodeURIComponent(location)}`
+      - Query: `format=j1`
+      - Method: GET
+
+      ### 2. logEnvironmentalData.ts  
+      **Purpose**: Log structured environmental data to Google Sheets
+      **Key Features**:
+      - Automatic spreadsheet ID extraction from URLs
+      - Auto-generate headers on first use: Timestamp, Location, Temperature (°C), Humidity (%), Pressure (hPa), Wind Speed (km/h), UV Index, Visibility (km), Cloud Cover (%), Precipitation (mm), Weather Description, Energy Usage (kWh), Indoor Temp (°C), Notes
+      - Formatted timestamp for readability
+      - Support for optional energy and indoor temperature data
+      - Robust error handling with fallback for header creation
+
+      **Pica Integration**:
+      - Platform: `google-sheets`
+      - Action ID: Use "Append Values to a Spreadsheet" action
+      - Path: `spreadsheets/${spreadsheetId}/values/${encodeURIComponent(sheetName)}:append`
+      - Method: POST
+      - Query Parameters: `valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS&includeValuesInResponse=true`
+      - Body: `{ values: [[...dataRow]], majorDimension: "ROWS" }`
+
+      ### 3. sendDailyWeatherReport.ts
+      **Purpose**: Send beautiful HTML email reports with weather insights
+      **Key Features**:
+      - Mobile-responsive HTML email design
+      - Weather emoji indicators based on conditions
+      - Smart optimization recommendations based on temperature, humidity, UV index
+      - Energy usage analysis (if provided)
+      - Trend indicators with visual arrows
+      - Professional styling with inline CSS
+      - Base64url encoding for Gmail API
+
+      **Pica Integration**:
+      - Platform: `gmail`
+      - Action ID: Use "Send Mail" action  
+      - Path: `users/me/messages/send`
+      - Method: POST
+      - Body: `{ raw: base64UrlEncodedMessage }`
+      - MIME format: Include To, Subject, Content-Type headers
+
+      ## ENVIRONMENT VARIABLES NEEDED
+      PICA_API_KEY=your_pica_api_key
+      WTTR_IN_CONNECTION_KEY=your_wttr_connection_key
+      GOOGLE_SHEETS_CONNECTION_KEY=your_google_sheets_connection_key
+      GMAIL_CONNECTION_KEY=your_gmail_connection_key
+
+      ## PICA TOOL EXECUTOR UTILITY
+
+      Create `src/utils/picaToolExecutor.ts` with a function that handles Pica API passthrough calls:
+      - Base URL: 'https://api.picaos.com/v1/passthrough'
+      - Headers: content-type, x-pica-secret, x-pica-connection-key, x-pica-action-id
+      - Support for GET/POST methods with query params and body
+      - Proper error handling and JSON response parsing
+
+      ## SMART RECOMMENDATIONS ENGINE
+
+      Implement intelligent recommendations based on:
+      - **Temperature > 25°C**: "High temperature - consider increasing AC efficiency"
+      - **Temperature < 5°C**: "Low temperature - check heating system efficiency" 
+      - **Humidity > 60%**: "High humidity - consider dehumidifier"
+      - **Humidity < 30%**: "Low humidity - consider humidifier"
+      - **UV Index > 7**: "High UV - close blinds to reduce cooling load"
+      - **Energy Usage > 30 kWh**: "High energy usage - review appliance efficiency"
+
+      ## VERCEL AI SDK INTEGRATION
+
+      Update `src/app/api/chat/route.ts`:
+      - Import all three tools
+      - Add to tools object in streamText configuration
+      - Update system prompt to include Smart Home capabilities
+      - Include workflow commands: "Monitor weather", "Log environmental data", "Send daily report"
+
+      ## DATA STRUCTURES
+
+      **Weather Data Interface**:
+      - location: { name, country, latitude, longitude }
+      - current: { temperature: {celsius, fahrenheit}, humidity, pressure, windSpeed: {kmh, mph}, uvIndex, visibility: {km, miles}, cloudCover, precipitation: {mm, inches}, weatherDescription }
+      - forecast: { maxTemp: {celsius, fahrenheit}, minTemp: {celsius, fahrenheit}, sunHours }
+
+      ## ERROR HANDLING PATTERNS
+
+      - Validate all environment variables at tool execution start
+      - Extract spreadsheet IDs from URLs with regex: `/\/d\/([a-zA-Z0-9-_]+)/`
+      - Handle missing optional data with fallback empty strings
+      - Provide detailed error messages for debugging
+      - Include retry logic for transient API failures
+
+      ## TESTING WORKFLOW
+
+      1. **Weather Test**: `"Get weather data for Toronto,ON"`
+      2. **Logging Test**: `"Log environmental data to spreadsheet [ID] with temperature 22, humidity 45"`
+      3. **Email Test**: `"Send daily weather report for New York,NY to user@example.com"`
+      4. **Full Workflow**: `"Monitor weather for London,UK, log to spreadsheet [ID], and email report to user@example.com"`
+
+      ## BUILD REQUIREMENTS
+
+      - TypeScript with strict mode
+      - Zod for input validation
+      - Next.js 15+ with Turbopack
+      - Vercel AI SDK latest version
+      - Proper export statements for all tools
+      - No circular dependencies
+
+      ## SUCCESS CRITERIA
+
+      ✅ Weather fetching returns structured data with all environmental metrics
+      ✅ Google Sheets logging creates proper headers and appends data correctly  
+      ✅ Email reports are mobile-responsive with smart recommendations
+      ✅ All tools handle errors gracefully with detailed logging
+      ✅ System builds without TypeScript errors
+      ✅ Environment variables are properly validated
+
+      ## IMPLEMENTATION NOTES
+
+      Each tool should:
+      1. Use Zod schemas for input validation
+      2. Validate required environment variables
+      3. Use the picaToolExecutor utility for all Pica API calls
+      4. Return structured success/error responses
+      5. Include comprehensive error handling
+      6. Follow TypeScript best practices
+
+      The fetchWeatherData tool parses wttr.in JSON response into structured weather data.
+      The logEnvironmentalData tool automatically creates headers and handles spreadsheet URL parsing.
+      The sendDailyWeatherReport tool generates mobile-responsive HTML emails with weather emojis and smart recommendations.
+
+      All tools integrate seamlessly with Vercel AI SDK using the tool() function and can be chained together for complete environmental monitoring workflows.
+
+      This creates a production-ready Smart Home Data Hub that monitors environmental conditions, provides intelligent insights, and maintains historical data for optimization opportunities.
+      ```
+    </Card>
+  </Tab>
+  <Tab title="LangChain" icon="/images/langchain-icon.svg">
+    <Card>
+      Copy this prompt to build the LangChain tool:
+      ```markdown LangChain Tool Suite expandable
+      ## LangChain Tool Suite: Smart Home Data Hub (BuildKit + Pica)
+
+      This LangChain Tool Suite creates a comprehensive Smart Home Data Hub that monitors weather conditions, logs environmental data to Google Sheets, and sends intelligent email reports using Pica MCP integrations.
+
+      ## Critical Integration Rules
+      - Do not hard-code API paths, HTTP methods, content types, or action IDs.
+      - Always discover action contracts at runtime using Pica MCP utilities:
+      1) list available actions for a platform
+      2) fetch action knowledge for the chosen action (method, path template, params, content-type, pagination, rate limits, examples)
+      - Build requests using the discovered contract with a shared `picaToolExecutor` (passthrough), not static values.
+      - Validate required environment variables at runtime and fail fast if missing.
+
+      ### Discovery Flow (per tool call)
+      1. Use Pica to list platform actions (e.g., wttr-in, google-sheets, gmail).
+      2. Select the specific action by title/key (e.g., "Get Weather Data", "Append Values to a Spreadsheet", "Send Mail").
+      3. Use action knowledge to derive method, path, query/body schema, and content type.
+      4. Execute via `picaToolExecutor` using the derived values.
+
+      ### Tools
+      1) fetchWeatherData
+      - Purpose: Fetch comprehensive weather data from wttr.in API
+      - Discovery: Use "Get Weather Data" action; path `/${encodeURIComponent(location)}` with query `format=j1`
+      - Parse response into structured weather data with temperature, humidity, pressure, wind, UV index, etc.
+
+      2) logEnvironmentalData
+      - Purpose: Log structured environmental data to Google Sheets with automatic header creation
+      - Discovery: Use "Append Values to a Spreadsheet" action; path `spreadsheets/${spreadsheetId}/values/${sheetName}:append`
+      - Auto-generate headers: Timestamp, Location, Temperature, Humidity, Pressure, Wind Speed, UV Index, etc.
+      - Extract spreadsheet ID from URLs using regex pattern
+
+      3) sendDailyWeatherReport
+      - Purpose: Send mobile-responsive HTML email reports with weather insights and smart recommendations
+      - Discovery: Use "Send Mail" action; path `users/me/messages/send`
+      - Generate HTML email with weather emojis, optimization recommendations, and professional styling
+      - Base64url encode RFC822 message format
+
+      ## Smart Recommendations Engine
+      Implement intelligent recommendations based on environmental data:
+      - Temperature thresholds for HVAC efficiency
+      - Humidity control suggestions
+      - UV index warnings for energy optimization
+      - Energy usage analysis and appliance efficiency tips
+
+      ## Environment Variables
+      - `PICA_API_KEY`
+      - `OPENAI_API_KEY`
+      - `WTTR_IN_CONNECTION_KEY`
+      - `GOOGLE_SHEETS_CONNECTION_KEY`
+      - `GMAIL_CONNECTION_KEY`
+
+      ## Workflow
+      1. Fetch weather data for specified location
+      2. Log environmental data to Google Sheets with timestamps
+      3. Generate and send HTML email report with smart recommendations
+      4. Provide actionable insights for home optimization
+
+      ## Implementation Notes
+      - Use shared `picaToolExecutor` with dynamically discovered action contracts
+      - Handle missing optional data with fallback empty strings
+      - Extract spreadsheet IDs from URLs with regex: `/\/d\/([a-zA-Z0-9-_]+)/`
+      - Generate weather emojis based on conditions for email reports
+      - Include retry logic for transient API failures
+      ```
+    </Card>
+  </Tab>
+  <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
+    <Card>
+      Copy this prompt to build the MCP server tool:
+      ```markdown MCP Server expandable
+      ## MCP Server: Smart Home Data Hub Tools (BuildKit + Pica)
+
+      This MCP server exposes tools for a comprehensive Smart Home Data Hub that monitors weather conditions, logs environmental data to Google Sheets, and sends intelligent email reports via Pica.
+
+      ## Critical Integration Rules
+      - Do not hard-code API paths, HTTP methods, content types, or action IDs.
+      - Always discover action contracts at runtime using Pica MCP utilities:
+      1) list available actions for a platform
+      2) fetch action knowledge for the chosen action (method, path template, params, content-type, pagination, rate limits, examples)
+      - Build requests using the discovered contract with a shared `picaToolExecutor` (passthrough), not static values.
+      - Validate required environment variables at runtime and fail fast if missing.
+
+      ### Discovery Flow (per tool call)
+      1. Use Pica to list platform actions (e.g., wttr-in, google-sheets, gmail).
+      2. Select the specific action by title/key (e.g., "Get Weather Data", "Append Values to a Spreadsheet", "Send Mail").
+      3. Use action knowledge to derive method, path, query/body schema, and content type.
+      4. Execute via `picaToolExecutor` using the derived values.
+
+      ### Tools (MCP)
+      - fetch_weather_data
+      - log_environmental_data
+      - send_daily_weather_report
+
+      Tool behaviors:
+      - `fetch_weather_data`: Fetch weather from wttr.in with `format=j1` query, parse into structured data (temperature, humidity, pressure, wind, UV index, visibility, cloud cover, precipitation)
+      - `log_environmental_data`: Auto-extract spreadsheet ID from URLs, create headers if needed, append environmental data with timestamps
+      - `send_daily_weather_report`: Generate mobile-responsive HTML email with weather emojis, smart recommendations, and Base64url encoding
+
+      ## Smart Recommendations Logic
+      - Temperature > 25°C: "High temperature - consider increasing AC efficiency"
+      - Temperature < 5°C: "Low temperature - check heating system efficiency"
+      - Humidity > 60%: "High humidity - consider dehumidifier"
+      - Humidity < 30%: "Low humidity - consider humidifier"
+      - UV Index > 7: "High UV - close blinds to reduce cooling load"
+      - Energy Usage > 30 kWh: "High energy usage - review appliance efficiency"
+
+      ## Environment Variables
+      - `PICA_API_KEY`
+      - `WTTR_IN_CONNECTION_KEY`
+      - `GOOGLE_SHEETS_CONNECTION_KEY`
+      - `GMAIL_CONNECTION_KEY`
+
+      ## Data Structures
+      Weather data includes location info, current conditions (temperature in C/F, humidity %, pressure hPa, wind speed km/h and mph, UV index, visibility km/miles, cloud cover %, precipitation mm/inches, weather description), and forecast data.
+
+      ## Error Handling
+      - Validate environment variables at startup
+      - Extract spreadsheet IDs with regex: `/\/d\/([a-zA-Z0-9-_]+)/`
+      - Handle missing optional data gracefully
+      - Provide detailed error messages for debugging
+      - Include retry logic for API failures
+
+      ## Usage Examples
+      - "Get weather data for Toronto,ON"
+      - "Log environmental data to spreadsheet [ID] with temperature 22, humidity 45"
+      - "Send daily weather report for New York,NY to user@example.com"
+      - "Monitor weather for London,UK, log to spreadsheet [ID], and email report"
+      ```
+    </Card>
+  </Tab>
+</Tabs>
+
+You can verify setup by asking "What connections do I have in Pica?" - it should show your connections added above.
