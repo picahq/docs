@@ -1,0 +1,47 @@
+---
+title: Build a Linear Daily Updates Agent
+description: Learn how to build an agent that fetches today’s Linear tickets and saves them to Google Sheets, grouped by assignee and status.
+---
+
+import WhatWeWillDo from '/snippets/what-we-will-do.mdx';
+import InstallMcpServer from '/snippets/install-mcp-server.mdx';
+import ConnectAccounts from '/snippets/connect-accounts.mdx';
+import { AddConnections } from '/snippets/add-connections.jsx';
+import NewConnectionDemo from '/snippets/new-connection-demo.mdx';
+import SetupStarterProject from '/snippets/setup-project.mdx';
+import AddRules from '/snippets/add-rules.mdx';
+import Prompts from '/snippets/prompts/day-summary-mcp.mdx';
+
+<WhatWeWillDo platformNames='Google Calendar, Gmail, and Slack accounts' projectType='MCP'/>
+
+<InstallMcpServer />
+
+<ConnectAccounts platformNames='Google Calendar, Gmail, and Slack accounts'/>
+<AddConnections platforms={[{'name': 'Gmail', 'code': 'gmail'}, { 'name': 'Google Calendar', 'code': 'google-calendar' }, {'name': 'Slack', 'code': 'slack'}]} />
+<NewConnectionDemo />
+
+<SetupStarterProject />
+
+## Steps
+
+1. **Connect Linear and Google Sheets**  
+   Set up API keys for Linear and Google Sheets.
+
+2. **Configure the Agent Tool**  
+   Use the following prompt to instruct your agent:
+   ```markdown
+   Create me a tool called getDailyUpdates in my agent for fetching today’s tickets from Linear, saving them into Google Sheets in a well-structured, easy-to-read format, grouped by assignee and status (In Progress / Closed).
+   ```
+
+3. **Run the Agent**  
+   Trigger the tool and check your Google Sheet for today’s tickets, grouped by assignee and status.
+
+## Environment Variables
+
+- `LINEAR_API_KEY`
+- `GOOGLE_SHEETS_API_KEY`
+- `GOOGLE_SHEET_ID`
+
+## Example Output
+
+Your Google Sheet will show today’s Linear tickets, grouped by assignee, with separate sections for In Progress and Closed tickets.
