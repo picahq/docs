@@ -30,8 +30,7 @@ import Prompts from '/snippets/prompts/day-summary-mcp.mdx';
 2. **Configure the Agent Tool**  
    Use the following prompt to instruct your agent:
    ```markdown
-   Create me a tool called getDailyUpdates in my agent for fetching today’s tickets from Linear, saving them into Google Sheets in a well-structured, easy-to-read format, grouped by assignee and status (In Progress / Closed).
-   ```
+Create a Vercel AI SDK tool getDailyUpdates that, via Pica discovery (no hardcoding), fetches today’s Linear issues and appends them to Google Sheets. Inputs: spreadsheet URL/ID, sheet (default Sheet1), timezone (default UTC), maxIssues (default 100). Build from action knowledge (Linear “Query Issues”, Sheets “Append Values”), and append rows ["Date","Assignee","Status","Issue","Title","URL"] using /spreadsheets/{id}/values/{sheet}:append with valueInputOption=USER_ENTERED.   ```
 
 3. **Run the Agent**  
    Trigger the tool and check your Google Sheet for today’s tickets, grouped by assignee and status.
