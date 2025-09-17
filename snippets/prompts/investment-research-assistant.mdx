@@ -1,0 +1,377 @@
+import { Card, Tabs } from "@mintlify/components";
+import { Tab } from "@headlessui/react";
+
+### Prompt the LLM to build your tool
+
+<Tabs>
+  <Tab title="Vercel AI SDK" icon="/images/vercel.svg">
+    <Card>
+      Copy this prompt to build the Vercel AI SDK tool:
+      ```markdown Vercel AI SDK Agent Prompt expandable
+      # Investment Research Assistant - Vercel AI SDK Agent
+
+      Create a comprehensive Vercel AI SDK agent with multiple tools for automated investment research using Twelve Data, News Data IO, and Notion integrations through Pica. The agent should provide complete market analysis and research documentation.
+
+      TOOLS NEEDED:
+      1. fetchStockQuote - Get real-time stock price and basic market data
+      2. fetchTechnicalIndicators - Calculate RSI, MACD, and moving averages
+      3. fetchCompanyProfile - Get company fundamentals, financials, and key metrics
+      4. fetchAnalystRecommendations - Get analyst ratings and price targets
+      5. fetchFinancialNews - Get relevant news articles for the stock
+      6. createNotionResearchPage - Create comprehensive research page in Notion
+      7. updateResearchAnalysis - Update existing research with new data
+
+      TWELVE DATA INTEGRATION (Key Action IDs):
+      - Real-time Quote: conn_mod_def::GF2-Z7VKGyk::lFnyTBCvT-uzAjFzH4rMbg
+      - Latest Price: conn_mod_def::GF2-aBZZCFo::jQlXPsJfR0q6O3bD32YBxA
+      - RSI Indicator: conn_mod_def::GF2-jSqIafo::o95SRd1SStK7bctlf6tIlA
+      - MACD Indicator: conn_mod_def::GF2-hWZx3Xc::EmZTkd_BTraHKCZM2L0Uag
+      - Simple Moving Average: conn_mod_def::GF2-nXThAks::ORlFzdRmRi-Wh8oQ_zs-8w
+      - Company Profile: conn_mod_def::GF2-cwyZSoA::D4fYT0fbTk2A2IOukaZa0w
+      - Analyst Recommendations: conn_mod_def::GF2-YSGIQYQ::fgLtfLBKTHuYoG9nrbwYtg
+      - Price Target: conn_mod_def::GF2-YY28HvY::C6fyIG9FRjKBBqSjbxEOxg
+      - Historical Data: conn_mod_def::GF2-Zvby_Cc::i_vNEX_HRUi2c0pTS0_7Ng
+
+      NEWS DATA IO INTEGRATION (Key Action IDs):
+      - Latest News: conn_mod_def::GCMkJZ1uN7I::UKpo5iDlRoSnfi5C8ih4FA
+      - News Archive: conn_mod_def::GCMkI5HRRGE::oq0ikaXKRdibN7hxItyRaA
+
+      NOTION INTEGRATION (Key Action IDs):
+      - Create Page: conn_mod_def::GCWcIDJuR4A::izAAbGNdQdKddzdP_JS4kw
+      - Create Database: conn_mod_def::GCWcHtC65WM::b4RMZv4aTjG_ni4ayKc0GA
+      - Update Page Properties: conn_mod_def::GCWcIBCFd3I::0UgTnKvXR5avVymmegseFA
+      - Query Database: conn_mod_def::GCWcHfwwY6Y::XqFfl-WYTguWn860w-Hnqw
+
+      NOTION DATABASE STRUCTURE:
+      - Database Name: "Investment Research"
+      - Properties:
+        * Stock Symbol (title)
+        * Company Name (text)
+        * Research Date (date)
+        * Current Price (number)
+        * Price Change % (number)
+        * Market Cap (text)
+        * Volume (number)
+        * 52 Week High (number)
+        * 52 Week Low (number)
+        * P/E Ratio (number)
+        * RSI (number)
+        * MACD Signal (select: Bullish, Bearish, Neutral)
+        * Moving Average Trend (select: Uptrend, Downtrend, Sideways)
+        * Analyst Rating (select: Strong Buy, Buy, Hold, Sell, Strong Sell)
+        * Average Price Target (number)
+        * News Sentiment (select: Very Positive, Positive, Neutral, Negative, Very Negative)
+        * Key News Headlines (rich text)
+        * Technical Analysis (rich text)
+        * Fundamental Analysis (rich text)
+        * Investment Recommendation (rich text)
+        * Risk Assessment (select: Low, Medium, High, Very High)
+        * Research Status (select: New, In Progress, Completed, Archived)
+
+      RESEARCH WORKFLOW:
+      1. Fetch real-time stock quote and basic market data
+      2. Calculate key technical indicators (RSI, MACD, SMA)
+      3. Get company profile and fundamental data
+      4. Retrieve analyst recommendations and price targets
+      5. Gather recent financial news and analyze sentiment
+      6. Create comprehensive analysis combining all data
+      7. Generate investment recommendation and risk assessment
+      8. Create or update Notion research page with structured data
+
+      TECHNICAL ANALYSIS RULES:
+      - RSI > 70: Overbought, potential sell signal
+      - RSI < 30: Oversold, potential buy signal  
+      - MACD above signal line: Bullish momentum
+      - MACD below signal line: Bearish momentum
+      - Price above SMA: Uptrend
+      - Price below SMA: Downtrend
+
+      SENTIMENT ANALYSIS:
+      - Analyze news headlines for positive/negative keywords
+      - Count analyst upgrades vs downgrades
+      - Factor in price target vs current price
+      - Combine technical and fundamental signals
+
+      ENVIRONMENT VARIABLES NEEDED:
+      - TWELVE_DATA_CONNECTION_KEY
+      - NEWS_DATA_IO_CONNECTION_KEY  
+      - NOTION_CONNECTION_KEY
+      - OPENAI_API_KEY
+      - PICA_API_KEY
+
+      Make the system intelligent enough to:
+      - Handle various stock symbols and validate ticker symbols
+      - Provide comprehensive technical and fundamental analysis
+      - Generate clear, actionable investment recommendations
+      - Create well-structured, searchable Notion research pages
+      - Handle API rate limits and error conditions gracefully
+      - Combine multiple data sources for holistic investment insights
+      ```
+      <Note>The system provides comprehensive investment research by combining real-time market data, technical analysis, and news sentiment.</Note>
+    </Card>
+  </Tab>
+  <Tab title="LangChain" icon="/images/langchain-icon.svg">
+    <Card>
+      Copy this prompt to build the LangChain tool:
+      ```markdown LangChain Investment Research Tools expandable
+      # LangChain Investment Research Assistant
+
+      Create a comprehensive LangChain tool suite for automated investment research using Twelve Data, News Data IO, and Notion integrations through Pica. Build tools that provide professional-grade market analysis.
+
+      CORE TOOLS:
+      1. StockDataFetcher - LangChain tool for real-time stock quotes and market data
+      2. TechnicalAnalyzer - Tool for calculating and interpreting technical indicators
+      3. FundamentalAnalyzer - Tool for company financials and valuation metrics
+      4. NewsAnalyzer - Tool for gathering and analyzing financial news sentiment
+      5. AnalystDataCollector - Tool for collecting analyst recommendations and targets
+      6. NotionResearchCreator - Tool for creating structured research pages
+      7. ResearchSynthesizer - Tool for combining all analysis into recommendations
+
+      LANGCHAIN IMPLEMENTATION REQUIREMENTS:
+      - Use LangChain's tool decorator and structured input/output schemas
+      - Implement proper error handling with LangChain's error types
+      - Use LangChain's memory system to track research state across tools
+      - Integrate with LangChain agents for orchestrating research workflow
+      - Support streaming responses for real-time research updates
+
+      TECHNICAL INDICATORS TO IMPLEMENT:
+      - RSI (Relative Strength Index) with overbought/oversold signals
+      - MACD (Moving Average Convergence Divergence) with signal line crossovers
+      - SMA (Simple Moving Average) for trend identification
+      - Volume analysis for confirmation signals
+      - Support and resistance level identification
+
+      FUNDAMENTAL ANALYSIS COMPONENTS:
+      - P/E ratio and valuation metrics
+      - Revenue and earnings growth analysis
+      - Debt-to-equity and financial health ratios
+      - Market capitalization and sector comparison
+      - Dividend yield and payout ratio analysis
+
+      NEWS SENTIMENT ANALYSIS:
+      - Keyword extraction from financial news headlines
+      - Sentiment scoring using NLP techniques
+      - Event impact assessment (earnings, mergers, regulatory changes)
+      - Social media sentiment integration
+      - News volume and recency weighting
+
+      NOTION RESEARCH STRUCTURE:
+      Create comprehensive research pages with:
+      - Executive summary with key findings
+      - Technical analysis section with charts and indicators
+      - Fundamental analysis with financial metrics
+      - News sentiment analysis with key headlines
+      - Analyst consensus and price target summary
+      - Investment recommendation with risk assessment
+      - Historical performance and trend analysis
+
+      RESEARCH WORKFLOW ORCHESTRATION:
+      1. Validate stock symbol and fetch basic company information
+      2. Gather real-time price data and calculate technical indicators
+      3. Analyze company fundamentals and financial health
+      4. Collect recent news articles and perform sentiment analysis
+      5. Retrieve analyst recommendations and price targets
+      6. Synthesize all data into comprehensive investment thesis
+      7. Create structured Notion research page with all findings
+      8. Generate executive summary and actionable recommendations
+
+      ERROR HANDLING AND RESILIENCE:
+      - Graceful degradation when APIs are unavailable
+      - Retry mechanisms for transient failures
+      - Data validation and sanitization
+      - Fallback to cached data when appropriate
+      - Clear error messaging for users
+
+      Use Pica integrations for seamless API access to Twelve Data, News Data IO, and Notion. The research assistant should provide institutional-quality analysis accessible through natural language queries.
+      ```
+      <Note>The LangChain tools provide professional-grade investment research with comprehensive data analysis and structured documentation.</Note>
+    </Card>
+  </Tab>
+  <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
+    <Card>
+      Copy this prompt to build the MCP server tool:
+      ```markdown MCP Investment Research Server expandable
+      # Complete MCP Investment Research Server
+
+      Create a complete MCP (Model Context Protocol) server for automated investment research with Twelve Data, News Data IO, and Notion integrations through Pica. The server should provide comprehensive market analysis tools for financial research.
+
+      MCP SERVER STRUCTURE:
+      - Server name: "investment-research-server"
+      - Version: "1.0.0"  
+      - Description: "MCP server for automated investment research with real-time data, technical analysis, and comprehensive reporting"
+
+      TOOLS TO IMPLEMENT:
+      1. fetch_stock_data - Get real-time quotes, historical data, and basic market information
+      2. calculate_technical_indicators - Compute RSI, MACD, moving averages, and trend signals
+      3. analyze_company_fundamentals - Retrieve company profile, financials, and valuation metrics
+      4. get_analyst_consensus - Fetch analyst ratings, recommendations, and price targets
+      5. gather_financial_news - Collect recent news articles and perform sentiment analysis
+      6. create_research_database - Set up Notion database for investment research tracking
+      7. create_research_report - Generate comprehensive research page with all analysis
+      8. update_research_status - Update research status and add new findings
+
+      TWELVE DATA API INTEGRATION:
+      Real-time Data Tools:
+      - Stock quotes with bid/ask spreads and volume
+      - Historical price data with adjustments for splits/dividends
+      - Intraday data with multiple time intervals
+      - Market hours and trading status information
+
+      Technical Indicators:
+      - RSI with customizable periods and overbought/oversold levels
+      - MACD with signal line, histogram, and divergence detection
+      - Moving averages (SMA, EMA, WMA) for trend analysis
+      - Bollinger Bands for volatility and support/resistance
+      - Volume indicators for confirmation signals
+
+      Fundamental Data:
+      - Company profiles with business descriptions and key metrics
+      - Financial statements (income, balance sheet, cash flow)
+      - Earnings data and estimates with surprise analysis
+      - Dividend history and yield calculations
+      - Analyst recommendations and price target consensus
+
+      NEWS DATA IO INTEGRATION:
+      News Analysis Tools:
+      - Latest financial news filtered by company/symbol
+      - Historical news archive for trend analysis
+      - News sentiment scoring using NLP techniques
+      - Event categorization (earnings, M&A, regulatory, etc.)
+      - Source credibility weighting and duplicate removal
+
+      Sentiment Analysis Features:
+      - Keyword extraction from headlines and content
+      - Positive/negative sentiment classification
+      - Impact scoring based on news source and recency
+      - Trend analysis of sentiment over time
+      - Correlation with stock price movements
+
+      NOTION DATABASE DESIGN:
+      Investment Research Database:
+      Primary Properties:
+      - Stock Symbol (title) - Ticker symbol for the security
+      - Company Name (text) - Full company name
+      - Research Date (date) - When research was conducted
+      - Current Price (number) - Latest stock price
+      - Price Change % (number) - Daily price change percentage
+      - Market Cap (text) - Market capitalization
+      - Volume (number) - Trading volume
+
+      Technical Analysis Properties:
+      - RSI (number) - Relative Strength Index value
+      - MACD Signal (select: Bullish, Bearish, Neutral)
+      - Moving Average Trend (select: Uptrend, Downtrend, Sideways)
+      - Support Level (number) - Key support price level
+      - Resistance Level (number) - Key resistance price level
+      - Technical Rating (select: Strong Buy, Buy, Neutral, Sell, Strong Sell)
+
+      Fundamental Analysis Properties:
+      - P/E Ratio (number) - Price-to-earnings ratio
+      - P/B Ratio (number) - Price-to-book ratio
+      - Debt/Equity (number) - Debt-to-equity ratio
+      - ROE (number) - Return on equity percentage
+      - Revenue Growth % (number) - Year-over-year revenue growth
+      - EPS Growth % (number) - Earnings per share growth
+
+      Analyst and News Properties:
+      - Analyst Rating (select: Strong Buy, Buy, Hold, Sell, Strong Sell)
+      - Average Price Target (number) - Consensus price target
+      - Price Target High (number) - Highest analyst target
+      - Price Target Low (number) - Lowest analyst target
+      - News Sentiment (select: Very Positive, Positive, Neutral, Negative, Very Negative)
+      - Key News Headlines (rich text) - Important recent headlines
+
+      Research Analysis Properties:
+      - Technical Analysis (rich text) - Detailed technical analysis summary
+      - Fundamental Analysis (rich text) - Company and financial analysis
+      - Investment Thesis (rich text) - Overall investment rationale
+      - Risk Factors (rich text) - Key risks and concerns
+      - Investment Recommendation (rich text) - Buy/Hold/Sell recommendation
+      - Risk Assessment (select: Low, Medium, High, Very High)
+      - Research Status (select: New, In Progress, Completed, Archived)
+
+      RESEARCH WORKFLOW AUTOMATION:
+      1. Stock Symbol Validation and Company Lookup
+         - Validate ticker symbol format and existence
+         - Fetch basic company information and sector classification
+         - Check market hours and trading status
+
+      2. Real-Time Data Collection
+         - Get current stock price, volume, and market data
+         - Fetch historical price data for technical analysis
+         - Calculate price performance over multiple timeframes
+
+      3. Technical Analysis Computation
+         - Calculate RSI with overbought/oversold signals
+         - Compute MACD with signal line crossovers and histogram
+         - Generate moving average trends and crossover signals
+         - Identify support and resistance levels
+         - Analyze volume patterns and confirmation signals
+
+      4. Fundamental Data Analysis
+         - Retrieve company financial statements and key ratios
+         - Analyze profitability, liquidity, and leverage metrics
+         - Compare valuation multiples to sector averages
+         - Assess earnings quality and growth sustainability
+         - Evaluate dividend policy and shareholder returns
+
+      5. News and Sentiment Analysis
+         - Collect recent news articles related to the company
+         - Perform sentiment analysis on headlines and content
+         - Categorize news by type (earnings, guidance, M&A, etc.)
+         - Weight sentiment by source credibility and recency
+         - Identify potential catalysts and risk factors
+
+      6. Analyst Consensus Integration
+         - Fetch analyst ratings and recommendation changes
+         - Calculate consensus price targets and revision trends
+         - Analyze estimate revisions and earnings surprises
+         - Compare analyst sentiment to technical/fundamental signals
+
+      7. Comprehensive Report Generation
+         - Create structured Notion page with all analysis
+         - Generate executive summary with key findings
+         - Provide detailed technical and fundamental analysis
+         - Include risk assessment and investment recommendation
+         - Add supporting charts, data tables, and news summaries
+
+      ADVANCED FEATURES:
+      Portfolio Integration:
+      - Track multiple stocks in a portfolio context
+      - Calculate portfolio-level risk and correlation metrics
+      - Monitor sector allocation and diversification
+      - Generate portfolio-level research summaries
+
+      Alert System:
+      - Price target alerts and technical indicator signals
+      - News-based alerts for significant events
+      - Earnings date and analyst revision notifications
+      - Technical pattern recognition alerts
+
+      Historical Analysis:
+      - Track research accuracy and recommendation performance
+      - Analyze prediction success rates over time
+      - Identify patterns in successful vs. unsuccessful calls
+      - Provide backtesting capabilities for research strategies
+
+      ERROR HANDLING AND RELIABILITY:
+      - Comprehensive error handling with meaningful messages
+      - Retry mechanisms for API failures with exponential backoff
+      - Data validation and sanitization for all inputs
+      - Graceful degradation when data sources are unavailable
+      - Caching strategies to reduce API calls and improve performance
+      - Rate limiting compliance for all integrated APIs
+
+      ENVIRONMENT REQUIREMENTS:
+      - PICA_API_KEY for Pica integration
+      - TWELVE_DATA_CONNECTION_KEY for market data access
+      - NEWS_DATA_IO_CONNECTION_KEY for news and sentiment data
+      - NOTION_CONNECTION_KEY for database operations
+      - OPENAI_API_KEY for advanced NLP and analysis (optional)
+
+      The MCP server should be production-ready with proper TypeScript types, comprehensive error handling, detailed logging, and optimized for both individual stock research and batch processing of multiple securities.
+      ```
+      <Note>The MCP server provides institutional-grade investment research capabilities with comprehensive data integration and analysis.</Note>
+    </Card>
+  </Tab>
+</Tabs>
