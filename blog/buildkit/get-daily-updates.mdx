@@ -28,9 +28,20 @@ import Prompts from '/snippets/prompts/day-summary-mcp.mdx';
    Set up API keys for Linear and Google Sheets.
 
 2. **Configure the Agent Tool**  
-   Use the following prompt to instruct your agent:
+   Use the following prompt to instruct your agent (works for Vercel AI SDK, LangChain, or MCP Server):
+
    ```markdown
-Create a Vercel AI SDK tool getDailyUpdates that, via Pica discovery (no hardcoding), fetches today’s Linear issues and appends them to Google Sheets. Inputs: spreadsheet URL/ID, sheet (default Sheet1), timezone (default UTC), maxIssues (default 100). Build from action knowledge (Linear “Query Issues”, Sheets “Append Values”), and append rows ["Date","Assignee","Status","Issue","Title","URL"] using /spreadsheets/{id}/values/{sheet}:append with valueInputOption=USER_ENTERED.   ```
+   Create a tool called getDailyUpdates in my agent. The tool should:
+   - Fetch today’s tickets from Linear (using the "Query Issues" action).
+   - For each ticket, extract: Date, Assignee, Status (use the latest status value from Linear), Issue ID, Title, and URL.
+   - Group tickets by assignee, and within each assignee, group tickets by their status value.
+   - Append the results to a Google Sheet (using "Append Values" action) in a readable table format with columns: Date, Assignee, Status, Issue, Title, URL.
+   - Inputs: spreadsheet URL or ID, sheet name (default: Sheet1), timezone (default: UTC), maxIssues (default: 100).
+   - Use /spreadsheets/{id}/values/{sheet}:append with valueInputOption=USER_ENTERED.
+   - Do not hardcode credentials; use environment variables for API keys.
+
+   The output Google Sheet should clearly show today’s Linear tickets, grouped by assignee and status.
+   ```
 
 3. **Run the Agent**  
    Trigger the tool and check your Google Sheet for today’s tickets, grouped by assignee and status.
@@ -43,4 +54,4 @@ Create a Vercel AI SDK tool getDailyUpdates that, via Pica discovery (no hardcod
 
 ## Example Output
 
-Your Google Sheet will show today’s Linear tickets, grouped by assignee, with separate sections for In Progress and Closed tickets.
+Your Google Sheet will show today’s Linear tickets, grouped by assignee, with tickets separated by their latest status value.
