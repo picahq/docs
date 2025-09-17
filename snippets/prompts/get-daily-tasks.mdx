@@ -1,0 +1,23 @@
+import { Card, Tabs } from "@mintlify/components";
+import { Tab } from "@headlessui/react";
+
+### Prompt the LLM to build your tool
+
+<Tabs>
+  <Tab title="Agent Prompt">
+    <Card>
+      Copy this prompt:
+      ```markdown Agent Prompt expandable
+      Create me a tool called sendDailyTasks in my agent for fetching today’s Todoist tasks and sending them via Gmail using Pica, and return the result using BuildKit.
+      ```
+
+      ## Environment Variables
+      - `PICA_API_KEY`
+      - `OPENAI_API_KEY`
+      - `TODOIST_CONNECTION_KEY`
+      - `GMAIL_CONNECTION_KEY`
+    </Card>
+  </Tab>
+</Tabs>
+
+
