@@ -4,6 +4,63 @@ description: "Product updates and announcements"
 icon: "code-compare"
 ---
 
+<Update label="September 16, 2025" description="2.5.0">
+  ## Introducing Custom Actions
+
+  <Frame>
+    <img src="./images/16-9-2025.png" />
+  </Frame>
+
+  ### What's new?
+  - **[Custom Actions](https://app.picaos.com/tools)**: We’ve introduced smarter custom actions for popular integrations - designed to reduce context bloat, speed up responses, 
+  and improve agent performance. These actions can streamline pagination, trim response sizes, or even combine multiple tasks into a single powerful call. 
+    <br /><br />
+    To better visualize the new actions, we’ve refreshed the actions table UI to make managing and exploring actions easier. 
+    <br /><br />
+    Featured integrations with enhanced custom actions include:
+      <div style={{ display: 'flex', flexWrap: 'wrap', margin: '1rem 0' }}>
+        <div style={{ display: 'flex', gap: '1.5rem' }}>
+          <a href="https://app.picaos.com/tools/attio" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', borderRadius: '8px', height: '30px' }}>
+            <img src="https://assets.picaos.com/connectors/attio.svg" style={{ width: '20px', height: '20px' }} />
+            Attio <Icon icon="arrow-up-right-from-square" size={12} />
+          </a>
+          <a href="https://app.picaos.com/tools/gmail" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', borderRadius: '8px', height: '30px' }}>
+            <img src="https://assets.picaos.com/connectors/gmail.svg" style={{ width: '20px', height: '20px' }} />
+            Gmail <Icon icon="arrow-up-right-from-square" size={12} />
+          </a>
+          <a href="https://app.picaos.com/tools/google-docs" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', borderRadius: '8px', height: '30px' }}>
+            <img src="https://assets.picaos.com/connectors/google-docs.svg" style={{ width: '20px', height: '20px' }} />
+            Google Docs <Icon icon="arrow-up-right-from-square" size={12} />
+          </a>
+          <a href="https://app.picaos.com/tools/hubspot" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', borderRadius: '8px', height: '30px' }}>
+            <img src="https://assets.picaos.com/connectors/hubspot.svg" style={{ width: '20px', height: '20px' }} />
+            Hubspot <Icon icon="arrow-up-right-from-square" size={12} />
+          </a>
+        </div>
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '.5rem' }}>
+          <a href="https://app.picaos.com/tools/google-sheets" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', borderRadius: '8px', height: '30px' }}>
+            <img src="https://assets.picaos.com/connectors/google-sheets.svg" style={{ width: '20px', height: '20px' }} />
+            Google Sheets <Icon icon="arrow-up-right-from-square" size={12} />
+          </a>
+          <a href="https://app.picaos.com/tools/github" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', borderRadius: '8px', height: '30px' }}>
+            <img src="https://assets.picaos.com/connectors/github.svg" style={{ width: '20px', height: '20px' }} />
+            Github <Icon icon="arrow-up-right-from-square" size={12} />
+          </a>
+          
+          <span style={{ display: 'flex', alignItems: 'center', padding: '0.5rem 0', borderRadius: '8px', color: '#718096', height: '30px' }}>...and more!</span>
+        </div>
+      </div>
+
+  - **[Notification System](https://app.picaos.com/usage)**: Introduced proactive notifications to keep users informed about their Pica usage, including email alerts when approaching usage limits to prevent service interruptions.
+
+  ### Integrations Added 🚀
+  <CardGroup cols={3}>
+    <Card title="Auth0 Management" icon="https://assets.picaos.com/connectors/auth0.svg" href="https://auth0.com">Authentication</Card>
+    <Card title="ClickUp" icon="https://assets.picaos.com/connectors/click-up.svg" href="https://clickup.com">Project Management</Card>
+    <Card title="Breathe HR" icon="https://assets.picaos.com/connectors/breathe.svg" href="https://breathehr.com">HR & Scheduling</Card>
+  </CardGroup>
+</Update>
+
 <Update label="September 4, 2025" description="2.4.0">
   ## BuildKit 2.0
 
@@ -34,7 +91,7 @@ icon: "code-compare"
 </Update>
 
 <Update label="August 27, 2025" description="2.3.0">
-  ## System Enhancements & Bug Fixes
+  ## Redis Caching System & Feature Flags
 
   <Frame>
     <img src="./images/27-8-2025.png" />
