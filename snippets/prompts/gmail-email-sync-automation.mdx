@@ -1,830 +1,326 @@
 import { Card, Tabs } from "@mintlify/components";
 import { Tab } from "@headlessui/react";
 
+### First, discover the Gmail and Supabase actions available in Pica
+
+Before building the Gmail email sync system, discover the available actions using Pica MCP:
+
+<Card>
+```markdown Action Discovery via Pica MCP
+# Discovery Phase: Gmail & Supabase Actions via Pica MCP
+
+I need to discover the available Gmail and Supabase actions through Pica MCP before building the email sync system. Help me:
+
+1. **List Gmail Platform Actions**: Use Pica MCP to discover all available Gmail actions
+2. **List Supabase Platform Actions**: Use Pica MCP to discover all available Supabase actions  
+3. **Get Action Knowledge**: Fetch detailed documentation for the actions I need
+4. **Build Implementation**: Create the email sync system using the discovered action IDs
+
+DISCOVERED GMAIL ACTIONS:
+- **List User Messages**: `conn_mod_def::F_JeIVCQAiA::oD2p47ZVSHu1tF_maldXVQ`
+- **Get Gmail Message**: `conn_mod_def::F_JeIErCKGA::Q2ivQ5-QSyGYiEIZT867Dw`
+
+DISCOVERED SUPABASE ACTIONS:
+- **Run SQL Query**: `conn_mod_def::GC40SckOddE::NFFu2-49QLyGsPBdfweitg`
+- **List All Projects**: `conn_mod_def::GC40U5B8xKY::_N0C5lBNSoWseIxyeQs1KQ`
+
+These action IDs will be used in the implementation below for Gmail and Supabase integration via Pica passthrough.
+```
+</Card>
+
 ### Prompt the LLM to build your tool
 
 <Tabs>
-  <Tab title="Next.js App with AuthKit" icon="/images/vercel.svg">
+  <Tab title="Vercel AI SDK" icon="/images/vercel.svg">
     <Card>
-      Copy this prompt to build the complete Gmail email sync system:
-      ```markdown Next.js Gmail Sync App expandable
-      # Gmail Email Sync Automation - Complete Next.js Application
+      Copy this prompt to build the Vercel AI SDK email sync system:
+      ```markdown Vercel AI SDK Agent Prompt expandable
+      # Vercel AI SDK Agent Prompt (Gmail Email Sync Automation)
 
-      Build a production-ready Gmail email sync system using AuthKit for multi-tenant authentication, Pica passthrough API for Gmail integration, and Supabase for data storage. The system should sync emails every hour automatically.
+      Create a comprehensive Vercel AI SDK agent for automated Gmail email synchronization using Pica integrations. The agent should sync emails to Supabase database every hour with full multi-tenant support.
 
-      ## CORE ARCHITECTURE:
+      TOOLS NEEDED:
+      1. fetchGmailEmails - Fetch Gmail emails using Pica Gmail integration (List Messages + Get Message details)
+      2. storeEmailsSupabase - Store emails in Supabase database using Pica SQL query execution
+      3. setupEmailSync - Initialize email sync configuration for a user with connection details
+      4. syncUserEmails - Complete email sync workflow combining fetch and store operations
+      5. getEmailInsights - Analyze email patterns and generate insights using stored email data
+      6. updateSyncStatus - Track sync performance and schedule next sync using Supabase
+      7. handleSyncErrors - Manage failed syncs with retry logic and error logging
 
-      1. **AuthKit Integration**: Multi-tenant OAuth authentication for Gmail connections
-      2. **Pica Passthrough API**: Secure Gmail API access without managing OAuth tokens
-      3. **Supabase Database**: PostgreSQL storage with RLS for multi-tenant security
-      4. **Cron Jobs**: Automated hourly email synchronization
-      5. **Real-time Updates**: WebSocket connections for live email data
+      SUPABASE DATABASE STRUCTURE (Single Database Approach):
+      Use Pica Supabase integration to create and manage these tables via SQL queries:
 
-      ## REQUIRED PACKAGES:
-      ```bash
-      npm install @picahq/authkit-node @picahq/authkit
-      npm install @supabase/supabase-js
-      npm install node-cron
-      npm install @modelcontextprotocol/sdk
+      Main Table: "emails" 
+      - id (uuid, primary key)
+      - user_id (text) - for multi-tenant RLS
+      - connection_key (text) - Gmail connection identifier
+      - message_id (text, unique) - Gmail message ID
+      - thread_id (text) - Gmail thread ID
+      - subject (text)
+      - sender (text)
+      - recipient (text) 
+      - body (text) - email content
+      - snippet (text) - Gmail snippet
+      - labels (jsonb) - Gmail labels array
+      - is_unread (boolean)
+      - received_date (timestamptz)
+      - created_at (timestamptz, default now())
+
+      Sync Status Table: "sync_status"
+      - user_id (text, primary key)
+      - connection_key (text)
+      - last_sync_at (timestamptz)
+      - next_sync_at (timestamptz)
+      - emails_synced (integer)
+      - status (text: active, paused, error)
+      - error_message (text, nullable)
+      - updated_at (timestamptz)
+
+      WORKFLOW:
+      1. Setup user email sync with Gmail connection key from AuthKit
+      2. Fetch recent Gmail messages using Pica Gmail List Messages action
+      3. Get full email details for each message using Pica Gmail Get Message action  
+      4. Store emails in Supabase using Pica SQL query execution with UPSERT for deduplication
+      5. Update sync status and schedule next sync (1 hour interval)
+      6. Handle errors gracefully with retry logic and status updates
+      7. Generate email insights and analytics from synchronized data
+
+      ENVIRONMENT VARIABLES NEEDED:
+      - GMAIL_CONNECTION_KEY (from AuthKit Gmail connection)
+      - SUPABASE_CONNECTION_KEY (from Pica Supabase integration)
+      - PICA_API_KEY
+
+      TOOL IMPLEMENTATION APPROACH:
+      Use Pica integrations for ALL external API calls:
+      - Gmail operations via Pica Gmail actions (no direct Gmail API calls)
+      - Supabase operations via Pica SQL query action (no Supabase client library)
+      - Let Pica handle OAuth tokens, rate limiting, and error handling
+      - Focus on business logic and workflow orchestration
+
+      ERROR HANDLING STRATEGY:
+      - Use Pica's built-in retry mechanisms and error handling
+      - Store sync errors in Supabase for monitoring and recovery
+      - Implement exponential backoff for failed sync attempts
+      - Provide detailed error messages for troubleshooting
+
+      SYNC SCHEDULING:
+      - Set next_sync_at to 1 hour from successful sync completion
+      - Support manual sync triggers for immediate synchronization
+      - Handle overlapping syncs by checking sync status before starting
+      - Provide sync statistics and performance monitoring
+
+      Make the system intelligent enough to:
+      - Detect and skip duplicate emails using Gmail message IDs
+      - Handle Gmail API rate limits through Pica's rate limiting
+      - Process large inboxes efficiently with pagination
+      - Provide real-time sync progress updates
+      - Generate email analytics and insights from synchronized data
       ```
-
-      ## ENVIRONMENT VARIABLES:
-      ```bash
-      PICA_SECRET_KEY=your_pica_secret_key
-      SUPABASE_URL=your_supabase_project_url
-      SUPABASE_ANON_KEY=your_supabase_anon_key
-      SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-      NEXTAUTH_SECRET=your_nextauth_secret
-      NEXTAUTH_URL=http://localhost:3000
-      ```
-
-      ## API ROUTES TO CREATE:
-
-      ### 1. AuthKit Token Generation (app/api/authkit/route.ts)
-      ```typescript
-      import { NextRequest, NextResponse } from "next/server";
-      import { AuthKitToken } from "@picahq/authkit-node";
-
-      const corsHeaders = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      };
-
-      export async function OPTIONS(req: NextRequest) {
-        return NextResponse.json({}, { headers: corsHeaders });
-      }
-
-      export async function POST(req: NextRequest) {
-        try {
-          const { userId } = await req.json();
-          
-          if (!userId) {
-            return NextResponse.json(
-              { error: "userId is required" }, 
-              { status: 400, headers: corsHeaders }
-            );
-          }
-
-          const authKitToken = new AuthKitToken(process.env.PICA_SECRET_KEY!);
-          
-          const token = await authKitToken.create({
-            identity: userId,
-            identityType: "user",
-          });
-
-          return NextResponse.json(token, { headers: corsHeaders });
-        } catch (error) {
-          console.error("AuthKit token generation error:", error);
-          return NextResponse.json(
-            { error: "Failed to generate AuthKit token" },
-            { status: 500, headers: corsHeaders }
-          );
-        }
-      }
-      ```
-
-      ### 2. Gmail Sync API (app/api/sync-emails/route.ts)
-      ```typescript
-      import { NextRequest, NextResponse } from "next/server";
-      import { GmailSyncService } from "@/lib/gmail-sync-service";
-
-      export async function POST(req: NextRequest) {
-        try {
-          const { userId, connectionKey } = await req.json();
-          
-          if (!userId || !connectionKey) {
-            return NextResponse.json(
-              { error: "userId and connectionKey are required" },
-              { status: 400 }
-            );
-          }
-
-          const syncService = new GmailSyncService();
-          const result = await syncService.syncUserEmails(userId, connectionKey);
-
-          return NextResponse.json(result);
-        } catch (error) {
-          console.error("Email sync error:", error);
-          return NextResponse.json(
-            { error: "Failed to sync emails" },
-            { status: 500 }
-          );
-        }
-      }
-      ```
-
-      ### 3. List User Connections (app/api/connections/route.ts)
-      ```typescript
-      import { NextRequest, NextResponse } from "next/server";
-
-      export async function GET(req: NextRequest) {
-        try {
-          const { searchParams } = new URL(req.url);
-          const userId = searchParams.get('userId');
-
-          if (!userId) {
-            return NextResponse.json(
-              { error: "userId is required" },
-              { status: 400 }
-            );
-          }
-
-          const response = await fetch(
-            `https://api.picaos.com/v1/vault/connections?identity=${userId}&platform=gmail`,
-            {
-              headers: {
-                'x-pica-secret': process.env.PICA_SECRET_KEY!,
-              },
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error(`Failed to fetch connections: ${response.statusText}`);
-          }
-
-          const connections = await response.json();
-          return NextResponse.json(connections);
-        } catch (error) {
-          console.error("Error fetching connections:", error);
-          return NextResponse.json(
-            { error: "Failed to fetch connections" },
-            { status: 500 }
-          );
-        }
-      }
-      ```
-
-      ## CORE SERVICES:
-
-      ### Gmail Sync Service (lib/gmail-sync-service.ts)
-      ```typescript
-      import { createClient } from '@supabase/supabase-js';
-
-      interface GmailEmail {
-        messageId: string;
-        threadId: string;
-        subject: string;
-        sender: string;
-        recipient: string;
-        body: string;
-        snippet: string;
-        labels: string[];
-        isUnread: boolean;
-        receivedDate: string;
-      }
-
-      export class GmailSyncService {
-        private supabase;
-        
-        constructor() {
-          this.supabase = createClient(
-            process.env.SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-          );
-        }
-
-        async syncUserEmails(userId: string, connectionKey: string) {
-          try {
-            console.log(`Starting email sync for user: ${userId}`);
-            
-            // Get last sync timestamp
-            const lastSync = await this.getLastSyncTime(userId, connectionKey);
-            
-            // Fetch emails from Gmail via Pica passthrough API
-            const emails = await this.fetchGmailEmails(connectionKey, lastSync);
-            
-            if (emails.length === 0) {
-              await this.updateSyncStatus(userId, connectionKey, 0);
-              return { success: true, emailsSynced: 0 };
-            }
-
-            // Store emails in Supabase
-            const storedCount = await this.storeEmails(userId, connectionKey, emails);
-            
-            // Update sync status
-            await this.updateSyncStatus(userId, connectionKey, storedCount);
-            
-            console.log(`Successfully synced ${storedCount} emails for user: ${userId}`);
-            return { success: true, emailsSynced: storedCount };
-            
-          } catch (error) {
-            console.error(`Email sync failed for user ${userId}:`, error);
-            await this.updateSyncStatus(userId, connectionKey, 0, String(error));
-            return { success: false, emailsSynced: 0, error: String(error) };
-          }
-        }
-
-        private async fetchGmailEmails(connectionKey: string, since?: Date): Promise<GmailEmail[]> {
-          const baseUrl = 'https://api.picaos.com/v1/passthrough';
-          
-          // Build query parameters
-          const queryParams = new URLSearchParams({
-            maxResults: '50',
-            q: since ? `after:${Math.floor(since.getTime() / 1000)}` : 'is:unread'
-          });
-
-          // First, get message list
-          const listResponse = await fetch(
-            `${baseUrl}/users/me/messages?${queryParams}`,
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'x-pica-secret': process.env.PICA_SECRET_KEY!,
-                'x-pica-connection-key': connectionKey,
-                'x-pica-action-id': 'conn_mod_def::F_JeIVCQAiA::oD2p47ZVSHu1tF_maldXVQ', // Gmail List Messages
-              },
-            }
-          );
-
-          if (!listResponse.ok) {
-            throw new Error(`Failed to list Gmail messages: ${listResponse.statusText}`);
-          }
-
-          const messageList = await listResponse.json();
-          
-          if (!messageList?.messages || messageList.messages.length === 0) {
-            return [];
-          }
-
-          // Fetch full details for each message
-          const emails: GmailEmail[] = [];
-          
-          for (const messageRef of messageList.messages.slice(0, 20)) { // Limit to 20 per sync
-            try {
-              const messageQueryParams = new URLSearchParams({
-                format: 'full'
-              });
-              
-              const messageResponse = await fetch(
-                `${baseUrl}/users/me/messages/${messageRef.id}?${messageQueryParams}`,
-                {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'x-pica-secret': process.env.PICA_SECRET_KEY!,
-                    'x-pica-connection-key': connectionKey,
-                    'x-pica-action-id': 'conn_mod_def::F_JeIErCKGA::Q2ivQ5-QSyGYiEIZT867Dw', // Gmail Get Message
-                  },
-                }
-              );
-
-              if (messageResponse.ok) {
-                const messageData = await messageResponse.json();
-                const email = this.parseGmailMessage(messageData);
-                if (email) {
-                  emails.push(email);
-                }
-              }
-            } catch (error) {
-              console.warn(`Failed to fetch message ${messageRef.id}:`, error);
-            }
-          }
-
-          return emails;
-        }
-
-        private parseGmailMessage(messageData: any): GmailEmail | null {
-          try {
-            const headers = messageData.payload?.headers || [];
-            
-            const getHeader = (name: string) => 
-              headers.find((h: any) => h.name.toLowerCase() === name.toLowerCase())?.value || '';
-
-            // Extract body content
-            let body = '';
-            if (messageData.payload?.body?.data) {
-              body = this.decodeBase64(messageData.payload.body.data);
-            } else if (messageData.payload?.parts) {
-              for (const part of messageData.payload.parts) {
-                if (part.mimeType === 'text/plain' && part.body?.data) {
-                  body = this.decodeBase64(part.body.data);
-                  break;
-                } else if (part.mimeType === 'text/html' && part.body?.data && !body) {
-                  body = this.decodeBase64(part.body.data);
-                }
-              }
-            }
-
-            return {
-              messageId: messageData.id,
-              threadId: messageData.threadId,
-              subject: getHeader('Subject'),
-              sender: getHeader('From'),
-              recipient: getHeader('To'),
-              body: body.substring(0, 5000), // Limit body length
-              snippet: messageData.snippet || '',
-              labels: messageData.labelIds || [],
-              isUnread: messageData.labelIds?.includes('UNREAD') || false,
-              receivedDate: getHeader('Date'),
-            };
-          } catch (error) {
-            console.error('Failed to parse Gmail message:', error);
-            return null;
-          }
-        }
-
-        private decodeBase64(data: string): string {
-          try {
-            return Buffer.from(
-              data.replace(/-/g, '+').replace(/_/g, '/'),
-              'base64'
-            ).toString('utf-8');
-          } catch (error) {
-            console.error('Failed to decode base64:', error);
-            return '';
-          }
-        }
-
-        private async storeEmails(userId: string, connectionKey: string, emails: GmailEmail[]): Promise<number> {
-          const emailsToInsert = emails.map(email => ({
-            user_id: userId,
-            connection_key: connectionKey,
-            message_id: email.messageId,
-            thread_id: email.threadId,
-            subject: email.subject,
-            sender: email.sender,
-            recipient: email.recipient,
-            body: email.body,
-            snippet: email.snippet,
-            labels: email.labels,
-            is_unread: email.isUnread,
-            received_date: new Date(email.receivedDate).toISOString(),
-          }));
-
-          const { data, error } = await this.supabase
-            .from('emails')
-            .upsert(emailsToInsert, { 
-              onConflict: 'message_id',
-              ignoreDuplicates: true 
-            })
-            .select();
-
-          if (error) {
-            console.error('Failed to store emails:', error);
-            throw error;
-          }
-
-          return data?.length || 0;
-        }
-
-        private async getLastSyncTime(userId: string, connectionKey: string): Promise<Date | undefined> {
-          const { data } = await this.supabase
-            .from('sync_status')
-            .select('last_sync_at')
-            .eq('user_id', userId)
-            .eq('connection_key', connectionKey)
-            .single();
-
-          return data?.last_sync_at ? new Date(data.last_sync_at) : undefined;
-        }
-
-        private async updateSyncStatus(userId: string, connectionKey: string, emailsSynced: number, error?: string) {
-          const now = new Date().toISOString();
-          const nextSync = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour from now
-
-          await this.supabase
-            .from('sync_status')
-            .upsert({
-              user_id: userId,
-              connection_key: connectionKey,
-              last_sync_at: now,
-              next_sync_at: nextSync,
-              emails_synced: emailsSynced,
-              status: error ? 'error' : 'active',
-              error_message: error || null,
-              updated_at: now,
-            }, { onConflict: 'user_id,connection_key' });
-        }
-      }
-      ```
-
-      ## REACT COMPONENTS:
-
-      ### AuthKit Button Component
-      ```tsx
-      'use client';
-
-      import { useAuthKit } from "@picahq/authkit";
-      import { useState } from "react";
-
-      interface AuthKitButtonProps {
-        userId: string;
-        onConnectionSuccess?: (connection: any) => void;
-      }
-
-      export function AuthKitButton({ userId, onConnectionSuccess }: AuthKitButtonProps) {
-        const [isConnecting, setIsConnecting] = useState(false);
-
-        const { open } = useAuthKit({
-          token: {
-            url: "/api/authkit",
-            headers: {},
-            body: { userId },
-          },
-          onSuccess: (connection) => {
-            console.log("Successfully created connection:", connection);
-            setIsConnecting(false);
-            onConnectionSuccess?.(connection);
-            // Trigger initial sync
-            fetch('/api/sync-emails', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                userId, 
-                connectionKey: connection.key 
-              }),
-            });
-          },
-          onError: (error) => {
-            console.error("Error creating connection:", error);
-            setIsConnecting(false);
-          },
-          onClose: () => {
-            setIsConnecting(false);
-          },
-        });
-
-        return (
-          <button
-            onClick={() => { setIsConnecting(true); open(); }}
-            disabled={isConnecting}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-          >
-            {isConnecting ? "Connecting..." : "Connect Gmail"}
-          </button>
-        );
-      }
-      ```
-
-      ## CRON JOB SETUP:
-
-      ### Automated Sync Runner (lib/sync-runner.ts)
-      ```typescript
-      import cron from 'node-cron';
-      import { GmailSyncService } from './gmail-sync-service';
-      import { createClient } from '@supabase/supabase-js';
-
-      export class SyncRunner {
-        private syncService: GmailSyncService;
-        private supabase;
-
-        constructor() {
-          this.syncService = new GmailSyncService();
-          this.supabase = createClient(
-            process.env.SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-          );
-        }
-
-        startScheduler() {
-          // Run every hour at minute 0
-          cron.schedule('0 * * * *', async () => {
-            console.log('Starting scheduled email sync...');
-            await this.runScheduledSync();
-          });
-
-          console.log('Email sync scheduler started - running every hour');
-        }
-
-        private async runScheduledSync() {
-          try {
-            // Get all active sync configurations
-            const { data: syncConfigs } = await this.supabase
-              .from('sync_status')
-              .select('user_id, connection_key')
-              .eq('status', 'active')
-              .lt('next_sync_at', new Date().toISOString());
-
-            if (!syncConfigs || syncConfigs.length === 0) {
-              console.log('No scheduled syncs found');
-              return;
-            }
-
-            console.log(`Running sync for ${syncConfigs.length} configurations`);
-
-            // Process syncs in parallel (but limit concurrency)
-            const promises = syncConfigs.map(config => 
-              this.syncService.syncUserEmails(config.user_id, config.connection_key)
-            );
-
-            const results = await Promise.allSettled(promises);
-            
-            const successful = results.filter(r => r.status === 'fulfilled').length;
-            const failed = results.filter(r => r.status === 'rejected').length;
-
-            console.log(`Scheduled sync completed: ${successful} successful, ${failed} failed`);
-          } catch (error) {
-            console.error('Scheduled sync error:', error);
-          }
-        }
-      }
-      ```
-
-      ## MAIN APPLICATION:
-
-      ### App Page with Email Dashboard
-      ```tsx
-      'use client';
-
-      import { useState, useEffect } from 'react';
-      import { AuthKitButton } from '@/components/AuthKitButton';
-      import { createClient } from '@supabase/supabase-js';
-
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-
-      export default function EmailDashboard() {
-        const [userId] = useState('user_123'); // In real app, get from auth
-        const [emails, setEmails] = useState([]);
-        const [connections, setConnections] = useState([]);
-        const [loading, setLoading] = useState(true);
-
-        useEffect(() => {
-          loadConnections();
-          loadEmails();
-        }, []);
-
-        const loadConnections = async () => {
-          try {
-            const response = await fetch(`/api/connections?userId=${userId}`);
-            const data = await response.json();
-            setConnections(data.rows || []);
-          } catch (error) {
-            console.error('Failed to load connections:', error);
-          }
-        };
-
-        const loadEmails = async () => {
-          try {
-            const { data } = await supabase
-              .from('emails')
-              .select('*')
-              .eq('user_id', userId)
-              .order('received_date', { ascending: false })
-              .limit(50);
-
-            setEmails(data || []);
-          } catch (error) {
-            console.error('Failed to load emails:', error);
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        const handleConnectionSuccess = () => {
-          loadConnections();
-          setTimeout(loadEmails, 2000); // Wait for initial sync
-        };
-
-        return (
-          <div className="max-w-6xl mx-auto p-6">
-            <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold">Gmail Email Sync</h1>
-              <AuthKitButton 
-                userId={userId} 
-                onConnectionSuccess={handleConnectionSuccess}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-2">Connections</h3>
-                <p className="text-3xl font-bold text-blue-600">{connections.length}</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-2">Total Emails</h3>
-                <p className="text-3xl font-bold text-green-600">{emails.length}</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-2">Unread</h3>
-                <p className="text-3xl font-bold text-red-600">
-                  {emails.filter(e => e.is_unread).length}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow">
-              <div className="p-6 border-b">
-                <h2 className="text-xl font-semibold">Recent Emails</h2>
-              </div>
-              <div className="divide-y">
-                {loading ? (
-                  <div className="p-6 text-center">Loading emails...</div>
-                ) : emails.length === 0 ? (
-                  <div className="p-6 text-center text-gray-500">
-                    No emails synced yet. Connect your Gmail account to get started.
-                  </div>
-                ) : (
-                  emails.map((email) => (
-                    <div key={email.id} className="p-4 hover:bg-gray-50">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold truncate">{email.subject}</h3>
-                        <span className="text-sm text-gray-500">
-                          {new Date(email.received_date).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-1">From: {email.sender}</p>
-                      <p className="text-sm text-gray-500 truncate">{email.snippet}</p>
-                      {email.is_unread && (
-                        <span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                          Unread
-                        </span>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      }
-      ```
-
-      ## DEPLOYMENT INSTRUCTIONS:
-
-      1. **Supabase Setup**: Create database tables using the provided SQL schema
-      2. **Pica Dashboard**: Enable Gmail integration in AuthKit section
-      3. **Environment Variables**: Configure all required environment variables
-      4. **Cron Jobs**: Set up the sync runner to run on your hosting platform
-      5. **Monitoring**: Implement logging and error tracking for production
-
-      Create a fully functional, production-ready Gmail email sync system with multi-tenant authentication, automated synchronization, and real-time data updates.
-      ```
-      <Note>This implementation provides enterprise-grade email synchronization with secure multi-tenant architecture using AuthKit and Supabase.</Note>
+      <Note>The system uses Pica for all Gmail and Supabase operations, eliminating the need for complex OAuth and API management code.</Note>
     </Card>
   </Tab>
-  <Tab title="MCP Server Implementation" icon="/images/model-context-protocol.svg">
+  <Tab title="LangChain" icon="/images/langchain-icon.svg">
     <Card>
-      Copy this prompt to build the MCP server for email processing:
-      ```markdown MCP Gmail Sync Server expandable
-      # Gmail Email Sync MCP Server
+      Copy this prompt to build the LangChain email sync tools:
+      ```markdown LangChain Email Sync Tools expandable
+      # LangChain Gmail Email Sync Tools
 
-      Create a comprehensive MCP (Model Context Protocol) server for Gmail email synchronization with AuthKit integration, automated scheduling, and Supabase storage. The server should provide tools for authentication, email fetching, storage, and processing.
+      Create a comprehensive LangChain tool suite for automated Gmail email synchronization using Pica integrations for both Gmail and Supabase operations.
+
+      CORE TOOLS:
+      1. GmailEmailFetcher - LangChain tool that fetches Gmail emails via Pica Gmail actions
+      2. SupabaseEmailStore - Tool that stores emails in Supabase via Pica SQL query action
+      3. EmailSyncOrchestrator - Tool that coordinates complete email sync workflow
+      4. SyncStatusManager - Tool that tracks and updates sync status using Pica Supabase integration
+      5. EmailAnalyzer - Tool that analyzes email patterns and generates insights
+      6. ErrorRecoveryHandler - Tool that manages sync failures and retry logic
+      7. PerformanceMonitor - Tool that tracks sync performance and generates reports
+
+      LANGCHAIN IMPLEMENTATION REQUIREMENTS:
+      - Use LangChain's tool decorator and structured input/output schemas
+      - Implement proper error handling with LangChain's error types
+      - Use LangChain's memory system to track sync state across operations
+      - Integrate with LangChain agents for workflow orchestration
+      - Support streaming responses for real-time sync progress updates
+
+      PICA INTEGRATION PATTERN:
+      All external API calls should go through Pica:
+
+      Gmail Operations:
+      - List Messages: Use action ID `conn_mod_def::F_JeIVCQAiA::oD2p47ZVSHu1tF_maldXVQ`
+      - Get Message: Use action ID `conn_mod_def::F_JeIErCKGA::Q2ivQ5-QSyGYiEIZT867Dw`
+
+      Supabase Operations:  
+      - Run SQL Query: Use action ID `conn_mod_def::GC40SckOddE::NFFu2-49QLyGsPBdfweitg`
+
+      EMAIL SYNC WORKFLOW:
+      1. **Initialize Sync**: Check sync status and prepare for new sync cycle
+      2. **Fetch Gmail Data**: Get email list and detailed content via Pica Gmail actions
+      3. **Process Emails**: Parse and structure email data for storage
+      4. **Store in Supabase**: Execute SQL queries via Pica to insert/update emails
+      5. **Update Status**: Record sync results and schedule next sync
+      6. **Generate Insights**: Analyze email patterns and create reports
+      7. **Error Handling**: Manage failures and implement recovery strategies
+
+      SIMPLIFIED DATABASE DESIGN:
+      Single database approach with embedded metadata:
+      - Main emails table with all email data and metadata
+      - Sync status tracking table for managing sync schedules
+      - No complex relationships - everything in primary tables
+      - Use JSON columns for flexible metadata storage
+
+      EMAIL CATEGORIZATION AND INSIGHTS:
+      - Detect email types: promotional, personal, work, newsletters
+      - Identify important senders and frequent contacts  
+      - Track email volume patterns and peak times
+      - Generate email health reports (inbox zero metrics, response times)
+      - Provide search and filtering capabilities across synchronized emails
+
+      AUTOMATED SCHEDULING:
+      - Set up hourly sync cycles using sync_status table
+      - Support different sync frequencies for different users
+      - Handle sync conflicts and overlapping operations
+      - Provide manual sync triggers for immediate updates
+
+      PERFORMANCE OPTIMIZATION:
+      - Use UPSERT operations to avoid duplicate emails
+      - Implement incremental sync based on last sync timestamp
+      - Batch email processing for large inboxes
+      - Use Pica's built-in rate limiting and retry mechanisms
+
+      Use Pica integrations for all Gmail and Supabase operations. This eliminates the need for managing OAuth tokens, API clients, and rate limiting - Pica handles all of that complexity.
+      ```
+      <Note>The LangChain tools leverage Pica's Gmail and Supabase integrations for simplified, reliable email synchronization without complex API management.</Note>
+    </Card>
+  </Tab>
+  <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
+    <Card>
+      Copy this prompt to build the MCP server:
+      ```markdown MCP Email Sync Server expandable
+      # Complete MCP Gmail Email Sync Server
+
+      Create a complete MCP (Model Context Protocol) server for automated Gmail email synchronization using Pica integrations for Gmail and Supabase operations. The server should provide a comprehensive email sync solution with minimal custom code.
 
       MCP SERVER STRUCTURE:
-      - Server name: "gmail-sync-server"
+      - Server name: "gmail-email-sync-server"
       - Version: "1.0.0"
-      - Description: "MCP server for automated Gmail email synchronization with AuthKit and Supabase integration"
+      - Description: "MCP server for automated Gmail email synchronization via Pica integrations"
 
       TOOLS TO IMPLEMENT:
+      1. discover_pica_actions - Discover available Gmail and Supabase actions via Pica MCP
+      2. setup_email_sync - Initialize email sync for a user with connection configuration
+      3. fetch_gmail_emails - Retrieve Gmail emails via Pica Gmail integration
+      4. store_emails_supabase - Save emails to Supabase via Pica SQL query execution
+      5. sync_user_emails - Complete email sync workflow (fetch + store + status update)
+      6. get_sync_status - Check current sync status and schedule information
+      7. update_sync_schedule - Modify sync frequency and scheduling parameters
+      8. analyze_email_data - Generate insights from synchronized email data
+      9. handle_sync_recovery - Recover from failed syncs with retry mechanisms
 
-      1. **setup_authkit_connection** - Initialize AuthKit connection for a user
-      2. **fetch_gmail_emails** - Retrieve emails from Gmail via Pica passthrough API
-      3. **store_emails_supabase** - Save emails to Supabase with proper schema
-      4. **sync_user_emails** - Complete email sync workflow for a user
-      5. **schedule_sync_job** - Set up automated hourly sync for a user
-      6. **get_sync_status** - Check synchronization status and statistics
-      7. **process_email_content** - AI-powered email analysis and classification
-      8. **create_email_insights** - Generate analytics and insights from email data
+      PICA INTEGRATION APPROACH:
+      The server should use Pica for ALL external operations:
 
-      AUTHKIT INTEGRATION:
-      ```typescript
-      import { AuthKitToken } from "@picahq/authkit-node";
+      Gmail Integration:
+      - No direct Gmail API calls or OAuth management
+      - Use Pica Gmail actions for all email operations
+      - Leverage Pica's rate limiting and error handling
 
-      // Tool for creating AuthKit tokens
-      async function setupAuthkitConnection(args: { userId: string, identityType?: string }) {
-        const authKitToken = new AuthKitToken(process.env.PICA_SECRET_KEY!);
-        
-        const token = await authKitToken.create({
-          identity: args.userId,
-          identityType: args.identityType || "user",
-        });
+      Supabase Integration:
+      - No Supabase client library or direct database connections
+      - All database operations via Pica SQL query action
+      - Use Pica for connection management and error handling
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: true,
-                token: token,
-                instructions: "Use this token to initialize AuthKit modal in your frontend application",
-                next_steps: [
-                  "Enable Gmail integration in Pica AuthKit dashboard",
-                  "Implement AuthKit modal in your React component",
-                  "Handle connection success callback to start email sync"
-                ]
-              }, null, 2)
-            }
-          ]
-        };
-      }
+      Benefits:
+      - Eliminates OAuth token management complexity
+      - Built-in rate limiting and retry mechanisms  
+      - Unified error handling across all integrations
+      - Simplified deployment without multiple API configurations
+
+      DATABASE SCHEMA (via Pica SQL Queries):
+      Create these tables using Pica Supabase SQL query action:
+
+      ```sql
+      -- Emails table for storing synchronized Gmail data
+      CREATE TABLE emails (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id TEXT NOT NULL,
+        connection_key TEXT NOT NULL,
+        message_id TEXT UNIQUE NOT NULL,
+        thread_id TEXT,
+        subject TEXT,
+        sender TEXT,
+        recipient TEXT,
+        body TEXT,
+        snippet TEXT,
+        labels JSONB DEFAULT '[]',
+        is_unread BOOLEAN DEFAULT false,
+        received_date TIMESTAMPTZ,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
+
+      -- Sync status table for managing sync schedules and performance
+      CREATE TABLE sync_status (
+        user_id TEXT PRIMARY KEY,
+        connection_key TEXT NOT NULL,
+        last_sync_at TIMESTAMPTZ,
+        next_sync_at TIMESTAMPTZ,
+        emails_synced INTEGER DEFAULT 0,
+        total_emails INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'active' CHECK (status IN ('active', 'paused', 'error')),
+        error_message TEXT,
+        sync_frequency_hours INTEGER DEFAULT 1,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
+
+      -- Enable RLS for multi-tenant security
+      ALTER TABLE emails ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE sync_status ENABLE ROW LEVEL SECURITY;
       ```
 
-      GMAIL API INTEGRATION:
-      ```typescript
-      // Tool for fetching Gmail emails via Pica passthrough
-      async function fetchGmailEmails(args: { 
-        connectionKey: string, 
-        maxResults?: number,
-        query?: string,
-        since?: string 
-      }) {
-        const baseUrl = 'https://api.picaos.com/v1/passthrough';
-        const { connectionKey, maxResults = 50, query = '', since } = args;
+      SYNC WORKFLOW IMPLEMENTATION:
+      1. **Discovery Phase**: Use Pica MCP to discover Gmail and Supabase actions
+      2. **Connection Setup**: Initialize Gmail connection via AuthKit and Supabase connection
+      3. **Email Fetching**: Retrieve Gmail messages using discovered Pica Gmail actions
+      4. **Data Processing**: Parse email content and prepare for database storage
+      5. **Database Storage**: Execute SQL queries via Pica to store emails with deduplication
+      6. **Status Management**: Update sync status and schedule next sync cycle
+      7. **Error Handling**: Manage failures with automatic retry and recovery
 
-        try {
-          // Build search query
-          let searchQuery = query;
-          if (since) {
-            const sinceTimestamp = Math.floor(new Date(since).getTime() / 1000);
-            searchQuery = searchQuery ? `${searchQuery} after:${sinceTimestamp}` : `after:${sinceTimestamp}`;
-          }
+      AUTOMATED SCHEDULING STRATEGY:
+      - Default 1-hour sync intervals with configurable frequency
+      - Use sync_status table to track next sync time
+      - Support priority syncs for active users or error recovery
+      - Implement sync conflict detection to avoid overlapping operations
+      - Provide manual sync triggers for immediate synchronization
 
-          // First, get message list
-          const queryParams = new URLSearchParams({
-            maxResults: maxResults.toString(),
-            ...(searchQuery && { q: searchQuery })
-          });
+      EMAIL ANALYTICS AND INSIGHTS:
+      Generate insights from synchronized email data:
+      - Email volume trends and patterns
+      - Top senders and frequent contacts
+      - Unread email management and inbox health
+      - Response time analysis and email habits
+      - Custom filters and search capabilities
 
-          const listResponse = await fetch(
-            `${baseUrl}/users/me/messages?${queryParams}`,
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'x-pica-secret': process.env.PICA_SECRET_KEY!,
-                'x-pica-connection-key': connectionKey,
-                'x-pica-action-id': 'conn_mod_def::F_JeIVCQAiA::oD2p47ZVSHu1tF_maldXVQ',
-              },
-            }
-          );
+      ERROR HANDLING AND RECOVERY:
+      - Leverage Pica's built-in error handling and retry mechanisms
+      - Log sync errors with detailed context for troubleshooting
+      - Implement exponential backoff for failed sync attempts
+      - Provide error recovery tools for manual intervention
+      - Monitor sync performance and alert on consistent failures
 
-          if (!listResponse.ok) {
-            throw new Error(`Failed to list Gmail messages: ${listResponse.statusText}`);
-          }
+      DEPLOYMENT CONSIDERATIONS:
+      - Minimal environment variables (PICA_API_KEY and connection keys)
+      - No complex OAuth setup or API client configurations
+      - Simplified Docker deployment with Pica handling external integrations
+      - Health checks and monitoring endpoints for production use
+      - Scaling support through Pica's infrastructure capabilities
 
-          const messageList = await listResponse.json();
-          
-          if (!messageList?.messages || messageList.messages.length === 0) {
-            return {
-              content: [{
-                type: "text",
-                text: JSON.stringify({ emails: [], count: 0, message: "No new emails found" }, null, 2)
-              }]
-            };
-          }
-
-          // Fetch full details for each message
-          const emails = [];
-          
-          for (const messageRef of messageList.messages) {
-            try {
-              const messageResponse = await fetch(
-                `${baseUrl}/users/me/messages/${messageRef.id}?format=full`,
-                {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'x-pica-secret': process.env.PICA_SECRET_KEY!,
-                    'x-pica-connection-key': connectionKey,
-                    'x-pica-action-id': 'conn_mod_def::F_JeIErCKGA::Q2ivQ5-QSyGYiEIZT867Dw',
-                  },
-                }
-              );
-
-              if (messageResponse.ok) {
-                const messageData = await messageResponse.json();
-                const email = parseGmailMessage(messageData);
-                if (email) {
-                  emails.push(email);
-                }
-              }
-            } catch (error) {
-              console.warn(`Failed to fetch message ${messageRef.id}:`, error);
-            }
-          }
-
-          return {
-            content: [{
-              type: "text",
-              text: JSON.stringify({
-                emails,
-                count: emails.length,
-                totalFound: messageList.messages.length,
-                summary: `Retrieved ${emails.length} emails from Gmail`
-              }, null, 2)
-            }]
-          };
-
-        } catch (error) {
-          throw new Error(`Gmail fetch failed: ${error.message}`);
-        }
-      }
-
-      function parseGmailMessage(messageData: any) {
-        const headers = messageData.payload?.headers || [];
-        const getHeader = (name: string) => 
-          headers.find((h: any) => h.name.toLowerCase() === name.toLowerCase())?.value || '';
-
-        // Extract body content
-        let body = '';
-        if (messageData.payload?.body?.data) {
-          body = Buffer.from(messageData.payload.body.data.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8');
-        } else if (messageData.payload?.parts) {
-          for (const part of messageData.payload.parts) {
-            if (part.mimeType === 'text/plain' && part.body?.data) {
-              body = Buffer.from(part.body.data.replace(/-/g, '+').replace(/_/g, '/'),
+      The MCP server should be production-ready with comprehensive error handling, automated scheduling, and detailed logging. The Pica integration approach eliminates most of the complexity typically associated with multi-API integrations.
+      ```
+      <Note>The MCP server uses Pica integrations exclusively, eliminating the need for complex OAuth, API client management, and rate limiting code.</Note>
+    </Card>
+  </Tab>
+</Tabs>
