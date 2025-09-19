@@ -1,0 +1,326 @@
+import { Card, Tabs } from "@mintlify/components";
+import { Tab } from "@headlessui/react";
+
+### First, discover the Gmail and Supabase actions available in Pica
+
+Before building the Gmail email sync system, discover the available actions using Pica MCP:
+
+<Card>
+```markdown Action Discovery via Pica MCP
+# Discovery Phase: Gmail & Supabase Actions via Pica MCP
+
+I need to discover the available Gmail and Supabase actions through Pica MCP before building the email sync system. Help me:
+
+1. **List Gmail Platform Actions**: Use Pica MCP to discover all available Gmail actions
+2. **List Supabase Platform Actions**: Use Pica MCP to discover all available Supabase actions  
+3. **Get Action Knowledge**: Fetch detailed documentation for the actions I need
+4. **Build Implementation**: Create the email sync system using the discovered action IDs
+
+DISCOVERED GMAIL ACTIONS:
+- **List User Messages**: `conn_mod_def::F_JeIVCQAiA::oD2p47ZVSHu1tF_maldXVQ`
+- **Get Gmail Message**: `conn_mod_def::F_JeIErCKGA::Q2ivQ5-QSyGYiEIZT867Dw`
+
+DISCOVERED SUPABASE ACTIONS:
+- **Run SQL Query**: `conn_mod_def::GC40SckOddE::NFFu2-49QLyGsPBdfweitg`
+- **List All Projects**: `conn_mod_def::GC40U5B8xKY::_N0C5lBNSoWseIxyeQs1KQ`
+
+These action IDs will be used in the implementation below for Gmail and Supabase integration via Pica passthrough.
+```
+</Card>
+
+### Prompt the LLM to build your tool
+
+<Tabs>
+  <Tab title="Vercel AI SDK" icon="/images/vercel.svg">
+    <Card>
+      Copy this prompt to build the Vercel AI SDK email sync system:
+      ```markdown Vercel AI SDK Agent Prompt expandable
+      # Vercel AI SDK Agent Prompt (Gmail Email Sync Automation)
+
+      Create a comprehensive Vercel AI SDK agent for automated Gmail email synchronization using Pica integrations. The agent should sync emails to Supabase database every hour with full multi-tenant support.
+
+      TOOLS NEEDED:
+      1. fetchGmailEmails - Fetch Gmail emails using Pica Gmail integration (List Messages + Get Message details)
+      2. storeEmailsSupabase - Store emails in Supabase database using Pica SQL query execution
+      3. setupEmailSync - Initialize email sync configuration for a user with connection details
+      4. syncUserEmails - Complete email sync workflow combining fetch and store operations
+      5. getEmailInsights - Analyze email patterns and generate insights using stored email data
+      6. updateSyncStatus - Track sync performance and schedule next sync using Supabase
+      7. handleSyncErrors - Manage failed syncs with retry logic and error logging
+
+      SUPABASE DATABASE STRUCTURE (Single Database Approach):
+      Use Pica Supabase integration to create and manage these tables via SQL queries:
+
+      Main Table: "emails" 
+      - id (uuid, primary key)
+      - user_id (text) - for multi-tenant RLS
+      - connection_key (text) - Gmail connection identifier
+      - message_id (text, unique) - Gmail message ID
+      - thread_id (text) - Gmail thread ID
+      - subject (text)
+      - sender (text)
+      - recipient (text) 
+      - body (text) - email content
+      - snippet (text) - Gmail snippet
+      - labels (jsonb) - Gmail labels array
+      - is_unread (boolean)
+      - received_date (timestamptz)
+      - created_at (timestamptz, default now())
+
+      Sync Status Table: "sync_status"
+      - user_id (text, primary key)
+      - connection_key (text)
+      - last_sync_at (timestamptz)
+      - next_sync_at (timestamptz)
+      - emails_synced (integer)
+      - status (text: active, paused, error)
+      - error_message (text, nullable)
+      - updated_at (timestamptz)
+
+      WORKFLOW:
+      1. Setup user email sync with Gmail connection key from AuthKit
+      2. Fetch recent Gmail messages using Pica Gmail List Messages action
+      3. Get full email details for each message using Pica Gmail Get Message action  
+      4. Store emails in Supabase using Pica SQL query execution with UPSERT for deduplication
+      5. Update sync status and schedule next sync (1 hour interval)
+      6. Handle errors gracefully with retry logic and status updates
+      7. Generate email insights and analytics from synchronized data
+
+      ENVIRONMENT VARIABLES NEEDED:
+      - GMAIL_CONNECTION_KEY (from AuthKit Gmail connection)
+      - SUPABASE_CONNECTION_KEY (from Pica Supabase integration)
+      - PICA_API_KEY
+
+      TOOL IMPLEMENTATION APPROACH:
+      Use Pica integrations for ALL external API calls:
+      - Gmail operations via Pica Gmail actions (no direct Gmail API calls)
+      - Supabase operations via Pica SQL query action (no Supabase client library)
+      - Let Pica handle OAuth tokens, rate limiting, and error handling
+      - Focus on business logic and workflow orchestration
+
+      ERROR HANDLING STRATEGY:
+      - Use Pica's built-in retry mechanisms and error handling
+      - Store sync errors in Supabase for monitoring and recovery
+      - Implement exponential backoff for failed sync attempts
+      - Provide detailed error messages for troubleshooting
+
+      SYNC SCHEDULING:
+      - Set next_sync_at to 1 hour from successful sync completion
+      - Support manual sync triggers for immediate synchronization
+      - Handle overlapping syncs by checking sync status before starting
+      - Provide sync statistics and performance monitoring
+
+      Make the system intelligent enough to:
+      - Detect and skip duplicate emails using Gmail message IDs
+      - Handle Gmail API rate limits through Pica's rate limiting
+      - Process large inboxes efficiently with pagination
+      - Provide real-time sync progress updates
+      - Generate email analytics and insights from synchronized data
+      ```
+      <Note>The system uses Pica for all Gmail and Supabase operations, eliminating the need for complex OAuth and API management code.</Note>
+    </Card>
+  </Tab>
+  <Tab title="LangChain" icon="/images/langchain-icon.svg">
+    <Card>
+      Copy this prompt to build the LangChain email sync tools:
+      ```markdown LangChain Email Sync Tools expandable
+      # LangChain Gmail Email Sync Tools
+
+      Create a comprehensive LangChain tool suite for automated Gmail email synchronization using Pica integrations for both Gmail and Supabase operations.
+
+      CORE TOOLS:
+      1. GmailEmailFetcher - LangChain tool that fetches Gmail emails via Pica Gmail actions
+      2. SupabaseEmailStore - Tool that stores emails in Supabase via Pica SQL query action
+      3. EmailSyncOrchestrator - Tool that coordinates complete email sync workflow
+      4. SyncStatusManager - Tool that tracks and updates sync status using Pica Supabase integration
+      5. EmailAnalyzer - Tool that analyzes email patterns and generates insights
+      6. ErrorRecoveryHandler - Tool that manages sync failures and retry logic
+      7. PerformanceMonitor - Tool that tracks sync performance and generates reports
+
+      LANGCHAIN IMPLEMENTATION REQUIREMENTS:
+      - Use LangChain's tool decorator and structured input/output schemas
+      - Implement proper error handling with LangChain's error types
+      - Use LangChain's memory system to track sync state across operations
+      - Integrate with LangChain agents for workflow orchestration
+      - Support streaming responses for real-time sync progress updates
+
+      PICA INTEGRATION PATTERN:
+      All external API calls should go through Pica:
+
+      Gmail Operations:
+      - List Messages: Use action ID `conn_mod_def::F_JeIVCQAiA::oD2p47ZVSHu1tF_maldXVQ`
+      - Get Message: Use action ID `conn_mod_def::F_JeIErCKGA::Q2ivQ5-QSyGYiEIZT867Dw`
+
+      Supabase Operations:  
+      - Run SQL Query: Use action ID `conn_mod_def::GC40SckOddE::NFFu2-49QLyGsPBdfweitg`
+
+      EMAIL SYNC WORKFLOW:
+      1. **Initialize Sync**: Check sync status and prepare for new sync cycle
+      2. **Fetch Gmail Data**: Get email list and detailed content via Pica Gmail actions
+      3. **Process Emails**: Parse and structure email data for storage
+      4. **Store in Supabase**: Execute SQL queries via Pica to insert/update emails
+      5. **Update Status**: Record sync results and schedule next sync
+      6. **Generate Insights**: Analyze email patterns and create reports
+      7. **Error Handling**: Manage failures and implement recovery strategies
+
+      SIMPLIFIED DATABASE DESIGN:
+      Single database approach with embedded metadata:
+      - Main emails table with all email data and metadata
+      - Sync status tracking table for managing sync schedules
+      - No complex relationships - everything in primary tables
+      - Use JSON columns for flexible metadata storage
+
+      EMAIL CATEGORIZATION AND INSIGHTS:
+      - Detect email types: promotional, personal, work, newsletters
+      - Identify important senders and frequent contacts  
+      - Track email volume patterns and peak times
+      - Generate email health reports (inbox zero metrics, response times)
+      - Provide search and filtering capabilities across synchronized emails
+
+      AUTOMATED SCHEDULING:
+      - Set up hourly sync cycles using sync_status table
+      - Support different sync frequencies for different users
+      - Handle sync conflicts and overlapping operations
+      - Provide manual sync triggers for immediate updates
+
+      PERFORMANCE OPTIMIZATION:
+      - Use UPSERT operations to avoid duplicate emails
+      - Implement incremental sync based on last sync timestamp
+      - Batch email processing for large inboxes
+      - Use Pica's built-in rate limiting and retry mechanisms
+
+      Use Pica integrations for all Gmail and Supabase operations. This eliminates the need for managing OAuth tokens, API clients, and rate limiting - Pica handles all of that complexity.
+      ```
+      <Note>The LangChain tools leverage Pica's Gmail and Supabase integrations for simplified, reliable email synchronization without complex API management.</Note>
+    </Card>
+  </Tab>
+  <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
+    <Card>
+      Copy this prompt to build the MCP server:
+      ```markdown MCP Email Sync Server expandable
+      # Complete MCP Gmail Email Sync Server
+
+      Create a complete MCP (Model Context Protocol) server for automated Gmail email synchronization using Pica integrations for Gmail and Supabase operations. The server should provide a comprehensive email sync solution with minimal custom code.
+
+      MCP SERVER STRUCTURE:
+      - Server name: "gmail-email-sync-server"
+      - Version: "1.0.0"
+      - Description: "MCP server for automated Gmail email synchronization via Pica integrations"
+
+      TOOLS TO IMPLEMENT:
+      1. discover_pica_actions - Discover available Gmail and Supabase actions via Pica MCP
+      2. setup_email_sync - Initialize email sync for a user with connection configuration
+      3. fetch_gmail_emails - Retrieve Gmail emails via Pica Gmail integration
+      4. store_emails_supabase - Save emails to Supabase via Pica SQL query execution
+      5. sync_user_emails - Complete email sync workflow (fetch + store + status update)
+      6. get_sync_status - Check current sync status and schedule information
+      7. update_sync_schedule - Modify sync frequency and scheduling parameters
+      8. analyze_email_data - Generate insights from synchronized email data
+      9. handle_sync_recovery - Recover from failed syncs with retry mechanisms
+
+      PICA INTEGRATION APPROACH:
+      The server should use Pica for ALL external operations:
+
+      Gmail Integration:
+      - No direct Gmail API calls or OAuth management
+      - Use Pica Gmail actions for all email operations
+      - Leverage Pica's rate limiting and error handling
+
+      Supabase Integration:
+      - No Supabase client library or direct database connections
+      - All database operations via Pica SQL query action
+      - Use Pica for connection management and error handling
+
+      Benefits:
+      - Eliminates OAuth token management complexity
+      - Built-in rate limiting and retry mechanisms  
+      - Unified error handling across all integrations
+      - Simplified deployment without multiple API configurations
+
+      DATABASE SCHEMA (via Pica SQL Queries):
+      Create these tables using Pica Supabase SQL query action:
+
+      ```sql
+      -- Emails table for storing synchronized Gmail data
+      CREATE TABLE emails (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id TEXT NOT NULL,
+        connection_key TEXT NOT NULL,
+        message_id TEXT UNIQUE NOT NULL,
+        thread_id TEXT,
+        subject TEXT,
+        sender TEXT,
+        recipient TEXT,
+        body TEXT,
+        snippet TEXT,
+        labels JSONB DEFAULT '[]',
+        is_unread BOOLEAN DEFAULT false,
+        received_date TIMESTAMPTZ,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
+
+      -- Sync status table for managing sync schedules and performance
+      CREATE TABLE sync_status (
+        user_id TEXT PRIMARY KEY,
+        connection_key TEXT NOT NULL,
+        last_sync_at TIMESTAMPTZ,
+        next_sync_at TIMESTAMPTZ,
+        emails_synced INTEGER DEFAULT 0,
+        total_emails INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'active' CHECK (status IN ('active', 'paused', 'error')),
+        error_message TEXT,
+        sync_frequency_hours INTEGER DEFAULT 1,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
+
+      -- Enable RLS for multi-tenant security
+      ALTER TABLE emails ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE sync_status ENABLE ROW LEVEL SECURITY;
+      ```
+
+      SYNC WORKFLOW IMPLEMENTATION:
+      1. **Discovery Phase**: Use Pica MCP to discover Gmail and Supabase actions
+      2. **Connection Setup**: Initialize Gmail connection via AuthKit and Supabase connection
+      3. **Email Fetching**: Retrieve Gmail messages using discovered Pica Gmail actions
+      4. **Data Processing**: Parse email content and prepare for database storage
+      5. **Database Storage**: Execute SQL queries via Pica to store emails with deduplication
+      6. **Status Management**: Update sync status and schedule next sync cycle
+      7. **Error Handling**: Manage failures with automatic retry and recovery
+
+      AUTOMATED SCHEDULING STRATEGY:
+      - Default 1-hour sync intervals with configurable frequency
+      - Use sync_status table to track next sync time
+      - Support priority syncs for active users or error recovery
+      - Implement sync conflict detection to avoid overlapping operations
+      - Provide manual sync triggers for immediate synchronization
+
+      EMAIL ANALYTICS AND INSIGHTS:
+      Generate insights from synchronized email data:
+      - Email volume trends and patterns
+      - Top senders and frequent contacts
+      - Unread email management and inbox health
+      - Response time analysis and email habits
+      - Custom filters and search capabilities
+
+      ERROR HANDLING AND RECOVERY:
+      - Leverage Pica's built-in error handling and retry mechanisms
+      - Log sync errors with detailed context for troubleshooting
+      - Implement exponential backoff for failed sync attempts
+      - Provide error recovery tools for manual intervention
+      - Monitor sync performance and alert on consistent failures
+
+      DEPLOYMENT CONSIDERATIONS:
+      - Minimal environment variables (PICA_API_KEY and connection keys)
+      - No complex OAuth setup or API client configurations
+      - Simplified Docker deployment with Pica handling external integrations
+      - Health checks and monitoring endpoints for production use
+      - Scaling support through Pica's infrastructure capabilities
+
+      The MCP server should be production-ready with comprehensive error handling, automated scheduling, and detailed logging. The Pica integration approach eliminates most of the complexity typically associated with multi-API integrations.
+      ```
+      <Note>The MCP server uses Pica integrations exclusively, eliminating the need for complex OAuth, API client management, and rate limiting code.</Note>
+    </Card>
+  </Tab>
+</Tabs>

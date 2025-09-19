@@ -1,0 +1,251 @@
+---
+title: Build a Gmail Email Sync Automation
+description: 🚀 Create an automated Gmail email sync system that runs every hour using AuthKit for secure multi-tenant authentication and BuildKit MCP for email processing, storing emails in Supabase for scalable data management.
+
+---
+
+import WhatWeWillDo from '/snippets/what-we-will-do.mdx';
+import InstallMcpServer from '/snippets/install-mcp-server.mdx';
+import ConnectAccounts from '/snippets/connect-accounts.mdx';
+import { AddConnections } from '/snippets/add-connections.jsx';
+import NewConnectionDemo from '/snippets/new-connection-demo.mdx';
+import SetupStarterProject from '/snippets/setup-project.mdx';
+import AddRules from '/snippets/add-rules.mdx';
+import Prompts from '/snippets/prompts/gmail-email-sync-automation.mdx';
+
+<WhatWeWillDo platformNames='Gmail and Supabase accounts with AuthKit integration' projectType='Next.js with BuildKit MCP'/>
+
+## Architecture Overview
+
+This tutorial demonstrates a production-ready Gmail email sync system that:
+- **Authenticates users** via AuthKit's secure multi-tenant OAuth flow
+- **Syncs emails hourly** using cron jobs or scheduled functions  
+- **Stores data** in Supabase for scalable, real-time access
+- **Processes emails** through BuildKit MCP server for AI-powered analysis
+
+<InstallMcpServer />
+<ConnectAccounts platformNames='Gmail accounts through AuthKit'/>
+
+## Required Environment Variables
+
+You'll need these keys in your environment:
+
+```bash Environment Setup
+# Pica Configuration
+PICA_SECRET_KEY=your_pica_secret_key
+
+# Supabase Configuration  
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Application Configuration
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=http://localhost:3000
+```
+
+## AuthKit Integration Setup
+
+### 1. Install Dependencies
+
+```bash Package Installation
+npm install @picahq/authkit-node @picahq/authkit
+npm install @supabase/supabase-js
+npm install node-cron
+npm install @modelcontextprotocol/sdk
+```
+
+### 2. Supabase Database Schema
+
+```sql Database Schema
+-- Create emails table
+CREATE TABLE emails (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  connection_key TEXT NOT NULL,
+  message_id TEXT UNIQUE NOT NULL,
+  thread_id TEXT,
+  subject TEXT,
+  sender TEXT,
+  recipient TEXT,
+  body TEXT,
+  snippet TEXT,
+  labels TEXT[],
+  is_unread BOOLEAN DEFAULT false,
+  received_date TIMESTAMPTZ,
+  processed_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create sync_status table for tracking
+CREATE TABLE sync_status (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  connection_key TEXT NOT NULL,
+  last_sync_at TIMESTAMPTZ,
+  next_sync_at TIMESTAMPTZ,
+  emails_synced INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'active',
+  error_message TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes for performance
+CREATE INDEX idx_emails_user_id ON emails(user_id);
+CREATE INDEX idx_emails_message_id ON emails(message_id);
+CREATE INDEX idx_emails_received_date ON emails(received_date DESC);
+CREATE INDEX idx_sync_status_user_id ON sync_status(user_id);
+CREATE INDEX idx_sync_status_next_sync ON sync_status(next_sync_at);
+
+-- Enable Row Level Security
+ALTER TABLE emails ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sync_status ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policies
+CREATE POLICY "Users can only access their own emails" ON emails
+  FOR ALL USING (auth.jwt() ->> 'sub' = user_id);
+
+CREATE POLICY "Users can only access their own sync status" ON sync_status
+  FOR ALL USING (auth.jwt() ->> 'sub' = user_id);
+```
+
+### 3. AuthKit Button Component
+
+```tsx Component: components/AuthKitButton.tsx
+'use client';
+
+import { useAuthKit } from "@picahq/authkit";
+import { useState } from "react";
+
+interface AuthKitButtonProps {
+  userId: string;
+  onConnectionSuccess?: (connection: any) => void;
+}
+
+export function AuthKitButton({ userId, onConnectionSuccess }: AuthKitButtonProps) {
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const { open } = useAuthKit({
+    token: {
+      url: "/api/authkit",
+      headers: {},
+      body: { userId },
+    },
+    onSuccess: (connection) => {
+      console.log("Successfully created connection:", connection);
+      setIsConnecting(false);
+      onConnectionSuccess?.(connection);
+    },
+    onError: (error) => {
+      console.error("Error creating connection:", error);
+      setIsConnecting(false);
+    },
+    onClose: () => {
+      console.log("AuthKit modal closed");
+      setIsConnecting(false);
+    },
+  });
+
+  const handleConnect = () => {
+    setIsConnecting(true);
+    open();
+  };
+
+  return (
+    <button
+      onClick={handleConnect}
+      disabled={isConnecting}
+      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+    >
+      {isConnecting ? "Connecting..." : "Connect Gmail"}
+    </button>
+  );
+}
+```
+
+## System Implementation
+
+The system consists of several key components working together for automated Gmail email synchronization.
+
+<SetupStarterProject />
+
+<AddRules />
+
+<Prompts />
+
+## Benefits
+
+<CardGroup cols={2}>
+  <Card title="Multi-Tenant Security" icon="shield-check">
+    **Enterprise-grade authentication**
+    
+    AuthKit handles OAuth flows, token management, and secure multi-tenant access
+  </Card>
+  
+  <Card title="Automated Sync" icon="clock">
+    **Hourly email synchronization**
+    
+    Background processes ensure your application always has the latest email data
+  </Card>
+  
+  <Card title="Scalable Storage" icon="database">
+    **Supabase real-time database**
+    
+    PostgreSQL-powered storage with RLS security and real-time subscriptions
+  </Card>
+  
+  <Card title="AI-Ready Processing" icon="cpu-chip">
+    **BuildKit MCP integration**
+    
+    Process emails through AI agents for classification, sentiment analysis, and automation
+  </Card>
+</CardGroup>
+
+## Advanced Features
+
+<CardGroup cols={3}>
+  <Card title="Real-time Updates" icon="bolt">
+    - WebSocket connections for live email updates
+    - Instant notification system
+    - Progressive sync with conflict resolution
+  </Card>
+  
+  <Card title="Smart Processing" icon="brain">
+    - AI-powered email classification
+    - Sentiment analysis and priority scoring
+    - Automated response generation
+  </Card>
+  
+  <Card title="Enterprise Scale" icon="building-office">
+    - Multi-tenant architecture
+    - Rate limiting and error handling
+    - Comprehensive audit logging
+  </Card>
+</CardGroup>
+
+## Expand Your Email Automation
+
+Ready to build more email integrations? Explore these additional capabilities:
+
+<CardGroup cols={2}>
+  <Card title="Outlook Integration" icon="envelope">
+    Add Microsoft 365 and Outlook.com email sync with the same AuthKit flow
+  </Card>
+  
+  <Card title="Slack Notifications" icon="chat-bubble-left">
+    Send real-time notifications to Slack channels for important emails
+  </Card>
+  
+  <Card title="AI Email Assistant" icon="sparkles">
+    Build intelligent email responses and automated workflows with LLM integration
+  </Card>
+  
+  <Card title="Analytics Dashboard" icon="chart-bar">
+    Create comprehensive email analytics and insights for business intelligence
+  </Card>
+</CardGroup>
+
+🚀 **Ready for more?** Browse our catalog of 25,000+ actions across 150+ integrations to expand your email automation pipeline!
+
+[Explore All Integrations →](https://app.picaos.com/tools)
