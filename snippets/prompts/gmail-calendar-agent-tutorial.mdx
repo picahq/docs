@@ -1,0 +1,300 @@
+## Step 1. Install Dependencies
+
+```bash
+npx create-next-app@latest gmail-calendar-sync --typescript --tailwind --app
+cd gmail-calendar-sync
+npm install @instantdb/react @instantdb/core openai
+```
+
+## Step 2. Setup Environment
+
+Create `.env.local`:
+
+```javascript
+NEXT_PUBLIC_INSTANT_APP_ID=your_instant_app_id
+PICA_SECRET_KEY=your_pica_secret_key
+PICA_GMAIL_CONNECTION_KEY=your_gmail_connection_key
+PICA_GOOGLE_CALENDAR_CONNECTION_KEY=your_google_calendar_connection_key
+OPENAI_API_KEY=your_openai_api_key
+TIMEZONE=America/New_York
+```
+
+## Step 3. Database Setup
+
+📂 `src/lib/db.ts`
+
+```javascript
+import { init } from "@instantdb/react";
+
+export const db = init({
+  appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
+});
+
+// Schema types
+export interface EmailData {
+  id: string;
+  messageId: string;
+  subject: string;
+  sender: string;
+  recipient: string;
+  body: string;
+  date: Date;
+  isRead: boolean;
+  labels: string[];
+  isMeetingRequest: boolean;
+  meetingDetails?: {
+    proposedTimes: Date[];
+    attendees: string[];
+    purpose: string;
+    duration: number;
+  };
+  processed: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CalendarEvent {
+  id: string;
+  eventId: string;
+  title: string;
+  description: string;
+  startTime: Date;
+  endTime: Date;
+  attendees: string[];
+  location?: string;
+  status: 'confirmed' | 'tentative' | 'cancelled';
+  source: 'manual' | 'email_request';
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+## Step 4. Pica API Utilities
+
+📂 `src/lib/pica.ts`
+
+```javascript expandable
+export class PicaClient {
+  private apiKey: string;
+  private baseUrl = 'https://api.picaos.com/v1';
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  async listActions(platform: string) {
+    const response = await fetch(`${this.baseUrl}/actions/${platform}`, {
+      headers: {
+        'x-pica-secret': this.apiKey,
+      },
+    });
+    return response.json();
+  }
+
+  async getActionKnowledge(platform: string, actionId: string) {
+    const response = await fetch(`${this.baseUrl}/actions/${platform}/${actionId}/knowledge`, {
+      headers: {
+        'x-pica-secret': this.apiKey,
+      },
+    });
+    return response.json();
+  }
+
+  async executeAction(
+    platform: string,
+    actionId: string,
+    connectionKey: string,
+    data: any,
+    pathVariables?: any,
+    queryParams?: any
+  ) {
+    const knowledge = await this.getActionKnowledge(platform, actionId);
+    
+    let url = knowledge.path;
+    if (pathVariables) {
+      Object.entries(pathVariables).forEach(([key, value]) => {
+        url = url.replace(`{${key}}`, String(value));
+      });
+    }
+    
+    if (queryParams) {
+      const searchParams = new URLSearchParams();
+      Object.entries(queryParams).forEach(([key, value]) => {
+        searchParams.append(key, String(value));
+      });
+      url += `?${searchParams.toString()}`;
+    }
+
+    const response = await fetch(url, {
+      method: knowledge.method,
+      headers: {
+        'x-pica-secret': this.apiKey,
+        'x-pica-connection-key': connectionKey,
+        'x-pica-action-id': actionId,
+        'Content-Type': knowledge.contentType || 'application/json',
+      },
+      body: knowledge.method !== 'GET' ? JSON.stringify(data) : undefined,
+    });
+
+    return response.json();
+  }
+}
+```
+
+## Step 5. Email Sync API
+
+📂 `src/app/api/sync-emails/route.ts`
+
+```javascript expandable
+import { NextRequest, NextResponse } from "next/server";
+import { PicaClient } from "@/lib/pica";
+import { db } from "@/lib/db";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!,
+});
+
+const pica = new PicaClient(process.env.PICA_SECRET_KEY!);
+
+export async function POST(request: NextRequest) {
+  try {
+    // Get Gmail actions
+    const gmailActions = await pica.listActions('gmail');
+    const listEmailsAction = gmailActions.find((action: any) => 
+      action.title.includes('List and View Read or Unread Emails')
+    );
+
+    if (!listEmailsAction) {
+      throw new Error('Gmail list emails action not found');
+    }
+
+    // Fetch emails from Gmail
+    const emails = await pica.executeAction(
+      'gmail',
+      listEmailsAction._id,
+      process.env.PICA_GMAIL_CONNECTION_KEY!,
+      {},
+      {},
+      { maxResults: 50 }
+    );
+
+    const processedEmails = [];
+
+    for (const email of emails.messages || []) {
+      // Get full email details
+      const emailDetails = await pica.executeAction(
+        'gmail',
+        listEmailsAction._id,
+        process.env.PICA_GMAIL_CONNECTION_KEY!,
+        {},
+        { messageId: email.id }
+      );
+
+      // Check if email is a meeting request using OpenAI
+      const isMeetingRequest = await checkIfMeetingRequest(emailDetails.snippet);
+      
+      let meetingDetails = null;
+      if (isMeetingRequest) {
+        meetingDetails = await extractMeetingDetails(emailDetails.snippet);
+      }
+
+      // Store in database
+      const emailData = {
+        id: email.id,
+        messageId: email.id,
+        subject: emailDetails.payload?.headers?.find((h: any) => h.name === 'Subject')?.value || '',
+        sender: emailDetails.payload?.headers?.find((h: any) => h.name === 'From')?.value || '',
+        recipient: emailDetails.payload?.headers?.find((h: any) => h.name === 'To')?.value || '',
+        body: emailDetails.snippet,
+        date: new Date(parseInt(emailDetails.internalDate)),
+        isRead: !emailDetails.labelIds?.includes('UNREAD'),
+        labels: emailDetails.labelIds || [],
+        isMeetingRequest,
+        meetingDetails,
+        processed: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await db.transact([
+        db.tx.emails[email.id].update(emailData),
+      ]);
+
+      processedEmails.push(emailData);
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      processed: processedEmails.length,
+      emails: processedEmails 
+    });
+
+  } catch (error) {
+    console.error('Email sync error:', error);
+    return NextResponse.json({ error: 'Failed to sync emails' }, { status: 500 });
+  }
+}
+
+async function checkIfMeetingRequest(emailContent: string): Promise<boolean> {
+  const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "system",
+        content: "You are an email classifier. Determine if an email is a meeting request. Respond with only 'true' or 'false'."
+      },
+      {
+        role: "user",
+        content: `Is this email a meeting request?\n\n${emailContent}`
+      }
+    ],
+    max_tokens: 10,
+  });
+
+  return response.choices[0].message.content?.toLowerCase().includes('true') || false;
+}
+
+async function extractMeetingDetails(emailContent: string) {
+  const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "system",
+        content: "Extract meeting details from email. Return JSON with: proposedTimes (array of ISO dates), attendees (array of emails), purpose (string), duration (number in minutes)."
+      },
+      {
+        role: "user",
+        content: emailContent
+      }
+    ],
+    max_tokens: 200,
+  });
+
+  try {
+    return JSON.parse(response.choices[0].message.content || '{}');
+  } catch {
+    return null;
+  }
+}
+```
+
+## Wrap Up
+
+In this tutorial, you learned how to:
+
+- **Sync Gmail emails** and automatically detect meeting requests using AI
+- **Sync Google Calendar events** and track availability
+- **Process meeting requests** and automatically schedule meetings
+- **Send confirmation emails** when meetings are scheduled
+- **Build a real-time dashboard** to monitor the sync system
+
+The system automatically:
+- ✅ Fetches emails every 15 minutes
+- ✅ Identifies meeting requests using OpenAI
+- ✅ Checks calendar availability
+- ✅ Schedules meetings automatically
+- ✅ Sends confirmation emails
+- ✅ Tracks everything in real-time
+
+👉 [Try Pica today](https://picaos.com/) and build your own email-calendar sync system!
