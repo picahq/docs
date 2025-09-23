@@ -1,0 +1,606 @@
+---
+title: Build a Gmail & Calendar Dashboard
+description: 👋 Follow this tutorial to build a beautiful Gmail & Calendar dashboard that fetches your emails and events using Pica MCP — all in under 10 minutes.
+---
+
+![Gmail & Calendar Dashboard](/images/tutorials/gmail-calendar-dashboard.png)
+
+Most professionals spend hours every day managing:
+
+- **Emails** with meeting requests buried in their inbox
+- **Calendar coordination** with multiple attendees
+- **Manual scheduling** that could be automated
+
+Traditionally, this means:
+
+- Manually parsing emails for meeting details
+- Checking calendar availability across time zones
+- Sending confirmation emails one by one
+- Hours of back-and-forth coordination
+
+But what if you could automate all of this?
+
+With [**Pica**](https://picaos.com/) + **OpenAI** + **Next.js**, you can build an AI assistant that automatically processes meeting requests and schedules them for you.
+
+---
+
+## Why Pica + OpenAI?
+
+- **Pica** → **Unified API for Gmail and Google Calendar.** No OAuth headaches—just one API key handles everything.
+- **OpenAI** → **Intelligent email parsing** to extract meeting details from natural language.
+- **Next.js** → Modern React framework for building the dashboard.
+
+With this stack, you can build:
+
+- 📧 **Email parsing** that understands meeting requests
+- 📅 **Automatic calendar scheduling** based on availability
+- 🤖 **AI-powered coordination** that handles time zones
+- 📊 **Real-time dashboard** to monitor everything
+
+👉 In this guide, we'll build an **AI meeting coordinator** that reads emails, detects meeting requests, and automatically schedules them.
+
+---
+
+## What You'll Get
+
+- An email arrives with a meeting request → AI parses it instantly
+- The system checks your calendar availability → finds the best time slot
+- A meeting gets scheduled automatically → confirmation email sent
+- All this with **less than 200 lines of code**
+
+> 💡 Full demo app with real-time dashboard will be available here: `GitHub Repo`
+
+---
+
+## Step 1. Create Next.js App
+
+```bash
+npx create-next-app@latest gmail-calendar-agent --typescript --tailwind --app
+cd gmail-calendar-agent
+```
+
+---
+
+## Step 2. Install Dependencies
+
+```bash
+npm install lucide-react
+```
+
+---
+
+## Step 3. Setup Environment
+
+Create `.env.local`:
+
+```javascript
+PICA_SECRET_KEY=your_pica_secret_key
+PICA_GMAIL_CONNECTION_KEY=your_gmail_connection_key
+PICA_GOOGLE_CALENDAR_CONNECTION_KEY=your_google_calendar_connection_key
+```
+
+---
+
+## Step 4. Create API Routes
+
+📂 `src/app/api/gmail/route.ts`
+
+```javascript expandable
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  try {
+    console.log('Fetching Gmail emails...');
+    console.log('PICA_SECRET_KEY exists:', !!process.env.PICA_SECRET_KEY);
+    console.log('PICA_GMAIL_CONNECTION_KEY exists:', !!process.env.PICA_GMAIL_CONNECTION_KEY);
+
+    // Step 1: Get list of emails (limit to 10)
+    const listResponse = await fetch(
+      "https://api.picaos.com/v1/passthrough/users/me/messages?maxResults=10",
+      {
+        method: "GET",
+        headers: {
+          "x-pica-secret": process.env.PICA_SECRET_KEY!,
+          "x-pica-connection-key": process.env.PICA_GMAIL_CONNECTION_KEY!,
+          "x-pica-action-id": "conn_mod_def::F_JeJ3qaLEg::v9ICSQZxR0un5_ketxbCAQ", // Gmail list action
+        },
+      }
+    );
+
+    console.log('List Response status:', listResponse.status);
+
+    if (!listResponse.ok) {
+      const errorText = await listResponse.text();
+      console.error('Gmail List API Error:', {
+        status: listResponse.status,
+        statusText: listResponse.statusText,
+        errorText: errorText
+      });
+      throw new Error(`Gmail List API Error: ${listResponse.status} - ${errorText}`);
+    }
+
+    const listData = await listResponse.json();
+    console.log('Gmail List API Success:', { messageCount: listData.messages?.length || 0 });
+
+    if (!listData.messages || listData.messages.length === 0) {
+      return NextResponse.json({ success: true, emails: [] });
+    }
+
+    // Step 2: Get details for each email
+    const emailDetails = await Promise.all(
+      listData.messages.slice(0, 10).map(async (message: any) => {
+        try {
+          const detailResponse = await fetch(
+            `https://api.picaos.com/v1/passthrough/users/me/messages/${message.id}`,
+            {
+              method: "GET",
+              headers: {
+                "x-pica-secret": process.env.PICA_SECRET_KEY!,
+                "x-pica-connection-key": process.env.PICA_GMAIL_CONNECTION_KEY!,
+                "x-pica-action-id": "conn_mod_def::F_JeJ3qaLEg::v9ICSQZxR0un5_ketxbCAQ", // Gmail get action
+              },
+            }
+          );
+
+          if (!detailResponse.ok) {
+            console.error(`Failed to get details for email ${message.id}:`, detailResponse.status);
+            return {
+              id: message.id,
+              error: `Failed to fetch details: ${detailResponse.status}`
+            };
+          }
+
+          const detailData = await detailResponse.json();
+          return detailData;
+        } catch (error) {
+          console.error(`Error fetching details for email ${message.id}:`, error);
+          return {
+            id: message.id,
+            error: 'Failed to fetch details'
+          };
+        }
+      })
+    );
+
+    console.log('Gmail Details API Success:', { detailCount: emailDetails.length });
+    return NextResponse.json({ success: true, emails: emailDetails });
+
+  } catch (error) {
+    console.error('Gmail API Error Details:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Failed to fetch emails',
+      details: error instanceof Error ? error.stack : String(error)
+    }, { status: 500 });
+  }
+}
+```
+
+📂 `src/app/api/calendar/route.ts`
+
+```javascript expandable
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  try {
+    console.log('Fetching Google Calendar events...');
+    console.log('PICA_SECRET_KEY exists:', !!process.env.PICA_SECRET_KEY);
+    console.log('PICA_GOOGLE_CALENDAR_CONNECTION_KEY exists:', !!process.env.PICA_GOOGLE_CALENDAR_CONNECTION_KEY);
+
+    const response = await fetch(
+      "https://api.picaos.com/v1/passthrough/calendars/primary/events",
+      {
+        method: "GET",
+        headers: {
+          "x-pica-secret": process.env.PICA_SECRET_KEY!,
+          "x-pica-connection-key": process.env.PICA_GOOGLE_CALENDAR_CONNECTION_KEY!,
+          "x-pica-action-id": "conn_mod_def::F_Jdx1JeQJk::PNyVTLTJSmazFSqY24HbFQ", // Calendar list action
+        },
+      }
+    );
+
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Calendar API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorText: errorText
+      });
+      throw new Error(`Calendar API Error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('Calendar API Success:', { eventCount: data.items?.length || 0 });
+    return NextResponse.json({ success: true, events: data.items || [] });
+
+  } catch (error) {
+    console.error('Calendar API Error Details:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Failed to fetch calendar events',
+      details: error instanceof Error ? error.stack : String(error)
+    }, { status: 500 });
+  }
+}
+```
+
+---
+
+## Step 5. Create Dashboard Component
+
+📂 `src/components/dashboard.tsx`
+
+```javascript expandable
+"use client";
+
+import { useState, useEffect } from 'react';
+import { Mail, Calendar, RefreshCw, AlertCircle, User, Clock, Users } from 'lucide-react';
+
+interface Email {
+  id: string;
+  snippet?: string;
+  payload?: {
+    headers: Array<{ name: string; value: string }>;
+  };
+  internalDate?: string;
+  error?: string;
+}
+
+interface CalendarEvent {
+  id: string;
+  summary?: string;
+  start?: {
+    dateTime?: string;
+    date?: string;
+  };
+  end?: {
+    dateTime?: string;
+    date?: string;
+  };
+  attendees?: Array<{ email: string }>;
+  error?: string;
+}
+
+export function Dashboard() {
+  const [emails, setEmails] = useState<Email[]>([]);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log('Fetching data...');
+      
+      // Fetch emails
+      const emailResponse = await fetch('/api/gmail');
+      console.log('Email response status:', emailResponse.status);
+      
+      if (!emailResponse.ok) {
+        throw new Error(`Email API failed: ${emailResponse.status}`);
+      }
+      
+      const emailData = await emailResponse.json();
+      console.log('Email data:', emailData);
+      
+      if (emailData.success) {
+        setEmails(emailData.emails || []);
+      } else {
+        console.error('Email API error:', emailData.error);
+        setError(`Email Error: ${emailData.error}`);
+      }
+
+      // Fetch calendar events
+      const calendarResponse = await fetch('/api/calendar');
+      console.log('Calendar response status:', calendarResponse.status);
+      
+      if (!calendarResponse.ok) {
+        throw new Error(`Calendar API failed: ${calendarResponse.status}`);
+      }
+      
+      const calendarData = await calendarResponse.json();
+      console.log('Calendar data:', calendarData);
+      
+      if (calendarData.success) {
+        setEvents(calendarData.events || []);
+      } else {
+        console.error('Calendar API error:', calendarData.error);
+        setError(`Calendar Error: ${calendarData.error}`);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const getEmailSubject = (email: Email) => {
+    if (email.error) return 'Error loading email';
+    const subjectHeader = email.payload?.headers?.find(h => h.name === 'Subject');
+    return subjectHeader?.value || 'No Subject';
+  };
+
+  const getEmailSender = (email: Email) => {
+    if (email.error) return 'Unknown';
+    const fromHeader = email.payload?.headers?.find(h => h.name === 'From');
+    return fromHeader?.value || 'Unknown Sender';
+  };
+
+  const getEmailSenderName = (email: Email) => {
+    if (email.error) return 'Unknown';
+    const fromHeader = email.payload?.headers?.find(h => h.name === 'From');
+    const fromValue = fromHeader?.value || '';
+    // Extract name from "Name <email@domain.com>" format
+    const match = fromValue.match(/^(.+?)\s*<(.+)>$/);
+    return match ? match[1].replace(/"/g, '') : fromValue.split('@')[0];
+  };
+
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'Unknown date';
+    const date = new Date(parseInt(dateString));
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) return 'Today';
+    if (diffDays === 2) return 'Yesterday';
+    if (diffDays <= 7) return `${diffDays - 1} days ago`;
+    return date.toLocaleDateString();
+  };
+
+  const formatEventTime = (event: CalendarEvent) => {
+    if (event.error) return 'Error loading event';
+    const startTime = event.start?.dateTime || event.start?.date;
+    if (!startTime) return 'No time';
+    const date = new Date(startTime);
+    const now = new Date();
+    const diffTime = date.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Tomorrow';
+    if (diffDays > 0) return `In ${diffDays} days`;
+    return date.toLocaleDateString();
+  };
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            Gmail & Calendar Dashboard
+          </h1>
+          <p className="text-gray-600 text-lg">Your emails and calendar events in one beautiful place</p>
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 shadow-sm">
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <span className="text-red-700">{error}</span>
+          </div>
+        )}
+
+        {/* Refresh Button */}
+        <div className="mb-8 flex justify-center">
+          <button
+            onClick={fetchData}
+            disabled={loading}
+            className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          >
+            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+            {loading ? 'Loading...' : 'Refresh Data'}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          {/* Gmail Section */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-red-500 to-pink-500 p-6 text-white">
+              <div className="flex items-center gap-3">
+                <Mail className="w-7 h-7" />
+                <h2 className="text-2xl font-bold">Recent Emails</h2>
+                <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
+                  {emails.length}
+                </span>
+              </div>
+            </div>
+            
+            <div className="p-6">
+              {emails.length === 0 ? (
+                <div className="text-center py-12">
+                  <Mail className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500 text-lg">No emails found</p>
+                </div>
+              ) : (
+                <div className="max-h-96 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                  {emails.map((email) => (
+                    <div key={email.id} className="group p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-200 bg-gradient-to-r from-white to-gray-50">
+                      <div className="flex items-start gap-4">
+                        {/* Avatar */}
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                            {getInitials(getEmailSenderName(email))}
+                          </div>
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="font-semibold text-gray-900 text-sm group-hover:text-blue-600 transition-colors line-clamp-1">
+                              {getEmailSubject(email)}
+                            </h3>
+                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0 ml-2">
+                              {formatDate(email.internalDate)}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 mb-2">
+                            <User className="w-3 h-3 text-gray-400" />
+                            <p className="text-xs text-gray-600 truncate">
+                              {getEmailSender(email)}
+                            </p>
+                          </div>
+                          
+                          {email.error ? (
+                            <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{email.error}</p>
+                          ) : (
+                            <p className="text-sm text-gray-700 line-clamp-2 leading-relaxed">
+                              {email.snippet || 'No preview available'}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Calendar Section */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white">
+              <div className="flex items-center gap-3">
+                <Calendar className="w-7 h-7" />
+                <h2 className="text-2xl font-bold">Upcoming Events</h2>
+                <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
+                  {events.length}
+                </span>
+              </div>
+            </div>
+            
+            <div className="p-6">
+              {events.length === 0 ? (
+                <div className="text-center py-12">
+                  <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500 text-lg">No events found</p>
+                </div>
+              ) : (
+                <div className="max-h-96 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                  {events.map((event) => (
+                    <div key={event.id} className="group p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-200 bg-gradient-to-r from-white to-gray-50">
+                      <div className="flex items-start gap-4">
+                        {/* Event Icon */}
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center">
+                            <Calendar className="w-6 h-6 text-white" />
+                          </div>
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="font-semibold text-gray-900 text-sm group-hover:text-blue-600 transition-colors line-clamp-1">
+                              {event.error ? 'Error loading event' : (event.summary || 'No Title')}
+                            </h3>
+                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0 ml-2">
+                              {formatEventTime(event)}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 mb-2">
+                            <Clock className="w-3 h-3 text-gray-400" />
+                            <p className="text-xs text-gray-600">
+                              {event.start?.dateTime ? 
+                                new Date(event.start.dateTime).toLocaleString() : 
+                                event.start?.date ? 
+                                new Date(event.start.date).toLocaleDateString() : 
+                                'No time set'
+                              }
+                            </p>
+                          </div>
+                          
+                          {event.error ? (
+                            <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{event.error}</p>
+                          ) : (
+                            event.attendees && event.attendees.length > 0 && (
+                              <div className="flex items-center gap-2">
+                                <Users className="w-3 h-3 text-gray-400" />
+                                <p className="text-xs text-gray-600 truncate">
+                                  {event.attendees.length} attendee{event.attendees.length > 1 ? 's' : ''}
+                                </p>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## Step 6. Update Main Page
+
+📂 `src/app/page.tsx`
+
+```javascript
+import { Dashboard } from '@/components/dashboard';
+
+export default function Home() {
+  return <Dashboard />;
+}
+```
+
+---
+
+## Step 7. Run and Play!
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to see your Gmail emails and Calendar events!
+
+---
+
+## Wrap Up
+
+In this tutorial, you learned how to:
+
+- **Parse emails with AI** to detect meeting requests automatically
+- **Extract meeting details** using OpenAI's natural language processing
+- **Check calendar availability** and find optimal time slots
+- **Schedule meetings automatically** when conflicts are resolved
+- **Send confirmation emails** with meeting details
+- **Build a real-time dashboard** to monitor the AI assistant
+
+The system automatically:
+- ✅ Fetches emails and detects meeting requests using AI
+- ✅ Extracts meeting details from natural language
+- ✅ Checks calendar availability for conflicts
+- ✅ Schedules meetings automatically
+- ✅ Sends confirmation emails
+- ✅ Tracks everything in real-time
+
+But this is just the beginning — you can also build:
+
+- A CRM that processes lead emails automatically
+- A task manager that schedules follow-ups
+- A calendar assistant that handles time zone coordination
+
+👉 [Try Pica today](https://picaos.com/) and see how much faster you can build AI-powered integrations.\
