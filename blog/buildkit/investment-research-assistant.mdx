@@ -1,0 +1,166 @@
+---
+title: Build an Investment Research Assistant
+description: 🚀 Create an intelligent system that automatically fetches real-time stock data, analyzes market trends, gathers relevant financial news, and creates comprehensive investment research notes in Notion.
+
+---
+
+import WhatWeWillDo from '/snippets/what-we-will-do.mdx';
+import InstallMcpServer from '/snippets/install-mcp-server.mdx';
+import ConnectAccounts from '/snippets/connect-accounts.mdx';
+import { AddConnections } from '/snippets/add-connections.jsx';
+import NewConnectionDemo from '/snippets/new-connection-demo.mdx';
+import SetupStarterProject from '/snippets/setup-project.mdx';
+import AddRules from '/snippets/add-rules.mdx';
+import Prompts from '/snippets/prompts/investment-research-assistant.mdx';
+
+<WhatWeWillDo platformNames='Twelve Data, News Data IO, and Notion accounts' projectType='Vercel AI SDK'/>
+
+<InstallMcpServer />
+<ConnectAccounts platformNames='Twelve Data, News Data IO, and Notion accounts'/>
+<AddConnections platforms={[{'name': 'Twelve Data', 'code': 'twelve-data'}, {'name': 'News Data IO', 'code': 'news-data-io'}, {'name': 'Notion', 'code': 'notion'}]} />
+
+### Required Environment Variables
+
+You'll need these connection keys in your environment:
+
+```bash Environment Setup
+TWELVE_DATA_CONNECTION_KEY=your_twelve_data_connection_key
+NEWS_DATA_IO_CONNECTION_KEY=your_news_data_io_connection_key
+NOTION_CONNECTION_KEY=your_notion_connection_key
+OPENAI_API_KEY=your_openai_api_key
+PICA_API_KEY=your_pica_api_key
+```
+
+### Using the System
+
+Once your system is set up, you can use prompts to conduct investment research. Here's an example prompt format:
+
+```
+Research AAPL stock - fetch current price, technical indicators, recent financial news, analyst recommendations, and create a comprehensive investment research note in Notion database: {your_notion_database_id}
+```
+
+Replace `{your_notion_database_id}` with your actual Notion database ID. This command will:
+- Fetch real-time stock price and market data
+- Calculate key technical indicators (RSI, MACD, Moving Averages)
+- Gather recent financial news and market sentiment
+- Retrieve analyst recommendations and price targets
+- Create a comprehensive research page in your Notion Investment Research database
+
+### Notion Database Setup
+
+The system will create a comprehensive Investment Research database in your Notion workspace:
+
+<Tabs>
+  <Tab title="Investment Research Database">
+    **Database Name:** "Investment Research"
+    
+    **Properties:**
+    - Stock Symbol (Title)
+    - Company Name (Text)
+    - Research Date (Date)
+    - Current Price (Number)
+    - Price Change % (Number)
+    - Market Cap (Text)
+    - Volume (Number)
+    - 52 Week High (Number)
+    - 52 Week Low (Number)
+    - P/E Ratio (Number)
+    - RSI (Number)
+    - MACD Signal (Select: Bullish, Bearish, Neutral)
+    - Moving Average Trend (Select: Uptrend, Downtrend, Sideways)
+    - Analyst Rating (Select: Strong Buy, Buy, Hold, Sell, Strong Sell)
+    - Average Price Target (Number)
+    - News Sentiment (Select: Very Positive, Positive, Neutral, Negative, Very Negative)
+    - Key News Headlines (Rich Text)
+    - Technical Analysis (Rich Text)
+    - Fundamental Analysis (Rich Text)
+    - Investment Recommendation (Rich Text)
+    - Risk Assessment (Select: Low, Medium, High, Very High)
+    - Research Status (Select: New, In Progress, Completed, Archived)
+  </Tab>
+</Tabs>
+
+<SetupStarterProject />
+
+<AddRules />
+
+<Prompts />
+
+## Benefits
+
+<CardGroup cols={2}>
+  <Card title="Data-Driven Decisions" icon="chart-line">
+    **Comprehensive market analysis**
+    
+    Real-time stock data, technical indicators, and sentiment analysis for informed investment decisions
+  </Card>
+  
+  <Card title="Time Efficiency" icon="clock">
+    **90% faster research process**
+    
+    Automate data collection, news gathering, and analysis that typically takes hours
+  </Card>
+  
+  <Card title="Organized Research" icon="folder">
+    **Centralized research hub**
+    
+    All investment research stored in structured Notion pages with searchable data
+  </Card>
+  
+  <Card title="Real-Time Intelligence" icon="bolt">
+    **Live market insights**
+    
+    Access to real-time quotes, breaking news, and up-to-date analyst recommendations
+  </Card>
+</CardGroup>
+
+## Advanced Research Capabilities
+
+<CardGroup cols={3}>
+  <Card title="Technical Analysis" icon="chart-candlestick">
+    - RSI and MACD indicators
+    - Moving averages and trend analysis  
+    - Support and resistance levels
+    - Momentum oscillators
+  </Card>
+  
+  <Card title="Fundamental Data" icon="building">
+    - Company financials and ratios
+    - Earnings data and estimates
+    - Dividend history and yield
+    - Market capitalization metrics
+  </Card>
+  
+  <Card title="Market Sentiment" icon="newspaper">
+    - Real-time financial news
+    - Analyst recommendations
+    - Price target consensus
+    - Social sentiment analysis
+  </Card>
+</CardGroup>
+
+## Expand Your Investment Tools
+
+Ready to build more financial automation? Explore these additional integrations:
+
+<CardGroup cols={2}>
+  <Card title="Portfolio Tracking" icon="briefcase">
+    Connect with brokerage APIs for real-time portfolio monitoring and performance analysis
+  </Card>
+  
+  <Card title="Alert System" icon="bell">
+    Set up Slack or email notifications for price alerts, earnings announcements, and news events
+  </Card>
+  
+  <Card title="Risk Management" icon="shield">
+    Integrate with risk assessment tools for position sizing and portfolio diversification analysis
+  </Card>
+  
+  <Card title="Backtesting" icon="history">
+    Historical data analysis for strategy backtesting and performance evaluation
+  </Card>
+</CardGroup>
+
+🚀 **Ready for more?** Browse our catalog of 25,000+ actions across 150+ integrations to expand your investment research pipeline!
+
+[Explore All Integrations →](https://app.picaos.com/tools)
