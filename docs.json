@@ -136,7 +136,8 @@
               "blog/use-cases/openai-agents",
               "blog/use-cases/elevenlabs",
               "blog/use-cases/chat-app",
-              "blog/use-cases/instantdb-waitlist-app"
+              "blog/use-cases/instantdb-waitlist-app",
+              "blog/use-cases/gmail-calendar-agent-tutorial"
             ]
           }
         ]
