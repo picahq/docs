@@ -76,9 +76,9 @@
             "group": "MCP Server",
             "icon": "server",
             "pages": [
-              "mcp/index",
-              "mcp/setup",
-              "mcp/claude-desktop"
+              "mcp-server/index",
+              "mcp-server/setup",
+              "mcp-server/claude-desktop"
             ]
           },
           {
@@ -252,7 +252,7 @@
           },
           {
             "label": "MCP Server",
-            "href": "https://docs.picaos.com/mcp"
+            "href": "https://docs.picaos.com/mcp-server"
           },
           {
             "label": "Changelog",
