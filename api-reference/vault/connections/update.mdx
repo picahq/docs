@@ -18,12 +18,12 @@ description: 'Update a Connection'
 
 <RequestExample>
 ```bash cURL
-curl --location --request PATCH 'https://api.picaos.com/v1/vault/connections/{connection_id}' \
---header 'Content-Type: application/json' \
---data-raw '{
+curl -X PATCH 'https://api.picaos.com/v1/vault/connections/{connection_id}' \
+  -H 'Content-Type: application/json' \
+  -H 'x-pica-secret: YOUR_API_KEY' \
+  -d '{
     "tags": ["new-user", "main"]
-}' \
---header 'x-pica-secret: YOUR_API_KEY'
+  }'
 ```
 </RequestExample>
 

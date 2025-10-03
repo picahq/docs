@@ -1,0 +1,456 @@
+---
+title: "Overview"
+description: "Learn how to add powerful third-party integrations to your SaaS application"
+---
+
+Building a SaaS product that needs to integrate with third-party tools? Pica gives you everything you need to write integration logic quickly and reliably—without managing OAuth flows, API credentials, or dealing with each API's quirks.
+
+## Why use Pica for integrations?
+
+<AccordionGroup>
+  <Accordion title="Built-in authentication" icon="key">
+    Your users connect their accounts through OAuth or API keys—you never need to store or manage credentials. Pica handles authentication, token refresh, and secure storage automatically.
+  </Accordion>
+  
+  <Accordion title="AI-powered request building" icon="wand-magic-sparkles">
+    Use the [Pica MCP Server](/sdk/mcp) in Cursor, Windsurf, or any MCP-compatible IDE. Pica's knowledge base writes integration requests for you, saving hours of reading through API documentation and figuring out schemas.
+  </Accordion>
+  
+  <Accordion title="Your data stays private" icon="lock">
+    We never store or access your integration data. All API calls go directly from your app to the integration—Pica only handles authentication tokens. Your data is yours.
+  </Accordion>
+  
+  <Accordion title="Fast integration updates" icon="bolt">
+    Need an integration we don't have? We can usually add it within a few days. New integrations are available immediately through the same API—no code changes required.
+  </Accordion>
+  
+  <Accordion title="Unified API for everything" icon="plug">
+    One API endpoint for 150+ integrations. No need to learn different authentication patterns, error handling, or rate limiting for each platform.
+  </Accordion>
+  
+  <Accordion title="Edge cases handled" icon="shield-check">
+    Our knowledge base covers rate limits, pagination, required fields, nested objects, and API quirks for every integration. Get reliable results without debugging each API's edge cases.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## What can you build?
+
+With Pica, you can build integration features with **any of the 150+ integrations** available in our catalog—from CRMs like Salesforce and HubSpot, to communication tools like Gmail and Slack, to accounting platforms like QuickBooks and Stripe.
+
+**Common integration patterns:**
+
+- Sync data from customer CRMs, calendars, or project management tools into your app
+- Automate emails, notifications, or updates across integrated platforms  
+- Pull reports and analytics from accounting, marketing, or sales tools
+- Create records, update statuses, or trigger actions in third-party systems
+- Build custom workflows that connect multiple tools together
+
+<Card
+  title="Browse all integrations"
+  icon="grid"
+  href="https://app.picaos.com/tools"
+  horizontal
+>
+  Explore 150+ integrations and 25,000+ actions available
+</Card>
+
+<Info>
+**Missing an integration you need?** Let us know and we can usually add it within a few days. Request integrations at [support@picaos.com](mailto:support@picaos.com).
+</Info>
+
+## How it works
+
+Pica provides two core components for building SaaS integrations:
+
+### 1. AuthKit: Let users connect their accounts
+
+[AuthKit](/authkit) is an embeddable UI component that lets your users securely connect their third-party accounts (Gmail, Slack, Salesforce, QuickBooks, etc.) directly in your app. Think of it as "Plaid for integrations."
+
+AuthKit handles OAuth flows, token management, and secure credential storage so you never have to touch or store user credentials. When a user connects an integration, you get a `connectionKey` that you'll use to make authenticated requests on their behalf.
+
+<Card
+  title="Learn more about AuthKit"
+  icon="plug"
+  href="/authkit"
+  horizontal
+>
+  Complete setup guide for integrating AuthKit into your application
+</Card>
+
+---
+
+### 2. Passthrough API: Make authenticated requests
+
+The [Passthrough API](/api-reference/passthrough) lets you make authenticated HTTP requests to any third-party API without managing credentials.
+
+**What it does:**
+- Provides a unified endpoint for 25,000+ actions across 150+ platforms
+- Automatically authenticates requests using stored connection credentials
+- Uses the same request/response schemas as the underlying API
+- Handles rate limiting, retries, and error responses
+- Returns data directly from the integration (no storage on Pica's side)
+
+**Building requests:**
+
+You can construct Passthrough API requests using:
+1. The underlying API's documentation (same schemas apply)
+2. The [Pica MCP Server](/sdk/mcp) which uses Pica's knowledge base to write requests for you—saving hours of reading through API docs
+
+**Finding action IDs:**
+
+Every integration action has a unique action ID. Find them in:
+1. The [Pica dashboard tools page](https://app.picaos.com/tools)
+2. The [Available Actions API](/api-reference/core/available-actions)
+3. Using the [Pica MCP Server](/sdk/mcp) in your IDE
+
+<Card
+  title="Passthrough API documentation"
+  icon="code"
+  href="/api-reference/passthrough"
+  horizontal
+>
+  Learn how to construct requests and handle responses
+</Card>
+
+---
+
+## Complete integration workflow
+
+Here's how all the pieces work together in a typical SaaS application.
+
+<Note>
+**Two approaches for connections:**
+- **Customer integrations** - Use [AuthKit](/authkit) to let your users connect their own accounts (recommended for multi-tenant apps)
+- **Your integrations** - Connect integrations directly in the [Pica dashboard](https://app.picaos.com/connections) and use those for all users (simpler for single-account use cases)
+</Note>
+
+<Tabs>
+  <Tab title="With AuthKit">
+    ### Customer-facing integrations
+    
+    Let your users connect their own third-party accounts through your app.
+    
+    <Steps>
+      <Step title="User connects their account">
+        User clicks "Connect Gmail" in your app → AuthKit modal opens → User authenticates → Connection created with a unique `connectionKey`
+        
+        ```typescript
+        // Frontend: Open AuthKit
+        const { open } = useAuthKit({
+          token: { url: "/api/authkit" },
+          onSuccess: async (connection) => {
+            // Save connection to your database
+            await saveConnection(currentUser.id, connection);
+          }
+        });
+        ```
+      </Step>
+      
+      <Step title="Store connection metadata">
+        Save the connection key to your database associated with the user. You'll use this key to make requests on their behalf.
+        
+        ```typescript
+        // Backend: Save to database
+        await db.connections.create({
+          userId: currentUser.id,
+          platform: "gmail",
+          connectionKey: connection.connectionKey,
+          connectedAt: new Date()
+        });
+        ```
+      </Step>
+      
+      <Step title="Make authenticated requests">
+        Use the Passthrough API with the user's connection key to access their data or perform actions.
+        
+        ```typescript
+        // Backend: Fetch user's Gmail emails
+        const userConnection = await db.connections.findOne({
+          userId: currentUser.id,
+          platform: "gmail"
+        });
+        
+        const emails = await fetch(
+          "https://api.picaos.com/v1/passthrough/users/me/messages",
+          {
+            headers: {
+              "x-pica-secret": process.env.PICA_SECRET_KEY,
+              "x-pica-connection-key": userConnection.connectionKey,
+              "x-pica-action-id": "conn_mod_def::F_JeJ3qaLEg::v9ICSQZxR0un5_ketxbCAQ"
+            }
+          }
+        ).then(r => r.json());
+        ```
+      </Step>
+      
+      <Step title="Build features with the data">
+        Process the data and display it in your app, sync it to your database, or use it in your workflows.
+        
+        ```typescript
+        // Frontend: Display emails in your UI
+        return (
+          <div>
+            <h2>Your Emails</h2>
+            {emails.messages.map(email => (
+              <EmailCard key={email.id} email={email} />
+            ))}
+          </div>
+        );
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+  
+  <Tab title="Without AuthKit">
+    ### Using your own integrations
+    
+    If you don't need each user to connect their own accounts, you can connect integrations directly in the Pica dashboard and use those for all your users.
+    
+    <Steps>
+      <Step title="Connect in Pica dashboard">
+        Go to the [Pica dashboard](https://app.picaos.com/connections) and connect the integrations you need (e.g., your company Gmail, Slack workspace, CRM account).
+      </Step>
+      
+      <Step title="Copy connection key">
+        Copy the connection key from the dashboard and store it in your environment variables.
+        
+        ```bash .env
+        PICA_SECRET_KEY=your_api_key
+        GMAIL_CONNECTION_KEY=your_gmail_connection_key
+        ```
+      </Step>
+      
+      <Step title="Make authenticated requests">
+        Use the Passthrough API with your connection key to access integration data.
+        
+        ```typescript
+        // Backend: Use your own connection for all users
+        const emails = await fetch(
+          "https://api.picaos.com/v1/passthrough/users/me/messages",
+          {
+            headers: {
+              "x-pica-secret": process.env.PICA_SECRET_KEY,
+              "x-pica-connection-key": process.env.GMAIL_CONNECTION_KEY,
+              "x-pica-action-id": "conn_mod_def::F_JeJ3qaLEg::v9ICSQZxR0un5_ketxbCAQ"
+            }
+          }
+        ).then(r => r.json());
+        ```
+      </Step>
+      
+      <Step title="Build features with the data">
+        Use the data in your application—all users will see data from your connected account.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+---
+
+## Managing integrations with the API
+
+Use the [Core API](/api-reference/introduction) to programmatically manage integrations, connections, and actions in your application.
+
+<Card
+  title="View Core API Reference"
+  icon="book"
+  href="/api-reference/introduction"
+  horizontal
+>
+  Complete API documentation for managing connectors, connections, and actions
+</Card>
+
+---
+
+## Development workflow tips
+
+<AccordionGroup>
+  <Accordion title="Test with the Pica MCP Server" icon="flask">
+    Use the [Pica MCP Server](/sdk/mcp) in Cursor, Windsurf, or any MCP-compatible IDE to:
+    - Explore available actions and their parameters
+    - Test API requests before writing code
+    - Get AI-powered suggestions for building integration requests
+    
+    ```json
+    // Add to your IDE's MCP config
+    {
+      "mcpServers": {
+        "pica": {
+          "command": "npx",
+          "args": ["@picahq/mcp"],
+          "env": {
+            "PICA_SECRET": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Use the API playground" icon="gamepad">
+    Test integration actions in the [Pica dashboard playground](https://app.picaos.com):
+    1. Connect your test account
+    2. Use the AI playground to test actions conversationally
+    3. Copy the working code to your application
+  </Accordion>
+  
+  <Accordion title="Store connection keys securely" icon="lock">
+    Best practices for storing connection metadata:
+    - Save connection keys in your database encrypted at rest
+    - Associate connections with user IDs for multi-tenancy
+    - Store platform name, connection status, and created date
+    - Index by userId and platform for fast lookups
+  </Accordion>
+  
+  <Accordion title="Handle connection errors gracefully" icon="triangle-exclamation">
+    Connection errors can happen (expired tokens, revoked access, rate limits). Handle them gracefully:
+    
+    ```typescript
+    try {
+      const data = await makePassthroughRequest(connectionKey);
+      return data;
+    } catch (error) {
+      if (error.status === 401) {
+        // Token expired - prompt user to reconnect
+        await notifyUserToReconnect(userId, platform);
+      } else if (error.status === 429) {
+        // Rate limited - retry with backoff
+        await retryWithBackoff(() => makePassthroughRequest(connectionKey));
+      } else {
+        // Other error - log and notify
+        console.error("Integration error:", error);
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Monitor usage and errors" icon="chart-line">
+    Track your integration usage in the [Pica dashboard](https://app.picaos.com):
+    - View API request logs and response times
+    - Monitor error rates by integration
+    - Set up alerts for authentication failures
+    - Track which integrations your users connect most
+  </Accordion>
+</AccordionGroup>
+
+## Security best practices
+
+<Warning>
+Never expose your Pica API key in frontend code. API keys should only be used on your backend server.
+</Warning>
+
+<AccordionGroup>
+  <Accordion title="Protect API keys" icon="key">
+    - Store API keys in environment variables
+    - Never commit API keys to version control
+    - Rotate API keys periodically
+    - Use separate keys for development and production
+  </Accordion>
+  
+  <Accordion title="Validate user ownership" icon="shield-check">
+    Always verify that the requesting user owns the connection before making requests:
+    
+    ```typescript
+    async function getUserEmails(requestingUserId: string, connectionId: string) {
+      // Verify the connection belongs to the requesting user
+      const connection = await db.connections.findOne({
+        id: connectionId,
+        userId: requestingUserId
+      });
+      
+      if (!connection) {
+        throw new Error("Unauthorized: Connection not found");
+      }
+      
+      // Now safe to use the connection
+      return await fetchEmails(connection.connectionKey);
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Use HTTPS everywhere" icon="lock">
+    Always serve your application over HTTPS in production to protect tokens and connection keys in transit.
+  </Accordion>
+  
+  <Accordion title="Implement rate limiting" icon="gauge">
+    Add rate limiting to your API endpoints to prevent abuse:
+    
+    ```typescript
+    import rateLimit from 'express-rate-limit';
+    
+    const limiter = rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: 100 // limit each user to 100 requests per window
+    });
+    
+    app.use('/api/integrations/', limiter);
+    ```
+  </Accordion>
+  
+  <Accordion title="Audit connection usage" icon="clipboard-list">
+    Log and monitor integration usage for security audits:
+    
+    ```typescript
+    async function logIntegrationUsage(userId: string, action: string, platform: string) {
+      await db.auditLog.create({
+        userId,
+        action,
+        platform,
+        timestamp: new Date(),
+        ipAddress: req.ip
+      });
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Set up AuthKit"
+    icon="rocket"
+    href="/authkit/setup"
+  >
+    Add user authentication to your app in under 10 minutes
+  </Card>
+  <Card
+    title="Passthrough API guide"
+    icon="code"
+    href="/api-reference/passthrough"
+  >
+    Learn how to make authenticated integration requests
+  </Card>
+  <Card
+    title="Browse integrations"
+    icon="grid"
+    href="https://app.picaos.com/tools"
+  >
+    Explore 150+ integrations and 25,000+ actions
+  </Card>
+  <Card
+    title="View tutorials"
+    icon="book"
+    href="/use-cases"
+  >
+    Step-by-step guides for common integration patterns
+  </Card>
+</CardGroup>
+
+---
+
+## Get help
+
+<Card
+  title="Contact support"
+  icon="envelope"
+  href="mailto:support@picaos.com"
+  horizontal
+>
+  Have questions? Email us at support@picaos.com for assistance
+</Card>
+

@@ -1,0 +1,294 @@
+---
+title: "Overview"
+description: "Use Pica's MCP Server to execute actions, generate integration code, and get intelligent integration insights"
+---
+
+[![npm version](https://img.shields.io/npm/v/%40picahq%2Fmcp)](https://npmjs.com/package/@picahq/mcp)
+
+<Frame>
+  <img src="/images/mcp/mcp-banner.svg" alt="Pica MCP Banner" style={{ borderRadius: '5px' }} />
+</Frame>
+
+## What is MCP?
+
+[Model Context Protocol (MCP)](https://modelcontextprotocol.io) is an open protocol that enables AI applications to connect to external tools and data sources. It provides a standardized way for AI assistants like Claude Desktop and Cursor to interact with local services and APIs while keeping you in control.
+
+<Info>
+Want to learn more about Model Context Protocol? Visit the [official website](https://modelcontextprotocol.io) or [read the documentation](https://modelcontextprotocol.io/introduction).
+</Info>
+
+## What is Pica's MCP Server?
+
+Pica's MCP Server brings the power of 150+ third-party integrations directly into a single MCP server. It enables seamless interaction with platforms like Gmail, Slack, Salesforce, QuickBooks, and more through a standardized MCP interface.
+
+**Three primary use cases:**
+
+<CardGroup cols={3}>
+  <Card icon="bolt" title="Execute Actions">
+    Run integration actions directly
+  </Card>
+  <Card icon="code" title="Generate Code">
+    Build integration features with AI assistance
+  </Card>
+  <Card icon="circle-question" title="Get Insights">
+    Ask questions about how integrations work
+  </Card>
+</CardGroup>
+
+## Key capabilities
+
+<Tabs>
+  <Tab title="Execute Actions">
+    ### Direct Action Execution
+    
+    Execute actions on third-party platforms directly through your AI assistant. The MCP server handles authentication, request formatting, and execution automatically.
+    
+    **Examples:**
+    
+    <AccordionGroup>
+      <Accordion title="Gmail" icon="envelope">
+        - "Get my last 5 emails from Gmail"
+        - "Send an email using Gmail to hello@picaos.com"
+        - "Search my Gmail for messages from John"
+      </Accordion>
+      
+      <Accordion title="Slack" icon="slack">
+        - "Send a message to #general channel in Slack"
+        - "List all channels in my Slack workspace"
+        - "Post an update to the #announcements channel"
+      </Accordion>
+      
+      <Accordion title="Google Calendar" icon="calendar">
+        - "Create an event in my Google Calendar"
+        - "Show my calendar events for this week"
+        - "Find free time slots on Friday"
+      </Accordion>
+      
+      <Accordion title="Salesforce" icon="user-plus">
+        - "Create a lead in Salesforce for Jane Doe at Acme Corp"
+        - "Show me recent leads from Salesforce"
+        - "Update the status of contact ID 12345"
+      </Accordion>
+      
+      <Accordion title="Other Platforms" icon="grid">
+        - "List products from my Shopify store"
+        - "Get invoices from QuickBooks"
+        - "Create a task in Asana"
+        - "Fetch data from my PostgreSQL database"
+      </Accordion>
+    </AccordionGroup>
+  </Tab>
+  
+  <Tab title="Generate Code">
+    ### Integration Code Generation
+    
+    Generate production-ready integration code with AI assistance. The server provides the context and structure needed for the AI to generate correct, working code.
+    
+    **Examples:**
+    
+    <AccordionGroup>
+      <Accordion title="React Components" icon="react">
+        **Prompt:**
+        ```
+        Build a React form component that sends emails using Gmail
+        ```
+        
+        **What you get:**
+        - Complete React component with form fields
+        - Gmail integration using Pica Passthrough API
+        - Form validation and error handling
+        - Proper authentication handling
+      </Accordion>
+      
+      <Accordion title="Dashboard Components" icon="chart-line">
+        **Prompt:**
+        ```
+        Create a dashboard displaying Linear users and their assigned projects
+        ```
+        
+        **What you get:**
+        - Dashboard component with data fetching
+        - Integration with Linear API via Pica
+        - Filter and search functionality
+        - Responsive UI components
+      </Accordion>
+      
+      <Accordion title="Data Tables" icon="table">
+        **Prompt:**
+        ```
+        Build a paginatable table for QuickBooks invoices with search and sort
+        ```
+        
+        **What you get:**
+        - Table component with pagination
+        - QuickBooks API integration
+        - Search and sort capabilities
+        - Export functionality
+      </Accordion>
+      
+      <Accordion title="Multi-Platform Forms" icon="messages">
+        **Prompt:**
+        ```
+        Create a form that posts messages to multiple Slack channels
+        ```
+        
+        **What you get:**
+        - Form with channel selection
+        - Slack API integration
+        - Message scheduling logic
+        - Confirmation UI
+      </Accordion>
+    </AccordionGroup>
+  </Tab>
+  
+  <Tab title="Get Insights">
+    ### Integration Knowledge
+    
+    Get detailed information about integrations and their capabilities. The server accesses Pica's knowledge base to provide accurate, detailed responses.
+    
+    **Examples:**
+    
+    <AccordionGroup>
+      <Accordion title="List Available Connections" icon="plug">
+        **Ask:**
+        ```
+        What connections do I have access to?
+        ```
+        
+        **Response:**
+        - All your connected integrations
+        - Connection status
+        - Available platforms
+      </Accordion>
+      
+      <Accordion title="Explore Platform Actions" icon="bolt">
+        **Ask:**
+        ```
+        What actions can I perform with Google Sheets?
+        ```
+        
+        **Response:**
+        - All available Google Sheets actions
+        - Action descriptions
+        - What each action does
+      </Accordion>
+      
+      <Accordion title="Learn Action Requirements" icon="book">
+        **Ask:**
+        ```
+        What parameters does the Gmail send message action require?
+        ```
+        
+        **Response:**
+        - Required parameters
+        - Optional parameters
+        - Parameter types and formats
+        - Example values
+      </Accordion>
+      
+      <Accordion title="Understand Authentication" icon="key">
+        **Ask:**
+        ```
+        How do I authenticate with Salesforce?
+        ```
+        
+        **Response:**
+        - Authentication methods
+        - Setup requirements
+        - Connection process
+      </Accordion>
+    </AccordionGroup>
+  </Tab>
+</Tabs>
+
+## Security & Authentication
+
+<CardGroup cols={3}>
+  <Card icon="key" title="Single API Key">
+    Only requires your Pica API key—no need to manage individual platform credentials
+  </Card>
+  <Card icon="shield" title="Secure Proxy">
+    All requests are authenticated through Pica's secure proxy
+  </Card>
+  <Card icon="lock" title="No Exposed Secrets">
+    Connection keys and secrets are never exposed to the AI
+  </Card>
+</CardGroup>
+
+## Supported AI IDEs
+
+<CardGroup cols={3}>
+  <Card
+    title="Claude Desktop"
+    icon="/images/claude.svg"
+    href="/mcp/claude-desktop"
+  >
+    Set up with Claude Desktop
+  </Card>
+  <Card
+    title="Cursor"
+    icon="/images/cursor.svg"
+    href="/mcp/setup"
+  >
+    Set up with Cursor
+  </Card>
+  <Card
+    title="Windsurf"
+    icon="/images/windsurf.svg"
+    href="/mcp/setup"
+  >
+    Set up with Windsurf
+  </Card>
+</CardGroup>
+
+<Info>
+The Pica MCP Server works with any MCP-compatible client. See the [MCP documentation](https://modelcontextprotocol.io) for more information.
+</Info>
+
+## Installation Options
+
+<CardGroup cols={3}>
+  <Card title="NPM" icon="npm" href="https://npmjs.com/package/@picahq/mcp">
+    Install via NPM package manager
+  </Card>
+  <Card title="Smithery" icon="server" href="https://smithery.ai/server/@picahq/mcp">
+    Install via Smithery registry
+  </Card>
+  <Card title="Glama" icon="server" href="https://glama.ai/mcp/servers/@picahq/mcp">
+    Install via Glama registry
+  </Card>
+</CardGroup>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Setup Guide"
+    icon="gear"
+    href="/mcp/setup"
+  >
+    Install and configure the MCP server
+  </Card>
+  <Card
+    title="Claude Desktop Setup"
+    icon="message"
+    href="/mcp/claude-desktop"
+  >
+    Set up with Claude Desktop specifically
+  </Card>
+  <Card
+    title="Browse Integrations"
+    icon="grid"
+    href="https://app.picaos.com/tools"
+  >
+    Explore all 150+ available integrations
+  </Card>
+  <Card
+    title="GitHub Repository"
+    icon="github"
+    href="https://github.com/picahq/mcp"
+  >
+    View the source code and contribute
+  </Card>
+</CardGroup>
+

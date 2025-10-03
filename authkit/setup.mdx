@@ -1,0 +1,392 @@
+---
+title: "Setup"
+description: "Integrate AuthKit into your application in under 10 minutes"
+---
+
+<Frame caption="This demo walks you through integrating AuthKit into your application in under 5 minutes">
+  <iframe
+    width="100%"
+    style={{ aspectRatio: '16/9' }}
+    src="https://www.youtube.com/embed/Tpu87QuXB1s"
+    title="Setup AuthKit in under 5 minutes"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  ></iframe>
+</Frame>
+
+## Prerequisites
+
+Before you begin, make sure you have:
+- A [Pica account](https://app.picaos.com) (free to sign up)
+- A Pica API key from your [API keys page](https://app.picaos.com/settings/api-keys)
+- A web application where you want to add AuthKit
+
+## Backend Setup
+
+<Steps>
+  <Step title="Step 1">
+    ### Install the backend package
+
+    Install the AuthKit token generator for your backend. This package creates secure tokens that authorize users to connect integrations.
+    
+    ```bash
+    npm install @picahq/authkit-node
+    ```
+  </Step>
+  
+  <Step title="Step 2">
+    ### Set your Pica API key
+
+    Store your Pica API key as an environment variable. Never expose this key in your frontend code.
+    
+    ```bash
+    PICA_SECRET_KEY=your_api_key_here
+    ```
+    
+    Get your API key from the [Pica dashboard](https://app.picaos.com/settings/api-keys).
+  </Step>
+  
+  <Step title="Step 3">
+    ### Create a token generation endpoint
+
+    Create an API endpoint in your backend that generates AuthKit tokens. This endpoint should be called by your frontend when a user wants to connect an integration.
+    
+    <Tabs>
+      <Tab title="Next.js App Router">
+        Create a file at `app/api/authkit/route.ts`:
+        
+        ```typescript
+        import { NextRequest, NextResponse } from "next/server";
+        import { AuthKitToken } from "@picahq/authkit-node";
+
+        const corsHeaders = {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        };
+
+        export async function OPTIONS(req: NextRequest) {
+          return NextResponse.json({}, { headers: corsHeaders });
+        }
+
+        export async function POST(req: NextRequest) {
+          try {
+            // Get the user's ID from your auth system
+            // This is just an example - use your actual auth logic
+            const userId = req.headers.get("x-user-id");
+            
+            if (!userId) {
+              return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401, headers: corsHeaders }
+              );
+            }
+
+            const authKitToken = new AuthKitToken(process.env.PICA_SECRET_KEY!);
+            
+            const token = await authKitToken.create({
+              identity: userId, // Your user's unique identifier
+              identityType: "user" // user, team, organization, or project
+            });
+
+            return NextResponse.json(token, { headers: corsHeaders });
+          } catch (error) {
+            return NextResponse.json(
+              { error: "Failed to generate token" },
+              { status: 500, headers: corsHeaders }
+            );
+          }
+        }
+        ```
+      </Tab>
+      
+      <Tab title="Next.js Pages Router">
+        Create a file at `pages/api/authkit.ts`:
+        
+        ```typescript
+        import type { NextApiRequest, NextApiResponse } from "next";
+        import { AuthKitToken } from "@picahq/authkit-node";
+
+        export default async function handler(
+          req: NextApiRequest,
+          res: NextApiResponse
+        ) {
+          if (req.method !== "POST") {
+            return res.status(405).json({ error: "Method not allowed" });
+          }
+
+          try {
+            // Get the user's ID from your auth system
+            const userId = req.headers["x-user-id"] as string;
+            
+            if (!userId) {
+              return res.status(401).json({ error: "Unauthorized" });
+            }
+
+            const authKitToken = new AuthKitToken(process.env.PICA_SECRET_KEY!);
+            
+            const token = await authKitToken.create({
+              identity: userId,
+              identityType: "user"
+            });
+
+            res.status(200).json(token);
+          } catch (error) {
+            res.status(500).json({ error: "Failed to generate token" });
+          }
+        }
+        ```
+      </Tab>
+      
+      <Tab title="Express.js">
+        ```typescript
+        import express from "express";
+        import { AuthKitToken } from "@picahq/authkit-node";
+
+        const app = express();
+        app.use(express.json());
+
+        app.post("/api/authkit", async (req, res) => {
+          try {
+            // Get the user's ID from your auth middleware
+            const userId = req.user?.id;
+            
+            if (!userId) {
+              return res.status(401).json({ error: "Unauthorized" });
+            }
+
+            const authKitToken = new AuthKitToken(process.env.PICA_SECRET_KEY!);
+            
+            const token = await authKitToken.create({
+              identity: userId,
+              identityType: "user"
+            });
+
+            res.json(token);
+          } catch (error) {
+            res.status(500).json({ error: "Failed to generate token" });
+          }
+        });
+        ```
+      </Tab>
+    </Tabs>
+    
+    ### Token parameters
+    
+    <ParamField path="identity" type="string" required>
+      A unique identifier for the user, team, organization, or project that will own the connection. Examples: `userId`, `teamId`, `organizationId`
+    </ParamField>
+    
+    <ParamField path="identityType" type="string" required>
+      Specifies the type of entity that owns the connection. Must be one of: `"user"`, `"team"`, `"organization"`, or `"project"`
+    </ParamField>
+    
+    <Tip>
+      Choose your `identityType` based on your use case:
+      - **user**: Each user has their own personal connections
+      - **team**: Team members share connections
+      - **organization**: Company-wide shared connections
+      - **project**: Project-specific isolated connections
+    </Tip>
+  </Step>
+</Steps>
+
+## Frontend Setup
+
+<Steps>
+  <Step title="Step 1">
+    ### Install the frontend package
+
+    Install the AuthKit client library in your frontend application.
+    
+    ```bash
+    npm install @picahq/authkit
+    ```
+    
+    This package works with any major frontend framework.
+  </Step>
+  
+  <Step title="Step 2">
+    ### Add the AuthKit button
+
+    Create a button component that opens the AuthKit modal when clicked.
+    
+    <Tabs>
+      <Tab title="React">
+        ```typescript
+        import { useAuthKit } from "@picahq/authkit";
+
+        export function ConnectIntegrationButton() {
+          const { open, isLoading } = useAuthKit({
+            token: {
+              url: "/api/authkit", // Your token endpoint
+              headers: {
+                // Include any auth headers your endpoint needs
+                "x-user-id": "user_123" // Example: pass user ID
+              },
+            },
+            onSuccess: (connection) => {
+              console.log("Successfully connected:", connection);
+              // Handle successful connection (e.g., refresh your UI, save connection key)
+            },
+            onError: (error) => {
+              console.error("Connection failed:", error);
+              // Handle error (e.g., show error message to user)
+            },
+            onClose: () => {
+              console.log("AuthKit modal closed");
+            },
+          });
+
+          return (
+            <button onClick={open} disabled={isLoading}>
+              {isLoading ? "Loading..." : "Connect Integration"}
+            </button>
+          );
+        }
+        ```
+      </Tab>
+      
+      <Tab title="Vue">
+        ```vue
+        <template>
+          <button @click="open" :disabled="isLoading">
+            {{ isLoading ? 'Loading...' : 'Connect Integration' }}
+          </button>
+        </template>
+
+        <script setup>
+        import { useAuthKit } from "@picahq/authkit";
+
+        const { open, isLoading } = useAuthKit({
+          token: {
+            url: "/api/authkit",
+            headers: {
+              "x-user-id": "user_123"
+            },
+          },
+          onSuccess: (connection) => {
+            console.log("Successfully connected:", connection);
+          },
+          onError: (error) => {
+            console.error("Connection failed:", error);
+          },
+          onClose: () => {
+            console.log("AuthKit modal closed");
+          },
+        });
+        </script>
+        ```
+      </Tab>
+      
+      <Tab title="JavaScript">
+        ```javascript
+        import { AuthKit } from "@picahq/authkit";
+
+        const authKit = new AuthKit({
+          token: {
+            url: "/api/authkit",
+            headers: {
+              "x-user-id": "user_123"
+            },
+          },
+          onSuccess: (connection) => {
+            console.log("Successfully connected:", connection);
+          },
+          onError: (error) => {
+            console.error("Connection failed:", error);
+          },
+          onClose: () => {
+            console.log("AuthKit modal closed");
+          },
+        });
+
+        document.getElementById("connect-btn").addEventListener("click", () => {
+          authKit.open();
+        });
+        ```
+      </Tab>
+    </Tabs>
+    ### Configuration options
+    
+    <ParamField path="token.url" type="string" required>
+      URL of your backend endpoint that generates AuthKit tokens
+    </ParamField>
+    
+    <ParamField path="token.headers" type="object">
+      Headers to include in the token request (e.g., authentication headers)
+    </ParamField>
+    
+    <ParamField path="selectedConnection" type="string">
+      The name of a specific integration to open directly (e.g., "Google Sheets", "Slack"). If provided, AuthKit will skip the integration list and open directly to that integration's authentication flow.
+    </ParamField>
+    
+    <ParamField path="onSuccess" type="function">
+      Callback when a connection is successfully created. Receives the connection object as a parameter.
+    </ParamField>
+    
+    <ParamField path="onError" type="function">
+      Callback when an error occurs. Receives the error object as a parameter.
+    </ParamField>
+    
+    <ParamField path="onClose" type="function">
+      Callback when the modal is closed (whether successful or not)
+    </ParamField>
+  </Step>
+</Steps>
+
+## Configure visible integrations
+
+<Frame>
+  <img src="/images/authkit/authkit.png" alt="AuthKit management page" />
+</Frame>
+
+Navigate to the [AuthKit settings page](https://app.picaos.com/authkit) in your Pica dashboard to:
+
+- **Toggle integrations**: Enable or disable which integrations appear in your AuthKit modal
+- **Set OAuth credentials**: For OAuth integrations, provide your own Client ID and Client Secret to use your OAuth apps
+
+<Info>
+  By default, integrations are not visible. You can selectively enable only the integrations your users need. For more details on managing integrations and OAuth apps, see the [Management guide](/authkit/management).
+</Info>
+
+## Testing your integration
+
+Once you've completed the setup, test the flow:
+
+1. Click your "Connect Integration" button
+2. The AuthKit modal should open with your enabled integrations
+3. Select an integration and complete the authentication
+4. Your `onSuccess` callback should receive the connection details
+
+<Card title="View complete demo" icon="github" href="https://github.com/picahq/authkit-demo" horizontal>
+Check out our example Next.js app with a full AuthKit implementation
+</Card>
+
+## What's next?
+
+<CardGroup cols={3}>
+  <Card
+    title="Manage connections"
+    icon="gear"
+    href="/authkit/management"
+  >
+    Learn how to list, filter, and manage your users' connections
+  </Card>
+  <Card
+    title="Make authenticated requests"
+    icon="code"
+    href="/api-reference/passthrough/overview"
+  >
+    Use the Passthrough API to access your users' integration data
+  </Card>
+  <Card
+    title="Get help"
+    icon="life-ring"
+    href="mailto:support@picaos.com"
+  >
+    Email us at support@picaos.com for assistance
+  </Card>
+</CardGroup>
+

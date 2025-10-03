@@ -1,0 +1,433 @@
+---
+title: "Setup"
+description: "Install and configure Pica's MCP Server in your AI IDE"
+---
+
+## Prerequisites
+
+Before installing the MCP server, you'll need:
+
+1. **Pica Account** - [Create a free account](https://app.picaos.com)
+2. **Pica API Key** - Get your API key from [Settings > API Keys](https://app.picaos.com/settings/api-keys)
+3. **Connected Integrations** - Connect integrations from the [Connections page](https://app.picaos.com/connections)
+4. **MCP-Compatible IDE** - Claude Desktop, Cursor, Windsurf, or any MCP client
+
+## Installation
+
+The easiest way to install the Pica MCP Server is via NPM:
+
+```bash
+npm install -g @picahq/mcp
+```
+
+Alternatively, you can use it directly with `npx` without installation:
+
+```bash
+npx @picahq/mcp
+```
+
+### Other Installation Methods
+
+<Tabs>
+  <Tab title="Smithery">
+    Install via Smithery for Claude Desktop:
+    
+    ```bash
+    npx -y @smithery/cli install @picahq/mcp --client claude
+    ```
+  </Tab>
+  
+  <Tab title="Docker">
+    Build and run with Docker:
+    
+    ```bash
+    # Build the image
+    docker build -t pica-mcp-server .
+    
+    # Run the container
+    docker run -e PICA_SECRET=your_pica_secret_key pica-mcp-server
+    ```
+  </Tab>
+  
+  <Tab title="From Source">
+    Clone and build from the GitHub repository:
+    
+    ```bash
+    # Clone the repository
+    git clone https://github.com/picahq/mcp.git
+    cd mcp
+    
+    # Install dependencies
+    npm install
+    
+    # Build the server
+    npm run build
+    ```
+  </Tab>
+</Tabs>
+
+## Configuration
+
+### Set Your API Key
+
+The MCP server requires your Pica API key to authenticate requests. Set it as an environment variable:
+
+```bash
+export PICA_SECRET=your_pica_secret_key
+```
+
+Get your API key from the [Pica dashboard](https://app.picaos.com/settings/api-keys).
+
+## IDE Setup
+
+<Tabs>
+  <Tab title="Cursor" icon="/images/cursor.svg">
+    To use the MCP server in Cursor:
+
+    1. Open Cursor and go to **Cursor Settings**
+    2. Select **MCP Settings** from the menu
+    3. Add the following configuration to your MCP JSON file:
+
+    ```json
+    {
+      "mcpServers": {
+        "pica": {
+          "command": "npx",
+          "args": ["@picahq/mcp"],
+          "env": {
+            "PICA_SECRET": "your-pica-secret-key"
+          }
+        }
+      }
+    }
+    ```
+
+    4. Save the file and restart Cursor
+
+    <Frame>
+      <img src="/images/ide-setup/mcp-settings.png" alt="Cursor MCP Settings" />
+    </Frame>
+
+    **Testing in Cursor:**
+
+    Try asking Cursor:
+    - "What connections do I have access to?"
+    - "Show me all Gmail actions I can perform"
+    - "Send an email using Gmail to hello@picaos.com"
+    - "Build a React form component that sends emails with Gmail"
+  </Tab>
+  
+  <Tab title="Windsurf" icon="/images/windsurf.svg">
+    Configuration for Windsurf is similar to Cursor:
+
+    1. Open Windsurf settings
+    2. Navigate to the MCP configuration
+    3. Add the Pica MCP server configuration:
+
+    ```json
+    {
+      "mcpServers": {
+        "pica": {
+          "command": "npx",
+          "args": ["@picahq/mcp"],
+          "env": {
+            "PICA_SECRET": "your-pica-secret-key"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Examples
+
+Once set up, you can use the MCP server for three main purposes:
+
+<Tabs>
+  <Tab title="Execute Actions" icon="bolt">
+    ### Direct Action Execution
+    
+    Ask your AI to perform actions on integrated platforms:
+
+    <AccordionGroup>
+      <Accordion title="Gmail - Read Emails" icon="envelope">
+        ```
+        Get my last 5 emails from Gmail
+        ```
+        
+        The AI will use the MCP server to fetch your recent emails and display them.
+      </Accordion>
+      
+      <Accordion title="Slack - Send Message" icon="slack">
+        ```
+        Send a message to #general channel in Slack: "Meeting in 10 minutes"
+        ```
+        
+        The AI will post the message to your Slack workspace.
+      </Accordion>
+      
+      <Accordion title="Google Calendar - Create Event" icon="calendar">
+        ```
+        Create a calendar event for tomorrow at 2pm titled "Product Review"
+        ```
+        
+        The AI will create the event in your Google Calendar.
+      </Accordion>
+      
+      <Accordion title="Salesforce - Create Lead" icon="user-plus">
+        ```
+        Create a lead in Salesforce for John Doe at Acme Corp with email john@acme.com
+        ```
+        
+        The AI will create the lead in your Salesforce CRM.
+      </Accordion>
+    </AccordionGroup>
+  </Tab>
+  
+  <Tab title="Generate Code" icon="code">
+    ### Integration Code Generation
+    
+    Ask your AI to build integration features:
+
+    <AccordionGroup>
+      <Accordion title="Email Form Component" icon="code">
+        **Prompt:**
+        ```
+        Create a React form component that sends emails using Gmail with Pica
+        ```
+        
+        **What you get:**
+        - Complete React component with form fields
+        - Gmail integration using Pica Passthrough API
+        - Proper authentication handling
+        - Error handling and validation
+      </Accordion>
+      
+      <Accordion title="Dashboard with CRM Data" icon="chart-line">
+        **Prompt:**
+        ```
+        Build a dashboard that displays Salesforce leads with filtering options using Pica
+        ```
+        
+        **What you get:**
+        - Dashboard component with data fetching
+        - Integration with Salesforce API via Pica
+        - Filter and search functionality
+        - Responsive UI components
+      </Accordion>
+      
+      <Accordion title="Invoice Management Table" icon="table">
+        **Prompt:**
+        ```
+        Create a paginatable table for QuickBooks invoices with search and sort using Pica
+        ```
+        
+        **What you get:**
+        - Table component with pagination
+        - QuickBooks API integration
+        - Search and sort capabilities
+        - Export functionality
+      </Accordion>
+      
+      <Accordion title="Multi-Channel Messaging" icon="messages">
+        **Prompt:**
+        ```
+        Build a form that posts messages to multiple Slack channels with scheduling using Pica
+        ```
+        
+        **What you get:**
+        - Form with channel selection
+        - Slack API integration
+        - Message scheduling logic
+        - Confirmation UI
+      </Accordion>
+    </AccordionGroup>
+  </Tab>
+  
+  <Tab title="Get Insights" icon="circle-question">
+    ### Integration Knowledge
+    
+    Ask questions about integrations and their capabilities:
+
+    <AccordionGroup>
+      <Accordion title="List Available Connections" icon="plug">
+        ```
+        What connections do I have access to?
+        ```
+        
+        Shows all your connected integrations and their status.
+      </Accordion>
+      
+      <Accordion title="Explore Platform Actions" icon="bolt">
+        ```
+        What actions can I perform with Google Sheets?
+        ```
+        
+        Lists all available actions for Google Sheets with descriptions.
+      </Accordion>
+      
+      <Accordion title="Understand Action Requirements" icon="circle-question">
+        ```
+        What parameters does the Gmail send message action require?
+        ```
+        
+        Provides detailed documentation about the action's parameters, requirements, and usage.
+      </Accordion>
+      
+      <Accordion title="Learn Authentication Methods" icon="key">
+        ```
+        How do I authenticate with the Salesforce API using Pica?
+        ```
+        
+        Explains the authentication flow and requirements.
+      </Accordion>
+    </AccordionGroup>
+  </Tab>
+</Tabs>
+
+## Advanced Configuration
+
+### Manual Installation
+
+If you want more control over the installation:
+
+```bash
+# Clone the repository
+git clone https://github.com/picahq/mcp.git
+cd mcp
+
+# Install dependencies
+npm install
+
+# Build the server
+npm run build
+
+# For development with auto-rebuild
+npm run watch
+```
+
+**Manual IDE Configuration:**
+
+```json
+{
+  "mcpServers": {
+    "pica": {
+      "command": "node",
+      "args": [
+        "/path/to/pica-mcp-server/build/index.js"
+      ],
+      "env": {
+        "PICA_SECRET": "YOUR_PICA_SECRET_KEY"
+      }
+    }
+  }
+}
+```
+
+### Deploy to Vercel
+
+You can deploy the MCP server to Vercel for remote access:
+
+1. Install dependencies including Vercel adapter:
+   ```bash
+   npm install @vercel/mcp-adapter zod
+   ```
+
+2. Deploy to Vercel:
+   ```bash
+   vercel
+   ```
+
+3. Configure your MCP client to use the remote server:
+   - **For Cursor**: `https://your-project.vercel.app/api/mcp`
+   - **For Claude/Cline**: Use `npx mcp-remote https://your-project.vercel.app/api/mcp`
+
+See the [DEPLOYMENT.md](https://github.com/picahq/mcp/blob/main/DEPLOYMENT.md) file in the repository for detailed instructions.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="MCP Server Not Responding" icon="circle-exclamation">
+    **Problem**: The AI can't connect to the MCP server.
+    
+    **Solutions**:
+    - Verify your `PICA_SECRET` is set correctly in the configuration
+    - Check that the MCP server is running (restart your IDE)
+    - Ensure you have an active internet connection
+    - Try running `npx @picahq/mcp` manually to test
+  </Accordion>
+  
+  <Accordion title="Authentication Errors" icon="key">
+    **Problem**: Getting 401 or authentication errors.
+    
+    **Solutions**:
+    - Verify your API key is valid at [Settings > API Keys](https://app.picaos.com/settings/api-keys)
+    - Check that your integrations are connected at the [Connections page](https://app.picaos.com/connections)
+    - Ensure the API key has proper permissions
+  </Accordion>
+  
+  <Accordion title="No Connections Available" icon="plug">
+    **Problem**: The server reports no connections available.
+    
+    **Solutions**:
+    - Connect integrations at [app.picaos.com/connections](https://app.picaos.com/connections)
+    - Verify connections are active and not expired
+    - Re-authenticate if needed
+  </Accordion>
+  
+  <Accordion title="Action Execution Fails" icon="triangle-exclamation">
+    **Problem**: Actions fail to execute.
+    
+    **Solutions**:
+    - Check the action knowledge first using `get_pica_action_knowledge`
+    - Verify all required parameters are provided
+    - Ensure your connection has proper permissions for the action
+    - Check for rate limits or API-specific restrictions
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Claude Desktop Setup"
+    icon="message"
+    href="/mcp/claude-desktop"
+  >
+    Specific setup guide for Claude Desktop
+  </Card>
+  <Card
+    title="Browse Integrations"
+    icon="grid"
+    href="https://app.picaos.com/tools"
+  >
+    Explore all 150+ available integrations
+  </Card>
+  <Card
+    title="API Reference"
+    icon="book"
+    href="/api-reference/introduction"
+  >
+    Learn about the underlying Pica APIs
+  </Card>
+  <Card
+    title="GitHub Repository"
+    icon="github"
+    href="https://github.com/picahq/mcp"
+  >
+    View source code and contribute
+  </Card>
+</CardGroup>
+
+## Get Help
+
+<Card
+  title="Contact Support"
+  icon="envelope"
+  href="mailto:support@picaos.com"
+  horizontal
+>
+  Have questions? Email us at support@picaos.com for assistance
+</Card>
+

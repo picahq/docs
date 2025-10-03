@@ -1,0 +1,177 @@
+---
+title: Welcome to Pica
+description: "The reliable data infrastructure for integrations. Connect to 150+ tools with built-in auth, edge case handling, and deep integration knowledge."
+---
+
+<iframe
+  width="100%"
+  style={{ aspectRatio: '16/9' }}
+  src="https://www.youtube.com/embed/hYWfFgtKybY"
+  title="Pica Product Overview"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+## What can Pica do for you?
+
+Pica gives you everything you need to build with integrations—whether you're connecting SaaS apps, building AI agents, making direct API calls, or vibe coding with prompts. 
+
+<CardGroup cols={3}>
+  <Card icon="users" title="Customer-facing integrations">
+    Let users connect Slack, Google, Salesforce, and more directly in your app
+  </Card>
+  <Card icon="robot" title="AI agents with tools">
+    Give agents access to any integration across any framework (LangChain, Vercel AI, MCP)
+  </Card>
+  <Card icon="brain" title="Intelligent knowledge">
+    Get intelligent responses to your questions about any integration's schema, endpoints, and best practices
+  </Card>
+  <Card icon="database" title="Data pipelines">
+    Pull data from CRMs, analytics tools, or databases into your app
+  </Card>
+  <Card icon="webhook" title="Integration workflows">
+    Sync data between tools, automate workflows, or build custom integrations
+  </Card>
+  <Card icon="sparkles" title="Vibe-coded features">
+    Prompt Lovable, V0, Bolt, or any AI coding tool to add integration logic instantly
+  </Card>
+</CardGroup>
+
+## Choose your path
+
+Select the product that matches what you're building:
+
+<Tabs>
+  <Tab title="AI Agent">
+    ### Building an AI agent that needs to use tools?
+    
+    **Use ToolKit** to give your agent instant access to any integration.
+    
+    ToolKit works with every major agentic framework—Vercel AI SDK, LangChain, Model Context Protocol (MCP), Mastra, and more. Simply load the toolkit and your agent can execute actions across 150+ integrations with proper authentication and error handling built in.
+    
+    **Key features:**
+    - Scope access by connection, action, and permission level
+    - Works with all frameworks (SDK-agnostic)
+    - Automatic retry logic and edge case handling
+    - Intelligent knowledge base so your agent always executes actions correctly
+    
+    <Card
+      title="Get started with ToolKit"
+      icon="robot"
+      href="/core/toolkit"
+    >
+      Add tools to your agent in minutes with any framework
+    </Card>
+  </Tab>
+
+  <Tab title="SaaS App">
+    ### Building a SaaS app that needs integrations?
+    
+    **Use AuthKit** to let your users connect their accounts.
+    
+    AuthKit is an embeddable component that works with React, Next.js, Vue, and all major frameworks. Your users can securely connect their third-party accounts through a pre-built UI that handles OAuth flows, token management, and authentication.
+    
+    **Perfect for:**
+    - B2B or B2C SaaS products needing customer integrations
+    - Apps that sync data from user accounts (CRM, calendar, email, etc.)
+    - Platforms that need user-scoped access to third-party tools
+    
+    <Card
+      title="Get started with AuthKit"
+      icon="plug"
+      href="/core/authkit"
+    >
+      Learn how to embed AuthKit in your app and let users connect their accounts
+    </Card>
+  </Tab>
+  
+  <Tab title="Direct API">
+    ### Need to make direct HTTP requests to integrations?
+    
+    **Use the Passthrough API** for full control over your integration requests.
+    
+    The Passthrough API lets you make authenticated HTTP requests to any integration without managing API keys, OAuth flows, or tokens. Pica handles authentication and provides deep knowledge of every endpoint's schemas, edge cases, and dependencies.
+    
+    **Build faster with:**
+    - Direct data passthrough—we never store or access your integration data
+    - Our MCP server in Cursor, Windsurf, or any other MCP-compatible IDE
+    - Prompt-based request building powered by our knowledge base
+    - Schema validation and error handling
+    
+    <Card
+      title="Get started with Passthrough API"
+      icon="code"
+      href="/api-reference/passthrough/overview"
+    >
+      Make your first authenticated API request
+    </Card>
+  </Tab>
+  
+  <Tab title="Vibe Coding">
+    ### Using Lovable, V0, Bolt, or other AI coding tools?
+    
+    **Use BuildKit** to add integration logic with copy-paste prompts.
+    
+    BuildKit provides pre-written prompts that you can paste into any vibe coding tool to instantly generate integration features. Each prompt includes the full context needed—schemas, authentication patterns, edge cases, and best practices.
+    
+    **Works with:**
+    - [Lovable](https://lovable.dev)
+    - [Vercel V0](https://v0.app)
+    - [Bolt](https://bolt.new)
+    - [Base44](https://base44.com)
+    - [Tempo](https://tempo.new) (Natively powered by Pica)
+    - Any AI coding assistant that accepts prompts
+
+    <Card
+      title="Get started with BuildKit"
+      icon="wand-magic-sparkles"
+      href="/core/buildkit"
+    >
+      Browse prompts and start building integration features
+    </Card>
+  </Tab>
+</Tabs>
+
+## Why developers choose Pica
+
+<AccordionGroup>
+  <Accordion title="Built-in authentication" icon="key">
+    Users connect their accounts through OAuth or API keys directly—you never need to store or manage credentials. Pica handles all authentication, token refresh, and security.
+  </Accordion>
+  
+  <Accordion title="Your data stays private" icon="lock">
+    We never store or access your integration data. All API calls go directly from your app to the integration—Pica only handles authentication tokens. Your data is yours.
+  </Accordion>
+  
+  <Accordion title="Edge cases handled" icon="shield-check">
+    Our knowledge base covers rate limits, pagination, required fields, nested objects, and API quirks for every integration. You get reliable results without debugging each API's edge cases.
+  </Accordion>
+  
+  <Accordion title="Works with any framework" icon="layer-group">
+    Use Pica with the Vercel AI SDK, LangChain, Mastra, Model Context Protocol, or any framework. We're Agentic Framework-agnostic.
+  </Accordion>
+  
+  <Accordion title="150+ integrations and growing" icon="grid">
+    From Slack and Gmail to Salesforce and QuickBooks—we support the tools your users actually use. Need an integration we don't have yet? Request it and our system can add it quickly, often within days.
+  </Accordion>
+</AccordionGroup>
+
+## Ready to start building?
+
+<CardGroup cols={2}>
+  <Card
+    title="Create free account"
+    icon="rocket"
+    href="https://app.picaos.com"
+  >
+    Sign up and connect your first integration in under 2 minutes
+  </Card>
+  <Card
+    title="View quickstart guide"
+    icon="book-open"
+    href="/get-started/quickstart"
+  >
+    Connect and call your first integration in under 2 minutes
+  </Card>
+</CardGroup>

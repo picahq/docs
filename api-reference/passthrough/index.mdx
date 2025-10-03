@@ -1,0 +1,31 @@
+---
+title: 'Overview'
+description: 'Work with any integration directly through a single API.'
+---
+
+The Passthrough API is a powerful tool that allows you to interact directly with the underlying API of any integration.
+
+<Warning>
+  Responses from the Passthrough API are shaped to match the response from the underlying API.
+</Warning> 
+
+## Base URL
+
+```
+https://api.picaos.com/v1/passthrough/{path}
+```
+Where `{path}` corresponds to the endpoint path in the third-party API's documentation.
+
+## Required Headers
+<ParamField header="x-pica-secret" type="string" required>
+  Your Pica API key
+</ParamField>
+<ParamField header="x-pica-connection-key" type="string" required>
+  The connection key for the specific integration
+</ParamField>
+
+<br />
+
+<Info>
+  If you're looking to see how you can construct requests to the Passthrough API, check out the [Building Requests](/api-reference/passthrough/building-requests) guide.
+</Info>

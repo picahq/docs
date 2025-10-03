@@ -1,0 +1,313 @@
+---
+title: "Claude Desktop"
+description: "Set up Pica's MCP Server with Claude Desktop"
+---
+
+<Frame caption="Watch this quick demo to see Pica's MCP Server in action with Claude Desktop">
+  <iframe
+    width="100%"
+    src="https://www.youtube.com/embed/yc0x7GokM2k"
+    title="Pica MCP Server with Claude Desktop"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  ></iframe>
+</Frame>
+
+## Overview
+
+Claude Desktop is Anthropic's desktop application that supports the Model Context Protocol (MCP). By integrating Pica's MCP Server with Claude Desktop, you can execute actions on 150+ third-party integrations, generate integration code, and get insights about how integrations work—all through natural conversation with Claude.
+
+<Card
+  title="Download Claude Desktop"
+  icon="download"
+  href="https://claude.ai/download"
+  horizontal
+>
+  Get the latest version of Claude Desktop from Anthropic
+</Card>
+
+## Prerequisites
+
+Before setting up, make sure you have:
+
+1. **Claude Desktop Installed** - Download [here](https://claude.ai/download)
+2. **Pica Account** - Create a [free account](https://app.picaos.com)
+3. **Pica API Key** - Get from [Settings > API Keys](https://app.picaos.com/settings/api-keys)
+4. **Connected Integrations** - Connect at least one integration from the [Connections page](https://app.picaos.com/connections)
+
+## Installation
+
+<Steps>
+  <Step title="Locate the Claude Desktop config file">
+    Find your Claude Desktop configuration file:
+    
+    **On MacOS:**
+    ```
+    ~/Library/Application Support/Claude/claude_desktop_config.json
+    ```
+    
+    **On Windows:**
+    ```
+    %APPDATA%/Claude/claude_desktop_config.json
+    ```
+    
+    <Info>
+    If the file doesn't exist, create it in the appropriate directory.
+    </Info>
+  </Step>
+  
+  <Step title="Add Pica MCP Server configuration">
+    Open the `claude_desktop_config.json` file and add the following configuration:
+    
+    ```json
+    {
+      "mcpServers": {
+        "pica": {
+          "command": "npx",
+          "args": ["@picahq/mcp"],
+          "env": {
+            "PICA_SECRET": "your-pica-secret-key"
+          }
+        }
+      }
+    }
+    ```
+    
+    Replace `your-pica-secret-key` with your actual Pica API key.
+    
+    <Warning>
+    Make sure to keep your API key secure. Never share the config file publicly.
+    </Warning>
+  </Step>
+  
+  <Step title="Restart Claude Desktop">
+    Close and reopen Claude Desktop for the changes to take effect.
+  </Step>
+  
+  <Step title="Verify the installation">
+    Start a new conversation in Claude and ask:
+    
+    ```
+    What connections do I have access to?
+    ```
+    
+    If configured correctly, Claude will list your connected Pica integrations.
+  </Step>
+</Steps>
+
+## What You Can Do
+
+Once set up, you can use Claude to interact with your integrations in three main ways:
+
+### Execute Actions Directly
+
+Ask Claude to perform actions on your connected platforms:
+
+<CardGroup cols={2}>
+  <Card icon="envelope" title="Email Management">
+    - "Get my last 5 emails from Gmail"
+    - "Send an email to hello@picaos.com with subject 'Hello'"
+    - "Search my emails for messages from John"
+  </Card>
+  
+  <Card icon="calendar" title="Calendar Operations">
+    - "Create a meeting tomorrow at 2pm"
+    - "Show my calendar events for this week"
+    - "Find free time slots on Friday"
+  </Card>
+  
+  <Card icon="slack" title="Slack Communication">
+    - "Send a message to #general: 'Meeting in 10 minutes'"
+    - "List all channels in my Slack workspace"
+    - "Post an update to the #announcements channel"
+  </Card>
+  
+  <Card icon="users" title="CRM Management">
+    - "Create a lead in Salesforce for Jane Doe at Acme Corp"
+    - "Show me recent leads from HubSpot"
+    - "Update the status of contact ID 12345"
+  </Card>
+</CardGroup>
+
+## Advanced Configuration
+
+### Using Docker
+
+If you prefer running the MCP server in Docker, you can configure Claude Desktop to use a Docker container instead of the NPX command.
+
+**Step 1: Build the Docker image**
+
+First, build the Pica MCP Server Docker image:
+
+```bash
+docker build -t pica-mcp-server .
+```
+
+Or pull from the repository if available.
+
+**Step 2: Configure Claude Desktop**
+
+Update your Claude Desktop configuration file:
+
+**On MacOS:** `~/Library/Application\ Support/Claude/claude_desktop_config.json`
+
+**On Windows:** `%APPDATA%/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "pica": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-e", "PICA_SECRET=YOUR_PICA_SECRET_KEY",
+        "pica-mcp-server"
+      ]
+    }
+  }
+}
+```
+
+Replace `YOUR_PICA_SECRET_KEY` with your actual Pica API key.
+
+### Using Local Build
+
+For development or custom modifications:
+
+```json
+{
+  "mcpServers": {
+    "pica": {
+      "command": "node",
+      "args": [
+        "/path/to/pica-mcp-server/build/index.js"
+      ],
+      "env": {
+        "PICA_SECRET": "YOUR_PICA_SECRET_KEY"
+      }
+    }
+  }
+}
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Claude doesn't see the MCP server" icon="circle-exclamation">
+    **Problem**: Claude doesn't respond to integration-related questions.
+    
+    **Solutions**:
+    1. Verify the config file path is correct
+    2. Check that the JSON syntax is valid
+    3. Ensure your API key is correct
+    4. Restart Claude Desktop completely
+    5. Check Claude's developer console for errors (if available)
+  </Accordion>
+  
+  <Accordion title="Authentication errors" icon="key">
+    **Problem**: Getting 401 or authentication errors.
+    
+    **Solutions**:
+    1. Verify your API key at [Settings > API Keys](https://app.picaos.com/settings/api-keys)
+    2. Check that integrations are connected at [Connections](https://app.picaos.com/connections)
+    3. Ensure connections haven't expired
+    4. Try re-authenticating the integration
+  </Accordion>
+  
+  <Accordion title="No connections found" icon="plug">
+    **Problem**: Claude says no connections are available.
+    
+    **Solutions**:
+    1. Connect integrations at [app.picaos.com/connections](https://app.picaos.com/connections)
+    2. Verify connections are active (not expired or revoked)
+    3. Check that your API key has access to the connections
+    4. Restart Claude Desktop after connecting
+  </Accordion>
+  
+  <Accordion title="Actions fail to execute" icon="triangle-exclamation">
+    **Problem**: Claude can't execute actions on platforms.
+    
+    **Solutions**:
+    1. Ask Claude to check action requirements first
+    2. Verify all required parameters are provided
+    3. Check connection permissions for the action
+    4. Look for rate limits or API restrictions
+    5. Test the action in the Pica dashboard first
+  </Accordion>
+</AccordionGroup>
+
+## Tips for Better Results
+
+<AccordionGroup>
+  <Accordion title="Be specific with requests" icon="bullseye">
+    Instead of "send an email," say "send an email to john@example.com with subject 'Meeting' and body 'Let's meet tomorrow at 2pm'"
+  </Accordion>
+  
+  <Accordion title="Check connections first" icon="plug">
+    Start conversations with "What connections do I have?" to see what's available
+  </Accordion>
+  
+  <Accordion title="Ask for knowledge before executing" icon="book">
+    For complex actions, ask "What parameters does [action] require?" before executing
+  </Accordion>
+  
+  <Accordion title="Provide context for code generation" icon="code">
+    When asking for code, specify:
+    - Framework/language (React, Next.js, etc.)
+    - UI requirements
+    - Error handling needs
+    - Authentication approach
+  </Accordion>
+  
+  <Accordion title="Test incrementally" icon="vial">
+    Start with simple actions before building complex workflows
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Browse Integrations"
+    icon="grid"
+    href="https://app.picaos.com/tools"
+  >
+    Explore all 150+ available integrations and their actions
+  </Card>
+  <Card
+    title="Setup Guide"
+    icon="gear"
+    href="/mcp/setup"
+  >
+    General setup instructions for other MCP clients
+  </Card>
+  <Card
+    title="API Reference"
+    icon="book"
+    href="/api-reference/introduction"
+  >
+    Learn about the underlying Pica APIs
+  </Card>
+  <Card
+    title="GitHub Repository"
+    icon="github"
+    href="https://github.com/picahq/mcp"
+  >
+    View source code and contribute
+  </Card>
+</CardGroup>
+
+## Get Help
+
+<Card
+  title="Contact Support"
+  icon="envelope"
+  href="mailto:support@picaos.com"
+  horizontal
+>
+  Have questions? Email us at support@picaos.com for assistance
+</Card>
+

@@ -1,0 +1,101 @@
+---
+title: Quickstart
+description: "Connect your first integration and make your first request in under 5 minutes"
+---
+
+Get up and running with Pica by connecting Gmail and retrieving your last unread email.
+
+<Steps>
+  <Step title="Create your Pica account">
+    [Sign up for a free Pica account](https://app.picaos.com) to get started.
+  </Step>
+  
+  <Step title="Connect Gmail ">
+    Click [**Connect Gmail**](https://app.picaos.com/connections#open=gmail) to open the connection modal, then authorize your Google account.
+    <img src="/images/new-connection.gif" alt="Add a new connection" />
+    
+    <Info>
+      You can connect any integration the same way. Each connection is stored securely and can be used across all Pica products.
+    </Info>
+  </Step>
+  
+  <Step title="Make your first request">
+    Now let's retrieve your Gmail user profile. Choose your preferred approach:
+    
+    <Tabs>
+      <Tab title="AI Playground">
+        **Best for: AI agents and agentic workflows**
+        
+        1. Click the **"Try in Playground"** button (top right of the connections page)
+        2. In the AI chat, paste this prompt:
+        
+        ```
+        Get my Gmail user profile
+        ```
+        
+        3. The AI will execute the action and return your profile information
+        
+        The Playground lets you test integration actions conversationally. It's perfect for exploring what's possible before building your agent or workflow.
+        
+        <Tip>
+          Try any request such as "Fetch my last 3 unread emails from Gmail" or "Send an email to hello@picaos.com with a warm greeting"
+        </Tip>
+      </Tab>
+      
+      <Tab title="Direct API">
+        **Best for: Direct integration building and custom workflows**
+        
+        First, gather your credentials:
+        1. Get your [API key](https://app.picaos.com/settings/api-keys) from the settings page
+        2. Copy your Gmail connection key from the [connections table](https://app.picaos.com/connections)
+        
+        Then make a request to the Passthrough API:
+        
+        ```bash
+        curl "https://api.picaos.com/v1/passthrough/users/me/profile" \
+          -H "x-pica-secret: YOUR_PICA_SECRET_KEY" \
+          -H "x-pica-connection-key: YOUR_GMAIL_CONNECTION_KEY" \
+          -H "x-pica-action-id: conn_mod_def::F_JeCYGuzvg::yAM6bqGdRdm91ZbYejlbEA" \
+          -H "Content-Type: application/json"
+        ```
+        
+        Replace `YOUR_PICA_SECRET_KEY` and `YOUR_GMAIL_CONNECTION_KEY` with your actual values.
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+## What's next?
+
+Now that you've made your first integration request, choose your path based on what you're building:
+
+<CardGroup cols={2}>
+  <Card
+    title="Build an AI agent with tools"
+    icon="robot"
+    href="/get-started/welcome#choose-your-path"
+  >
+    Use ToolKit to give your agent access to integrations
+  </Card>
+  <Card
+    title="Build a SaaS app with integrations"
+    icon="plug"
+    href="/get-started/welcome#choose-your-path"
+  >
+    Add AuthKit to let your users connect their own accounts
+  </Card>
+  <Card
+    title="Make direct API requests"
+    icon="code"
+    href="/get-started/welcome#choose-your-path"
+  >
+    Use the Passthrough API for full control over requests
+  </Card>
+  <Card
+    title="Vibe code with prompts"
+    icon="wand-magic-sparkles"
+    href="/get-started/welcome#choose-your-path"
+  >
+    Use BuildKit with Lovable, V0, Bolt, and more
+  </Card>
+</CardGroup>

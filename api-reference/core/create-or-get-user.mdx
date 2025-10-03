@@ -18,12 +18,12 @@ description: 'Create a new user, or get an existing user by email'
 
 <RequestExample>
 ```bash cURL
-curl --location --request POST 'https://api.picaos.com/internal/v3/users/create-or-get' \
---header 'x-pica-secret: YOUR_API_KEY' \
---header 'Content-Type: application/json' \
---data-raw '{
+curl -X POST 'https://api.picaos.com/internal/v3/users/create-or-get' \
+  -H 'x-pica-secret: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
     "email": "test@example.com"
-}'
+  }'
 ```
 </RequestExample>
 

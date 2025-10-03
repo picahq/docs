@@ -1,0 +1,482 @@
+---
+title: "OpenAI Agents SDK"
+description: "Use Pica's MCP Server with OpenAI Agents SDK for intelligent integration access"
+---
+
+<Frame>
+  <img src="/images/toolkit/openai-agents-sdk-banner.svg" alt="Pica OpenAI Agents SDK" style={{ borderRadius: '5px' }} />
+</Frame>
+
+Give your [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/) agents intelligent access to 150+ integrations using Pica's MCP Server. The Model Context Protocol (MCP) integration provides seamless tool access with built-in authentication, error handling, and Pica's knowledge base.
+
+<Info>
+For complete MCP Server documentation including all tools and configuration options, see the [MCP Server guide](/toolkit/mcp). This page focuses on OpenAI Agents SDK-specific usage patterns.
+</Info>
+
+## Prerequisites
+
+1. **Pica Account** - Free account for managing integrations
+2. **Python 3.10+** - Required for OpenAI Agents SDK  
+3. **OpenAI Agents SDK** - Installed via pip
+
+## Installation
+
+```bash
+pip install openai-agents
+```
+
+## Quick Start
+
+Create an agent with Pica's MCP Server:
+
+```python
+from agents import Agent, Runner
+from agents.extensions.mcp import MCPServerManager
+import os
+
+# Initialize MCP manager and add Pica server
+mcp = MCPServerManager()
+mcp.add_server(
+    name="pica",
+    command="npx",
+    args=["@picahq/mcp"],
+    env={"PICA_SECRET": os.getenv("PICA_SECRET")}
+)
+
+# Create agent with MCP tools
+agent = Agent(
+    name="integration-agent",
+    instructions="""You are an AI assistant with access to integrations through Pica.
+    You can list available integrations, search for actions, get detailed action knowledge,
+    and execute actions on behalf of the user.""",
+    mcp_servers=[mcp]
+)
+
+# Run the agent
+result = Runner.run_sync(
+    agent,
+    "What integrations do I have connected?"
+)
+
+print(result.final_output)
+```
+
+## Usage Patterns
+
+### Basic Agent with MCP Server
+
+The simplest setup - an agent with access to all MCP tools:
+
+```python expandable Example
+from agents import Agent, Runner
+from agents.extensions.mcp import MCPServerManager
+import os
+
+# Setup MCP server
+mcp = MCPServerManager()
+mcp.add_server(
+    name="pica",
+    command="npx",
+    args=["@picahq/mcp"],
+    env={"PICA_SECRET": os.getenv("PICA_SECRET")}
+)
+
+# Create agent
+agent = Agent(
+    name="automation-agent",
+    instructions="""You help users automate tasks across their integrated tools.
+    Use Pica's tools to discover available integrations, search for actions,
+    understand action requirements, and execute actions.""",
+    model="gpt-5",
+    mcp_servers=[mcp]
+)
+
+# Execute tasks
+result = Runner.run_sync(
+    agent,
+    "Send an email via Gmail to team@company.com with the subject 'Weekly Update'"
+)
+
+print(result.final_output)
+```
+
+### Agent with Handoffs
+
+Use multiple specialized agents with handoff capabilities. This example combines a Pica-powered integration agent with a text analysis agent:
+
+```python expandable Example
+from agents import Agent, Runner, Handoff
+from agents.extensions.mcp import MCPServerManager
+import os
+
+# Setup MCP server
+mcp = MCPServerManager()
+mcp.add_server(
+    name="pica",
+    command="npx",
+    args=["@picahq/mcp"],
+    env={"PICA_SECRET": os.getenv("PICA_SECRET")}
+)
+
+# Integration specialist (with Pica MCP)
+integration_agent = Agent(
+    name="integration-agent",
+    instructions="""You specialize in working with third-party integrations.
+    You can list integrations, search for actions, and execute operations
+    through Gmail, Slack, Salesforce, and other platforms.""",
+    model="gpt-5",
+    mcp_servers=[mcp]
+)
+
+# Text analysis specialist (no Pica tools)
+analyst_agent = Agent(
+    name="analyst-agent",
+    instructions="""You specialize in analyzing and summarizing text content.
+    You don't have access to integrations, but you're excellent at
+    understanding patterns, extracting insights, and creating summaries.""",
+    model="gpt-5"
+    # Note: No mcp_servers - this agent doesn't use Pica
+)
+
+# Coordinator agent
+coordinator = Agent(
+    name="coordinator",
+    instructions="""You coordinate between integration operations and text analysis.
+    
+    Hand off to:
+    - integration-agent: For fetching data from or sending data to integrations
+    - analyst-agent: For analyzing, summarizing, or processing text content
+    
+    Example workflow: Have integration-agent fetch emails, then have analyst-agent
+    summarize them, then have integration-agent send the summary.""",
+    model="gpt-5",
+    handoffs=[
+        Handoff(agent=integration_agent, description="Work with integrations"),
+        Handoff(agent=analyst_agent, description="Analyze and summarize text")
+    ]
+)
+
+# Run with handoffs
+result = Runner.run_sync(
+    coordinator,
+    """Get my last 5 Gmail emails, analyze their sentiment and key topics,
+    then send a summary to team@company.com"""
+)
+
+print(result.final_output)
+```
+
+### Agent with Guardrails
+
+Add validation and safety checks to your agent. This example blocks emails to restricted addresses:
+
+```python expandable Example
+from agents import Agent, Runner, Guardrail
+from agents.extensions.mcp import MCPServerManager
+import os
+import re
+
+# Setup MCP server
+mcp = MCPServerManager()
+mcp.add_server(
+    name="pica",
+    command="npx",
+    args=["@picahq/mcp"],
+    env={"PICA_SECRET": os.getenv("PICA_SECRET")}
+)
+
+# Define email validation guardrail
+def validate_email_recipient(context):
+    """Block emails to restricted addresses"""
+    message = context.input.lower()
+    
+    # Extract email addresses from the request
+    email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    emails = re.findall(email_pattern, message)
+    
+    # Blocked email addresses
+    blocked_emails = ["john@example.com", "blocked@company.com"]
+    
+    for email in emails:
+        if email.lower() in blocked_emails:
+            return False, f"Cannot send email to {email} - this address is restricted"
+    
+    return True, None
+
+# Create email agent with guardrails
+email_agent = Agent(
+    name="email-agent",
+    instructions="""You help users send emails using Gmail.
+    Search for Gmail email sending actions and execute them with the user's parameters.""",
+    model="gpt-5",
+    mcp_servers=[mcp],
+    guardrails=[
+        Guardrail(name="email-validator", fn=validate_email_recipient, on="input")
+    ]
+)
+
+# This will work
+try:
+    result1 = Runner.run_sync(
+        email_agent,
+        "Send an email to team@company.com with subject 'Meeting Update'"
+    )
+    print("✅ Email sent:", result1.final_output)
+except Exception as e:
+    print(f"❌ Blocked: {e}")
+
+# This will be blocked by guardrail
+try:
+    result2 = Runner.run_sync(
+        email_agent,
+        "Send an email to john@example.com saying hello"
+    )
+    print("✅ Email sent:", result2.final_output)
+except Exception as e:
+    print(f"❌ Blocked: {e}")
+```
+
+### Streaming Responses
+
+Stream agent responses in real-time:
+
+```python expandable Example
+from agents import Agent, Runner
+from agents.extensions.mcp import MCPServerManager
+import os
+
+# Setup MCP server
+mcp = MCPServerManager()
+mcp.add_server(
+    name="pica",
+    command="npx",
+    args=["@picahq/mcp"],
+    env={"PICA_SECRET": os.getenv("PICA_SECRET")}
+)
+
+# Create agent
+agent = Agent(
+    name="streaming-agent",
+    instructions="""You help users discover and work with their Pica integrations.
+    Explain what you're doing as you work through the process.""",
+    model="gpt-5",
+    mcp_servers=[mcp]
+)
+
+# Stream the response
+async def stream_agent():
+    async with Runner.run_stream(
+        agent,
+        "What integrations do I have connected in Pica?"
+    ) as stream:
+        async for event in stream:
+            if event.type == "agent_response":
+                print(event.data.content, end="", flush=True)
+            elif event.type == "tool_call":
+                print(f"\n[Using tool: {event.data.name}]")
+            elif event.type == "tool_result":
+                print(f"[Tool completed]")
+
+# Run async
+import asyncio
+asyncio.run(stream_agent())
+```
+
+## Multi-Session Support
+
+Use sessions to maintain conversation history:
+
+```python expandable Example
+from agents import Agent, Runner, Session
+from agents.extensions.mcp import MCPServerManager
+import os
+
+# Setup MCP server
+mcp = MCPServerManager()
+mcp.add_server(
+    name="pica",
+    command="npx",
+    args=["@picahq/mcp"],
+    env={"PICA_SECRET": os.getenv("PICA_SECRET")}
+)
+
+# Create agent
+agent = Agent(
+    name="context-agent",
+    instructions="You help with integrations and remember context from previous messages.",
+    model="gpt-5",
+    mcp_servers=[mcp]
+)
+
+# Create session
+session = Session()
+
+# First interaction
+result1 = Runner.run_sync(
+    agent,
+    "What integrations do I have?",
+    session=session
+)
+
+# Agent remembers previous context
+result2 = Runner.run_sync(
+    agent,
+    "Show me actions for the first one",
+    session=session
+)
+
+print(result2.final_output)
+```
+
+## Configuration
+
+The MCP server accepts configuration through environment variables:
+
+```python
+mcp.add_server(
+    name="pica",
+    command="npx",
+    args=["@picahq/mcp"],
+    env={
+        "PICA_SECRET": os.getenv("PICA_SECRET"),  # Required: Your Pica API key
+        # Optional: Add custom headers
+        "CUSTOM_HEADER": "value"
+    }
+)
+```
+
+<Card title="Full MCP configuration options" icon="sliders" href="/toolkit/mcp#configuration" horizontal>
+  View all environment variables and configuration settings
+</Card>
+
+## Best Practices
+
+<Frame>
+  <img src="/images/toolkit/openai-agents.png" alt="Pica OpenAI Agents SDK Best Practices" style={{ borderRadius: '5px' }} />
+</Frame>
+
+<AccordionGroup>
+  <Accordion title="Use specific instructions" icon="message">
+    Provide clear instructions about when and how to use Pica tools:
+    
+    ```python
+    instructions = """You are an integration assistant with access to Pica tools.
+    
+    Always follow this workflow:
+    1. Use list_pica_integrations to see available platforms
+    2. Use get_pica_platform_actions to find relevant actions
+    3. Use get_pica_action_knowledge to understand requirements
+    4. Use execute_pica_action to perform the operation
+    
+    Ask for clarification if you're unsure about any parameters."""
+    ```
+  </Accordion>
+  
+  <Accordion title="Implement guardrails" icon="shield-check">
+    Always add guardrails for production agents to prevent:
+    - Destructive operations without confirmation
+    - Exposure of sensitive information
+    - Invalid or malicious requests
+  </Accordion>
+  
+  <Accordion title="Use handoffs for complex workflows" icon="arrow-right-arrow-left">
+    Split complex tasks across specialized agents:
+    - Data retrieval agent (read-only)
+    - Action execution agent (write operations)
+    - Coordinator agent (orchestrates handoffs)
+  </Accordion>
+  
+  <Accordion title="Leverage sessions" icon="clock-rotate-left">
+    Use sessions to maintain context across multiple interactions, making your agent feel more natural and contextual.
+  </Accordion>
+  
+  <Accordion title="Enable tracing" icon="chart-line">
+    Use OpenAI Agents SDK's built-in tracing to debug and monitor your agent:
+    
+    ```python
+    from agents import trace
+    
+    # Enable tracing
+    trace.configure(enabled=True)
+    
+    # Run agent with traces
+    result = Runner.run_sync(agent, "task")
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="MCP server not starting" icon="circle-exclamation">
+    **Problem**: Agent can't connect to MCP server.
+    
+    **Solutions**:
+    - Ensure Node.js is installed: `node --version`
+    - Verify PICA_SECRET is set: `echo $PICA_SECRET`
+    - Check MCP server logs for errors
+    - Try running manually: `npx @picahq/mcp`
+  </Accordion>
+  
+  <Accordion title="Tools not available" icon="wrench">
+    **Problem**: Agent says Pica tools are not available.
+    
+    **Solutions**:
+    - Verify MCP server is added: `mcp_servers=[mcp]` in Agent
+    - Check that PICA_SECRET is valid
+    - Ensure you have connections in [Pica dashboard](https://app.picaos.com/connections)
+  </Accordion>
+  
+  <Accordion title="Action execution failing" icon="circle-xmark">
+    **Problem**: execute_pica_action returns errors.
+    
+    **Solutions**:
+    - Always call get_pica_action_knowledge first
+    - Verify connection key is correct
+    - Check required parameters are provided
+    - Ensure connection is authenticated
+  </Accordion>
+  
+  <Accordion title="Agent context too large" icon="file-lines">
+    **Problem**: Token limit exceeded.
+    
+    **Solutions**:
+    - Use more specific queries
+    - Limit number of actions searched
+    - Use streaming for long responses
+    - Consider using handoffs to specialized agents
+  </Accordion>
+</AccordionGroup>
+
+## What's next?
+
+<CardGroup cols={2}>
+  <Card
+    title="MCP Server Documentation"
+    icon="server"
+    href="/mcp"
+  >
+    Complete guide to Pica's MCP Server tools and configuration
+  </Card>
+  <Card
+    title="OpenAI Agents SDK Docs"
+    icon="book"
+    href="https://openai.github.io/openai-agents-python/"
+  >
+    Learn more about agents, handoffs, guardrails, and tracing
+  </Card>
+  <Card
+    title="Browse available integrations"
+    icon="plug"
+    href="https://app.picaos.com/tools"
+  >
+    Explore the 150+ platforms available through Pica
+  </Card>
+  <Card
+    title="Get help"
+    icon="life-ring"
+    href="mailto:support@picaos.com"
+  >
+    Contact support for assistance with your implementation
+  </Card>
+</CardGroup>

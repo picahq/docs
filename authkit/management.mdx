@@ -1,0 +1,346 @@
+---
+title: "Management"
+description: "Manage user connections, configure integrations, and make authenticated API requests"
+---
+
+<Frame>
+  <img src="/images/authkit/authkit.png" alt="AuthKit management page" />
+</Frame>
+
+<Card
+  title="Open AuthKit Management"
+  icon="arrow-up-right-from-square"
+  href="https://app.picaos.com/authkit"
+  target="_blank"
+  horizontal
+>
+  Manage your integrations in the AuthKit dashboard
+</Card>
+
+> Once AuthKit is set up, you'll need to manage your users' connections, configure which integrations are available, and make authenticated requests to access their data. This guide covers everything you need to know.
+
+## Understanding connection ownership
+
+Every connection created through AuthKit belongs to an **identity**—the unique identifier you provided when generating the AuthKit token (like `userId`, `teamId`, or `organizationId`).
+
+This identity-based ownership enables:
+- **Multi-tenant architecture**: Each user, team, or organization has isolated connections
+- **Filtered queries**: List connections for specific users or teams
+- **Access control**: Users can only access connections they own
+- **Data isolation**: No cross-contamination between users' integration data
+
+### How identity scoping works
+
+When you create an AuthKit token:
+
+```typescript
+const token = await authKitToken.create({
+  identity: "user_123", // The owner of future connections
+  identityType: "user"  // The type of owner
+});
+```
+
+Any connection created with this token is permanently tagged with `identity: "user_123"`. This means:
+- You can list all connections for `user_123`
+- You can filter connections by this identity
+- Requests made with these connection keys automatically scope to this user's data
+
+## Managing connections
+
+### List connections for a user
+
+To display a user's connected integrations, use the [List Connections API](/api-reference/vault/connections/list) and filter by identity:
+
+```bash cURL
+curl 'https://api.picaos.com/v1/vault/connections?identity=user_123' \
+  -H 'x-pica-secret: YOUR_API_KEY'
+```
+
+### Delete a user's connection
+
+Allow users to disconnect an integration using the [Delete Connection API](/api-reference/vault/connections/delete):
+
+```bash
+curl -X DELETE "https://api.picaos.com/v1/vault/connections/{CONNECTION_ID}" \
+  -H "x-pica-secret: YOUR_API_KEY"
+```
+
+### Add tags to a user's connection
+
+Update a connection's tags using the [Update Connection API](/api-reference/vault/connections/update):
+
+```bash
+curl -X PATCH "https://api.picaos.com/v1/vault/connections/{CONNECTION_ID}" \
+  -H "x-pica-secret: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tags": ["new-user", "default"]
+  }'
+```
+
+## Making authenticated requests
+
+Once a user has connected an integration through AuthKit, you can make API requests on their behalf using the **connection key**.
+
+### Using the Passthrough API
+
+The [Passthrough API](/api-reference/passthrough) lets you make authenticated HTTP requests to any integration endpoint:
+
+```bash
+curl "https://api.picaos.com/v1/passthrough/users/me/profile" \
+  -H "x-pica-secret: YOUR_API_KEY" \
+  -H "x-pica-connection-key: {CONNECTION_KEY}" \
+  -H "x-pica-action-id: conn_mod_def::F_JeCYGuzvg::yAM6bqGdRdm91ZbYejlbEA"
+```
+
+**Key points:**
+- `x-pica-connection-key`: The connection key from the user's connected integration
+- `x-pica-action-id`: The specific action you want to perform (found in the [Available Actions API](/api-reference/core/available-actions) or in the [Actions table in the Pica dashboard](https://app.picaos.com/tools))
+- The request is automatically authenticated using the stored credentials for that connection
+
+<Card
+  title="Learn more about the Passthrough API"
+  icon="arrow-up-right-from-square"
+  href="/api-reference/passthrough/overview"
+  target="_blank"
+  horizontal
+>
+  See the full documentation for advanced usage and best practices.
+</Card>
+
+### Choosing the right connection key
+
+When a user has multiple connections, you need to:
+
+1. **List their connections** to see what's available
+2. **Filter by platform** to find the specific integration you need
+3. **Use the connection key** when making requests
+
+### Using ToolKit for Agents
+
+For allowing agents to make requests, load [Pica's ToolKit](/toolkit) into your agent. 
+
+```typescript expandable Example using the Vercel AI SDK
+import { Pica } from "@picahq/toolkit";
+import { openai } from "@ai-sdk/openai";
+import { stepCountIs, streamText } from "ai";
+
+async function main() {
+  const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+    identity: "user_123",
+    identityType: "user",
+    connectors: ["*"],
+    actions: ["*"]
+  });
+
+  // Get connections for that identity
+  const connections = await pica.getConnectedIntegrations();
+  console.log("Connections:", connections);
+
+  // Or, ask the AI to get the connections
+  const systemPrompt = pica.systemPrompt;
+
+  const { textStream } = streamText({
+    model: openai("gpt-5"),
+    tools: { ...pica.tools() },
+    system: systemPrompt,
+    prompt: "What connections do I have access to?",
+    stopWhen: stepCountIs(10),
+  });
+
+  for await (const textPart of textStream) {
+    process.stdout.write(textPart);
+  }
+}
+
+main().catch(console.error);
+```
+
+## Configuring integrations
+
+### Toggle integration visibility
+
+By default, integrations are not visible in AuthKit. You must explicitly enable the integrations you want your users to see.
+
+<Frame caption="Configure integrations visibility in the Pica dashboard">
+  <img src="/images/authkit/toggle.png" alt="AuthKit dashboard configuration" />
+</Frame>
+
+1. Navigate to the [AuthKit settings page](https://app.picaos.com/authkit)
+2. Browse the list of integrations
+3. Toggle integrations on or off based on what your application needs
+4. Changes take effect immediately in your AuthKit modal
+
+<Tip>
+**Best Practice**: Only enable integrations your application actually uses.
+</Tip>
+
+### Set up OAuth applications
+
+For OAuth-based integrations (Google, Microsoft, Salesforce, etc.), you can use your own OAuth credentials:
+
+<Frame caption="Configure OAuth credentials">
+  <img src="/images/authkit/oauth-credentials.png" alt="AuthKit dashboard configuration" />
+</Frame>
+
+1. Go to the [AuthKit settings page](https://app.picaos.com/authkit)
+2. Select an OAuth integration (e.g., Gmail, Slack)
+3. Click "Configure OAuth App"
+4. Enter your **Client ID** and **Client Secret** from the integration's developer console
+5. Set the **Redirect URI** in your OAuth app to: `https://api.picaos.com/connections/oauth/callback`
+
+You also have full control over the scopes and permissions your users will grant to your application by clicking on the Edit Scopes button:
+
+<Frame caption="Configure OAuth scopes and permissions">
+  <img src="/images/authkit/oauth-scopes.png" alt="AuthKit dashboard configuration" />
+</Frame>
+
+**Why use your own OAuth apps?**
+- **Branding**: Users see your app name during OAuth consent
+- **Rate limits**: Higher API rate limits for your application
+- **Compliance**: Meet enterprise security requirements
+- **Control**: Full ownership of the OAuth relationship
+
+## Security best practices
+
+<AccordionGroup>
+  <Accordion title="Never expose your API key in frontend code" icon="shield-exclamation">
+    Your Pica API key should **only** be used on your backend. Always generate AuthKit tokens server-side and send them to your frontend. Never include your API key in client-side JavaScript.
+  </Accordion>
+  
+  <Accordion title="Validate user identity before generating tokens" icon="user-shield">
+    Before generating an AuthKit token, verify that the requesting user is authenticated in your application. Don't let unauthenticated users generate tokens.
+    
+    ```typescript
+    // Good: Verify user is authenticated
+    const userId = await verifyUserSession(req);
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    
+    const token = await authKitToken.create({
+      identity: userId,
+      identityType: "user"
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Use HTTPS in production" icon="lock">
+    Always serve your application over HTTPS in production to protect tokens and connection keys in transit.
+  </Accordion>
+  
+  <Accordion title="Store connection keys securely" icon="database">
+    If you store connection keys in your database, ensure your database is properly secured.
+  </Accordion>
+  
+  <Accordion title="Implement proper access control" icon="key">
+    When a user requests data from an integration, verify they own the connection before making the API request:
+    
+    ```typescript
+    // Verify the connection belongs to the requesting user
+    const connection = await fetch(
+      `https://api.picaos.com/v1/vault/connections/${CONNECTION_ID}`,
+      { 
+        headers: { "x-pica-secret": process.env.PICA_SECRET_KEY } 
+      }
+    ).then(r => r.json());
+    
+    if (connection.identity !== userId) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+    
+    // Proceed with the request
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="AuthKit modal not opening" icon="circle-exclamation">
+    **Possible causes:**
+    - Token endpoint is failing or returning an error
+    - CORS issues blocking the token request
+    - Invalid API key
+    
+    **Solutions:**
+    - Check browser console for errors
+    - Verify your token endpoint is accessible and returns a valid token
+    - Ensure CORS headers are set correctly on your backend
+    - Confirm your API key is valid in the [Pica dashboard](https://app.picaos.com/settings/api-keys)
+  </Accordion>
+  
+  <Accordion title="OAuth flow failing" icon="circle-xmark">
+    **Possible causes:**
+    - Incorrect OAuth credentials
+    - Redirect URI mismatch
+    - Missing OAuth scopes/permissions
+    
+    **Solutions:**
+    - Verify Client ID and Client Secret are correct in [AuthKit settings](https://app.picaos.com/authkit)
+    - Ensure redirect URI is exactly: `https://api.picaos.com/oauth/callback`
+    - Check that required scopes are enabled in your OAuth app
+  </Accordion>
+  
+  <Accordion title="Connection not found" icon="magnifying-glass">
+    **Possible causes:**
+    - Wrong identity or identityType
+    - Connection was deleted
+    - Querying with wrong connection key
+    
+    **Solutions:**
+    - List connections for the identity to see what exists
+    - Verify the identity matches what was used when creating the token
+    - Check that the connection wasn't deleted
+  </Accordion>
+  
+  <Accordion title="API requests failing with 401" icon="lock">
+    **Possible causes:**
+    - Invalid connection key
+    - Token expired or revoked by user
+    - Wrong API key
+    
+    **Solutions:**
+    - Verify connection key is correct
+    - Check connection status with the Get Connection API
+    - Have the user reconnect if their token was revoked
+  </Accordion>
+</AccordionGroup>
+
+<Card title="Need help?" icon="life-ring" href="mailto:support@picaos.com" horizontal>
+Contact our support team at support@picaos.com for assistance
+</Card>
+
+## What's next?
+
+<CardGroup cols={2}>
+  <Card
+    title="Passthrough API"
+    icon="code"
+    href="/api-reference/passthrough"
+  >
+    Learn how to make authenticated requests to integration APIs
+  </Card>
+  <Card
+    title="Available Actions"
+    icon="list"
+    href="/api-reference/core/available-actions"
+  >
+    Browse all available integration actions and their parameters
+  </Card>
+  <Card
+    title="Vault API"
+    icon="vault"
+    href="/api-reference/vault/connections/list"
+  >
+    Explore the full Vault API for managing connections
+  </Card>
+  <Card
+    title="OneTool SDK"
+    icon="wrench"
+    href="/core/one-tool"
+  >
+    Simplify integration requests with the OneTool SDK
+  </Card>
+</CardGroup>
+

@@ -1,6 +1,3 @@
-import { Card, Tabs } from "@mintlify/components";
-import { Tab } from "@headlessui/react";
-
 ### First, discover the Gmail and Supabase actions available in Pica
 
 Before building the Gmail email sync system, discover the available actions using Pica MCP:
@@ -30,10 +27,9 @@ These action IDs will be used in the implementation below for Gmail and Supabase
 
 ### Prompt the LLM to build your tool
 
-<Tabs>
-  <Tab title="Vercel AI SDK" icon="/images/vercel.svg">
-    <Card>
-      Copy this prompt to build the Vercel AI SDK email sync system:
+#### Vercel AI SDK
+
+Copy this prompt to build the Vercel AI SDK email sync system:
       ```markdown Vercel AI SDK Agent Prompt expandable
       # Vercel AI SDK Agent Prompt (Gmail Email Sync Automation)
 
@@ -117,12 +113,12 @@ These action IDs will be used in the implementation below for Gmail and Supabase
       - Provide real-time sync progress updates
       - Generate email analytics and insights from synchronized data
       ```
-      <Note>The system uses Pica for all Gmail and Supabase operations, eliminating the need for complex OAuth and API management code.</Note>
-    </Card>
-  </Tab>
-  <Tab title="LangChain" icon="/images/langchain-icon.svg">
-    <Card>
-      Copy this prompt to build the LangChain email sync tools:
+
+<Note>The system uses Pica for all Gmail and Supabase operations, eliminating the need for complex OAuth and API management code.</Note>
+
+#### LangChain
+
+Copy this prompt to build the LangChain email sync tools:
       ```markdown LangChain Email Sync Tools expandable
       # LangChain Gmail Email Sync Tools
 
@@ -191,12 +187,12 @@ These action IDs will be used in the implementation below for Gmail and Supabase
 
       Use Pica integrations for all Gmail and Supabase operations. This eliminates the need for managing OAuth tokens, API clients, and rate limiting - Pica handles all of that complexity.
       ```
-      <Note>The LangChain tools leverage Pica's Gmail and Supabase integrations for simplified, reliable email synchronization without complex API management.</Note>
-    </Card>
-  </Tab>
-  <Tab title="MCP Server" icon="/images/model-context-protocol.svg">
-    <Card>
-      Copy this prompt to build the MCP server:
+
+<Note>The LangChain tools leverage Pica's Gmail and Supabase integrations for simplified, reliable email synchronization without complex API management.</Note>
+
+#### MCP Server
+
+Copy this prompt to build the MCP server:
       ```markdown MCP Email Sync Server expandable
       # Complete MCP Gmail Email Sync Server
 
@@ -320,7 +316,5 @@ These action IDs will be used in the implementation below for Gmail and Supabase
 
       The MCP server should be production-ready with comprehensive error handling, automated scheduling, and detailed logging. The Pica integration approach eliminates most of the complexity typically associated with multi-API integrations.
       ```
-      <Note>The MCP server uses Pica integrations exclusively, eliminating the need for complex OAuth, API client management, and rate limiting code.</Note>
-    </Card>
-  </Tab>
-</Tabs>
+
+<Note>The MCP server uses Pica integrations exclusively, eliminating the need for complex OAuth, API client management, and rate limiting code.</Note>

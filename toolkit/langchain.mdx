@@ -1,0 +1,602 @@
+---
+title: "LangChain"
+description: "Build AI agents with LangChain and Pica ToolKit"
+---
+
+[![pypi version](https://img.shields.io/pypi/v/pica-langchain)](https://pypi.org/project/pica-langchain)
+
+<Frame>
+  <img src="/images/toolkit/langchain-banner.svg" alt="Pica LangChain Banner" style={{ borderRadius: '5px' }} />
+</Frame>
+
+Pica's ToolKit provides enterprise-grade integration capabilities for AI agents built with LangChain. Give your agents intelligent access to 150+ third-party integrations with built-in authentication, error handling, and Pica's knowledge base.
+
+<Card title="pica-langchain on PyPI" icon="python" href="https://pypi.org/project/pica-langchain" horizontal>
+Install the Python SDK to unlock powerful tools for LangChain
+</Card>
+
+## Prerequisites
+
+Before installing ToolKit, you'll need:
+
+1. **Pica Account** - Free account for managing integrations
+2. **Pica API Key** - API key from your [Pica dashboard](https://app.picaos.com/settings/api-keys)
+3. **LangChain** - Installed in your Python project
+4. **LLM Provider** - API key from OpenAI, Anthropic, or your chosen provider
+
+## Installation
+
+Install the Pica LangChain SDK:
+
+```bash
+pip install pica-langchain
+```
+
+## Quick Start
+
+<Steps>
+  <Step title="Set environment variables">
+    Configure your API keys as environment variables:
+    
+    ```bash
+    export PICA_SECRET="your-pica-secret"
+    export OPENAI_API_KEY="your-openai-api-key"
+    ```
+  </Step>
+  
+  <Step title="Connect integrations">
+    Go to the [Connections page](https://app.picaos.com/connections) and connect integrations (e.g., Gmail, Slack, Salesforce). You'll need at least one connection for your agent to interact with.
+  </Step>
+  
+  <Step title="Create your first agent">
+    Create a LangChain agent with Pica tools:
+    
+    ```python
+    import os
+    from langchain_openai import ChatOpenAI
+    from langchain.agents import AgentType
+    from pica_langchain import PicaClient, create_pica_agent
+    from pica_langchain.models import PicaClientOptions
+
+    # Initialize Pica client
+    pica_client = PicaClient(
+        secret=os.environ["PICA_SECRET"],
+        options=PicaClientOptions(
+            connectors=["*"]  # Access all connected integrations
+        )
+    )
+    pica_client.initialize()
+    
+    # Create LLM
+    llm = ChatOpenAI(temperature=0, model="gpt-4.1")
+
+    # Create agent with Pica tools
+    agent = create_pica_agent(
+        client=pica_client,
+        llm=llm,
+        agent_type=AgentType.OPENAI_FUNCTIONS,
+    )
+
+    # Execute
+    result = agent.invoke({
+        "input": "What connections do I have access to?"
+    })
+    
+    print(result)
+    ```
+  </Step>
+</Steps>
+
+## Configuration
+
+### PicaClientOptions
+
+Configure the Pica client with these options:
+
+<ParamField path="server_url" type="str" default="https://api.picaos.com">
+  URL for self-hosted Pica server. Use this if you're running your own instance of Pica.
+  
+  ```python
+  options=PicaClientOptions(
+      server_url="https://my-pica-instance.com"
+  )
+  ```
+</ParamField>
+
+<ParamField path="connectors" type="List[str]" default="All connectors">
+  List of connection keys to filter by. Pass `["*"]` to initialize all available connections, or specify exact connection keys. If empty, no connections will be initialized.
+  
+  ```python
+  # Enable all connections
+  connectors=["*"]
+  
+  # Enable specific connections
+  connectors=[
+      "live::gmail::default::abc123",
+      "live::slack::default::def456"
+  ]
+  ```
+</ParamField>
+
+<ParamField path="actions" type="List[str]" default="All actions">
+  List of action IDs to filter by. Set to `["*"]` for all actions, or specify individual action IDs from the [available actions table](https://app.picaos.com/tools).
+  
+  ```python
+  # Enable all actions
+  actions=["*"]
+  
+  # Enable specific actions
+  actions=["conn_mod_def::GGSNOTZxFUU::ZWXBuJboTpS3Q_U06pF8gA"]
+  ```
+</ParamField>
+
+<ParamField path="permissions" type="Literal['read', 'write', 'admin']" default="admin">
+  Permission level to filter actions by:
+  - `"read"` - Only GET requests (read-only access)
+  - `"write"` - POST, PUT, PATCH requests (create/update operations)
+  - `"admin"` - All HTTP methods including DELETE
+  
+  ```python
+  permissions="read"  # Read-only agent
+  ```
+</ParamField>
+
+<ParamField path="identity" type="str">
+  Filter connections by a specific identifier (e.g., user ID, team ID). Use with `identity_type` for multi-tenant applications.
+  
+  ```python
+  identity="user_123"
+  ```
+</ParamField>
+
+<ParamField path="identity_type" type="Literal['user', 'team', 'project', 'organization']">
+  Filter connections by identity type. Works with the `identity` parameter.
+  
+  ```python
+  identity="user_123",
+  identity_type="user"
+  ```
+</ParamField>
+
+<ParamField path="authkit" type="bool" default="False">
+  If `True`, the SDK will use [AuthKit](/authkit) to prompt users to connect platforms they don't currently have access to.
+  
+  ```python
+  authkit=True
+  ```
+</ParamField>
+
+### create_pica_agent
+
+Customize agent creation with these parameters:
+
+<ParamField path="client" type="PicaClient" required>
+  Initialized Pica client instance. Must be created and initialized before passing to the agent.
+  
+  ```python
+  pica_client = PicaClient(secret=os.environ["PICA_SECRET"])
+  pica_client.initialize()
+  ```
+</ParamField>
+
+<ParamField path="llm" type="BaseLanguageModel" required>
+  LangChain LLM to use for the agent. Can be any LangChain-compatible language model.
+  
+  ```python
+  llm = ChatOpenAI(temperature=0, model="gpt-5")
+  ```
+</ParamField>
+
+<ParamField path="agent_type" type="AgentType" default="OPENAI_FUNCTIONS">
+  Type of LangChain agent to create. See [LangChain documentation](https://python.langchain.com/docs/modules/agents/agent_types/) for available types.
+  
+  ```python
+  agent_type=AgentType.OPENAI_FUNCTIONS
+  ```
+</ParamField>
+
+<ParamField path="verbose" type="bool" default="False">
+  Whether to print verbose logs during agent execution.
+  
+  ```python
+  verbose=True
+  ```
+</ParamField>
+
+<ParamField path="system_prompt" type="str">
+  Custom system prompt to append to the default Pica system prompt.
+  
+  ```python
+  system_prompt="You are a helpful sales assistant."
+  ```
+</ParamField>
+
+<ParamField path="tools" type="List[BaseTool]">
+  Additional LangChain tools to include alongside Pica tools.
+  
+  ```python
+  tools=[my_custom_tool, another_tool]
+  ```
+</ParamField>
+
+<ParamField path="return_intermediate_steps" type="bool" default="False">
+  Whether to return the intermediate steps of the agent execution.
+  
+  ```python
+  return_intermediate_steps=True
+  ```
+</ParamField>
+
+## Usage Patterns
+
+### Basic Agent
+
+The simplest setup with full access to integrations:
+
+```python
+import os
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentType
+from pica_langchain import PicaClient, create_pica_agent
+from pica_langchain.models import PicaClientOptions
+
+pica_client = PicaClient(
+    secret=os.environ["PICA_SECRET"],
+    options=PicaClientOptions(connectors=["*"])
+)
+pica_client.initialize()
+
+llm = ChatOpenAI(temperature=0, model="gpt-4.1")
+
+agent = create_pica_agent(
+    client=pica_client,
+    llm=llm,
+    agent_type=AgentType.OPENAI_FUNCTIONS
+)
+
+result = agent.invoke({
+    "input": "Send an email to hello@picaos.com with subject 'Test'"
+})
+```
+
+### Streaming Response
+
+Enable streaming for real-time output:
+
+```python expandable Example
+import os
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentType
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from pica_langchain import PicaClient, create_pica_agent
+from pica_langchain.models import PicaClientOptions
+
+pica_client = PicaClient(
+    secret=os.environ["PICA_SECRET"],
+    options=PicaClientOptions(connectors=["*"])
+)
+pica_client.initialize()
+
+llm = ChatOpenAI(
+    temperature=0,
+    model="gpt-4.1",
+    streaming=True,
+    callbacks=[StreamingStdOutCallbackHandler()]
+)
+
+agent = create_pica_agent(
+    client=pica_client,
+    llm=llm,
+    agent_type=AgentType.OPENAI_FUNCTIONS
+)
+
+for chunk in agent.stream({
+    "input": "List three platforms available in Pica."
+}):
+    print(chunk)
+```
+
+### With AuthKit
+
+Enable AuthKit to prompt users to connect missing integrations:
+
+```python expandable Example
+import os
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentType
+from pica_langchain import PicaClient, create_pica_agent
+from pica_langchain.models import PicaClientOptions
+
+pica_client = PicaClient(
+    secret=os.environ["PICA_SECRET"],
+    options=PicaClientOptions(
+        authkit=True,  # Enable AuthKit
+        connectors=["*"]
+    )
+)
+pica_client.initialize()
+
+llm = ChatOpenAI(temperature=0, model="gpt-4.1")
+
+agent = create_pica_agent(
+    client=pica_client,
+    llm=llm,
+    agent_type=AgentType.OPENAI_FUNCTIONS,
+    return_intermediate_steps=True
+)
+
+result = agent.invoke({
+    "input": "Connect to google calendar"  # Triggers AuthKit if not connected
+})
+```
+
+### Multi-Tenant Agent
+
+Filter connections by user identity:
+
+```python expandable Example
+import os
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentType
+from pica_langchain import PicaClient, create_pica_agent
+from pica_langchain.models import PicaClientOptions
+
+def create_user_agent(user_id: str):
+    pica_client = PicaClient(
+        secret=os.environ["PICA_SECRET"],
+        options=PicaClientOptions(
+            connectors=["*"],
+            identity=user_id,
+            identityType="user"
+        )
+    )
+    pica_client.initialize()
+    
+    llm = ChatOpenAI(temperature=0, model="gpt-4.1")
+    
+    return create_pica_agent(
+        client=pica_client,
+        llm=llm,
+        agent_type=AgentType.OPENAI_FUNCTIONS
+    )
+
+# Each user gets their own scoped agent
+user_agent = create_user_agent("user_123")
+result = user_agent.invoke({
+    "input": "List my Gmail emails"
+})
+```
+
+## Example Workflows
+
+<Tabs>
+  <Tab title="GitHub Workflow">
+    Star a GitHub repository and list your starred repos:
+    
+    ```python expandable Example
+    from langchain_openai import ChatOpenAI
+    from langchain.agents import AgentType
+    from pica_langchain import PicaClient, create_pica_agent
+    from pica_langchain.models import PicaClientOptions
+
+    pica_client = PicaClient(
+        secret=os.environ["PICA_SECRET"],
+        options=PicaClientOptions(connectors=["*"])
+    )
+    pica_client.initialize()
+
+    llm = ChatOpenAI(temperature=0, model="gpt-4.1")
+
+    agent = create_pica_agent(
+        client=pica_client,
+        llm=llm,
+        agent_type=AgentType.OPENAI_FUNCTIONS
+    )
+
+    result = agent.invoke({
+        "input": (
+            "Star the picahq/pica repo in github. "
+            "Then, list 5 of the repositories that I have starred in github."
+        )
+    })
+
+    print(f"Result: {result}")
+    ```
+  </Tab>
+  
+  <Tab title="Airtable to GitHub">
+    Create GitHub issues from Airtable tasks:
+    
+    ```python expandable Example
+    from langchain_openai import ChatOpenAI
+    from langchain.agents import AgentType
+    from pica_langchain import PicaClient, create_pica_agent
+    from pica_langchain.models import PicaClientOptions
+
+    pica_client = PicaClient(
+        secret=os.environ["PICA_SECRET"],
+        options=PicaClientOptions(connectors=["*"])
+    )
+    pica_client.initialize()
+
+    llm = ChatOpenAI(temperature=0, model="gpt-4.1")
+
+    agent = create_pica_agent(
+        client=pica_client,
+        llm=llm,
+        agent_type=AgentType.OPENAI_FUNCTIONS
+    )
+
+    result = agent.invoke({
+        "input": (
+            "Retrieve the list of available bases from Airtable. "
+            "List the tasks from the Base 'My Tasks' with the status 'Todo'. "
+            "For each task, create a GitHub issue in the 'myorg/myrepo' repository. "
+            "Use the task title as the issue title and the task description as the issue body. "
+            "Add the Airtable ticket ID for reference in the issue. "
+            "Assign the issue to the task's assignee if available. "
+            "Report the number of tasks created, skipped, or failed."
+        )
+    })
+
+    print(f"Result: {result}")
+    ```
+  </Tab>
+  
+  <Tab title="Sheets to Gmail">
+    Summarize Google Sheets data and email it:
+    
+    ```python expandable Example
+    from langchain_openai import ChatOpenAI
+    from langchain.agents import AgentType
+    from pica_langchain import PicaClient, create_pica_agent
+    from pica_langchain.models import PicaClientOptions
+
+    pica_client = PicaClient(
+        secret=os.environ["PICA_SECRET"],
+        options=PicaClientOptions(connectors=["*"])
+    )
+    pica_client.initialize()
+
+    llm = ChatOpenAI(temperature=0, model="gpt-4.1")
+
+    agent = create_pica_agent(
+        client=pica_client,
+        llm=llm,
+        agent_type=AgentType.OPENAI_FUNCTIONS
+    )
+
+    result = agent.invoke({
+        "input": (
+            "List my available google spreadsheets. "
+            "Retrieve the data from Spreadsheet ID '1NBp5QpEJV43Sq2P0aeo1DtYUof2BDY_YcdKcIIQTCcs'. "
+            "List the content from the sheet named 'Sheet1' in the range 'A1:C5'. "
+            "Summarize the Comment column. "
+            "Send the summarized comment data using gmail to hello@picaos.com"
+        )
+    })
+
+    print(f"Result: {result}")
+    ```
+  </Tab>
+</Tabs>
+
+## Logging
+
+The Pica LangChain SDK uses Python's `logging` module. Set the log level using the `PICA_LOG_LEVEL` environment variable:
+
+```bash
+export PICA_LOG_LEVEL="debug"
+```
+
+Available log levels:
+- `debug` - Detailed debugging information
+- `info` - General information messages
+- `warning` - Warning messages
+- `error` - Error messages
+- `critical` - Critical error messages
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use specific connections in production" icon="plug">
+    Instead of `connectors=["*"]`, specify exact connection keys for better performance:
+    
+    ```python
+    options=PicaClientOptions(
+        connectors=[
+            "live::gmail::default::abc123",
+            "live::slack::default::def456"
+        ]
+    )
+    ```
+  </Accordion>
+  
+  <Accordion title="Set appropriate permissions" icon="lock">
+    Use permission levels based on your use case:
+    - `"read"` - For data retrieval agents
+    - `"write"` - For agents that create/update data
+    - `"admin"` - For full-access automation (use carefully)
+  </Accordion>
+  
+  <Accordion title="Handle multi-tenancy" icon="users">
+    Always filter by identity in multi-user applications:
+    
+    ```python
+    options=PicaClientOptions(
+        connectors=["*"],
+        identity=user_id,
+        identity_type="user"
+    )
+    ```
+  </Accordion>
+  
+  <Accordion title="Monitor usage" icon="chart-line">
+    Track API usage in your [Pica dashboard](https://app.picaos.com/usage) and view request logs at [Logs](https://app.picaos.com/logs).
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="No connections available" icon="circle-exclamation">
+    **Problem**: Agent reports no connections available.
+    
+    **Solutions**:
+    - Verify you've connected integrations in the [Pica dashboard](https://app.picaos.com/connections)
+    - Check that `connectors` is set correctly (use `["*"]` for all)
+    - If using `identity`, ensure the identity value matches your connections
+  </Accordion>
+  
+  <Accordion title="Actions not executing" icon="circle-xmark">
+    **Problem**: Agent finds actions but can't execute them.
+    
+    **Solutions**:
+    - Ensure connections have proper authentication
+    - Check `permissions` level allows the required HTTP method
+    - Verify the connection hasn't expired (re-authenticate if needed)
+    - Check for error messages in the agent's response
+  </Accordion>
+  
+  <Accordion title="Authentication errors" icon="key">
+    **Problem**: Getting 401 or authentication errors.
+    
+    **Solutions**:
+    - Verify `PICA_SECRET` environment variable is set correctly
+    - Check API key is valid at [Settings > API Keys](https://app.picaos.com/settings/api-keys)
+    - Ensure integrations are properly connected
+  </Accordion>
+</AccordionGroup>
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card
+    title="GitHub Repository"
+    icon="github"
+    href="https://github.com/picahq/pica-langchain"
+  >
+    Explore the code, contribute, or raise issues
+  </Card>
+  <Card
+    title="PyPI Package"
+    icon="python"
+    href="https://pypi.org/project/pica-langchain"
+  >
+    View package details and release history
+  </Card>
+  <Card
+    title="Browse Integrations"
+    icon="grid"
+    href="https://app.picaos.com/tools"
+  >
+    Explore 150+ available integrations and actions
+  </Card>
+  <Card
+    title="Get Help"
+    icon="envelope"
+    href="mailto:support@picaos.com"
+  >
+    Contact support for assistance
+  </Card>
+</CardGroup>

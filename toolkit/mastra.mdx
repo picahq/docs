@@ -1,0 +1,387 @@
+---
+title: "Mastra"
+description: "Add ToolKit to your Mastra agents and workflows"
+---
+
+[![npm version](https://img.shields.io/npm/v/%40picahq%2Ftoolkit)](https://npmjs.com/package/@picahq/toolkit)
+
+<Frame>
+  <img src="/images/toolkit/mastra-banner.svg" alt="Pica Mastra Banner" style={{ borderRadius: '5px' }} />
+</Frame>
+
+Pica's ToolKit works seamlessly with [Mastra](https://mastra.ai/en/docs) agents and workflows. Since Mastra uses the Vercel AI SDK under the hood, you can give your Mastra agents access to 150+ integrations with intelligent action execution powered by Pica's knowledge base.
+
+<Info>
+For complete configuration options (connectors, actions, permissions, identity scoping), see the [Vercel AI SDK integration](/toolkit/vercel-ai-sdk) documentation. This page focuses on Mastra-specific usage patterns.
+</Info>
+
+## Prerequisites
+
+1. **Pica Account** - Free account for managing integrations
+2. **Pica API Key** - API key from your [Pica dashboard](https://app.picaos.com/settings/api-keys)
+3. **Mastra** - Already installed and configured in your project
+4. **LLM Provider** - API key from your chosen provider
+
+## Installation
+
+```bash
+npm install @picahq/toolkit
+```
+
+## Quick Start
+
+Create a Mastra agent with Pica tools:
+
+```typescript
+import { Agent } from '@mastra/core';
+import { Pica } from '@picahq/toolkit';
+
+// Initialize Pica ToolKit
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"], // Access all connected integrations
+  actions: ["*"]     // Access all available actions
+});
+
+// Create a Mastra agent with Pica tools
+const integrationAgent = new Agent({
+  name: 'integration-assistant',
+  instructions: pica.systemPrompt, // Use Pica's system prompt
+  model: {
+    provider: 'openai',
+    name: 'gpt-5'
+  },
+  tools: pica.tools() // Load Pica tools
+});
+
+// Generate a response
+const result = await integrationAgent.generate(
+  'Send an email summary of today\'s meetings to the team'
+);
+
+console.log(result.text);
+```
+
+## Usage Patterns
+
+### Basic Agent with Tools
+
+The simplest setup - an agent with full access to integrations:
+
+```typescript expandable Example
+import { Agent } from '@mastra/core';
+import { Pica } from '@picahq/toolkit';
+
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"],
+  permissions: "admin" // Full access
+});
+
+const agent = new Agent({
+  name: 'automation-agent',
+  instructions: pica.systemPrompt,
+  model: { provider: 'openai', name: 'gpt-5' },
+  tools: pica.tools()
+});
+
+// Use the agent
+const response = await agent.generate(
+  'Create a new lead in Salesforce for John Doe at Acme Corp'
+);
+```
+
+### Agent with Memory and Tools
+
+Combine Pica tools with Mastra's memory capabilities:
+
+```typescript expandable Example
+import { Agent } from '@mastra/core';
+import { Pica } from '@picahq/toolkit';
+
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"]
+});
+
+const agent = new Agent({
+  name: 'context-aware-agent',
+  instructions: pica.generateSystemPrompt(
+    'You are a helpful assistant with access to user integrations. Remember context from previous conversations.'
+  ),
+  model: { provider: 'anthropic', name: 'claude-3-5-sonnet-20241022' },
+  tools: pica.tools(),
+  enableMemory: true // Enable Mastra memory
+});
+
+// Agent remembers previous context
+await agent.generate('What integrations do I have connected?', {
+  threadId: 'user-123'
+});
+
+await agent.generate('Send an email using the last one mentioned', {
+  threadId: 'user-123' // Same thread for context
+});
+```
+
+### Read-Only Agent
+
+Restrict the agent to read-only operations:
+
+```typescript expandable Example
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"],
+  permissions: "read" // Read-only access
+});
+
+const readOnlyAgent = new Agent({
+  name: 'data-retrieval-agent',
+  instructions: pica.systemPrompt,
+  model: { provider: 'openai', name: 'gpt-5' },
+  tools: pica.tools()
+});
+
+// Can read data but not modify
+await readOnlyAgent.generate('Show me my last 5 Gmail emails');
+```
+
+### Multi-Tenant Agent
+
+Scope integrations to specific users:
+
+```typescript expandable Example
+// Create agent for specific user
+function createUserAgent(userId: string) {
+  const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+    connectors: ["*"],
+    actions: ["*"],
+    identity: userId,
+    identityType: "user"
+  });
+
+  return new Agent({
+    name: `agent-${userId}`,
+    instructions: pica.systemPrompt,
+    model: { provider: 'openai', name: 'gpt-5' },
+    tools: pica.tools()
+  });
+}
+
+// Each user gets their own scoped agent
+const userAgent = createUserAgent('user-123');
+const response = await userAgent.generate(
+  'Schedule a meeting for tomorrow at 2pm'
+);
+```
+
+### Agent in a Workflow
+
+Use Pica-powered agents within Mastra workflows:
+
+```typescript expandable Example
+import { Agent, Workflow } from '@mastra/core';
+import { Pica } from '@picahq/toolkit';
+
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"]
+});
+
+const dataAgent = new Agent({
+  name: 'data-processor',
+  instructions: pica.systemPrompt,
+  model: { provider: 'openai', name: 'gpt-5' },
+  tools: pica.tools()
+});
+
+const workflow = new Workflow({
+  name: 'lead-processing-workflow'
+});
+
+workflow
+  .step('fetch-leads', {
+    execute: async () => {
+      return await dataAgent.generate(
+        'Get all new leads from Salesforce created in the last 24 hours'
+      );
+    }
+  })
+  .then('enrich-leads', {
+    execute: async ({ context }) => {
+      const leads = context.fetch-leads;
+      return await dataAgent.generate(
+        `For each of these leads, search for company information: ${JSON.stringify(leads)}`
+      );
+    }
+  })
+  .then('send-summary', {
+    execute: async ({ context }) => {
+      const enrichedLeads = context.enrich-leads;
+      return await dataAgent.generate(
+        `Send a summary email of these enriched leads to sales@company.com: ${JSON.stringify(enrichedLeads)}`
+      );
+    }
+  });
+
+// Run the workflow
+await workflow.execute();
+```
+
+### Custom System Prompt
+
+Combine your agent's personality with Pica's integration instructions:
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"]
+});
+
+const customInstructions = `You are a friendly sales assistant named Sarah.
+Your goal is to help sales teams manage their leads and follow-ups efficiently.
+Always be professional and concise in your communications.`;
+
+const agent = new Agent({
+  name: 'sarah-sales-assistant',
+  instructions: pica.generateSystemPrompt(customInstructions),
+  model: { provider: 'openai', name: 'gpt-5' },
+  tools: pica.tools()
+});
+```
+
+## Streaming Responses
+
+Mastra supports streaming - use it with Pica tools for real-time responses:
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"]
+});
+
+const agent = new Agent({
+  name: 'streaming-agent',
+  instructions: pica.systemPrompt,
+  model: { provider: 'openai', name: 'gpt-5' },
+  tools: pica.tools()
+});
+
+// Stream the response
+const stream = await agent.stream(
+  'Search my emails for any mentions of the Q4 budget and summarize them'
+);
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk.text);
+}
+```
+
+## Configuration Reference
+
+All ToolKit configuration options are available:
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  // Specify exact connections
+  connectors: ["test::gmail::default::abc123"],
+  
+  // Limit to specific actions
+  actions: ["conn_mod_def::GGSNOTZxFUU::ZWXBuJboTpS3Q_U06pF8gA"],
+  
+  // Set permission level
+  permissions: "read", // "read" | "write" | "admin"
+  
+  // Multi-tenant scoping
+  identity: "user_123",
+  identityType: "user", // "user" | "team" | "organization" | "project"
+  
+  // Enable AuthKit integration
+  authkit: true
+});
+```
+
+<Card title="View all configuration options" icon="sliders" href="/toolkit/vercel-ai-sdk#configuration" horizontal>
+  See the complete configuration reference in the Vercel AI SDK documentation
+</Card>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Combine with Mastra workflows" icon="diagram-project">
+    Use Pica-powered agents within Mastra workflows for deterministic multi-step processes. This gives you the flexibility of agentic tool calling combined with the reliability of workflow orchestration.
+  </Accordion>
+  
+  <Accordion title="Use memory for context" icon="brain">
+    Enable Mastra's memory features alongside Pica tools so your agent can reference previous conversations when executing integration actions.
+    
+    ```typescript
+    const agent = new Agent({
+      name: 'context-agent',
+      instructions: pica.systemPrompt,
+      model: { provider: 'openai', name: 'gpt-5' },
+      tools: pica.tools(),
+      enableMemory: true // Remember context
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Scope agents per user" icon="users">
+    In multi-tenant applications, create separate agent instances with user-specific identity scoping:
+    
+    ```typescript
+    function createUserAgent(userId: string) {
+      const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+        connectors: ["*"],
+        identity: userId,
+        identityType: "user"
+      });
+      
+      return new Agent({
+        name: `agent-${userId}`,
+        tools: pica.tools(),
+        // ...
+      });
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Set appropriate permissions" icon="shield-check">
+    Match permission levels to your use case:
+    - Customer-facing agents: `"read"` or `"write"`
+    - Internal automation: `"admin"`
+    - Data retrieval: `"read"`
+  </Accordion>
+</AccordionGroup>
+
+## What's next?
+
+<CardGroup cols={2}>
+  <Card
+    title="Full configuration options"
+    icon="sliders"
+    href="/toolkit/vercel-ai-sdk"
+  >
+    View complete ToolKit configuration in the Vercel AI SDK docs
+  </Card>
+  <Card
+    title="Mastra documentation"
+    icon="book"
+    href="https://mastra.ai/en/docs"
+  >
+    Learn more about Mastra agents, workflows, and memory
+  </Card>
+  <Card
+    title="Browse available actions"
+    icon="list"
+    href="https://app.picaos.com/tools"
+  >
+    Explore the 25,000+ actions across 150+ integrations
+  </Card>
+  <Card
+    title="Get help"
+    icon="life-ring"
+    href="mailto:support@picaos.com"
+  >
+    Contact support for assistance with your implementation
+  </Card>
+</CardGroup>

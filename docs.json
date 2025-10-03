@@ -19,13 +19,7 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "anchors": [
-      {
-        "anchor": "Blog",
-        "icon": "newspaper",
-        "href": "https://docs.picaos.com/blog/overview"
-      }
-    ],
+    "anchors": [],
     "global": {
       "anchors": [
         {
@@ -51,30 +45,54 @@
         "groups": [
           {
             "group": "Get Started",
+            "icon": "door-open",
             "pages": [
-              "get-started/introduction"
+              "get-started/index",
+              "get-started/quickstart",
+              "get-started/ide-and-agent-setup"
             ]
           },
           {
-            "group": "Products",
+            "group": "AuthKit",
+            "icon": "link",
             "pages": [
-              "core/authkit",
-              "core/one-tool",
-              "core/buildkit"
+              "authkit/index",
+              "authkit/setup",
+              "authkit/management"
             ]
           },
           {
-            "group": "Agentic SDKs",
+            "group": "ToolKit",
+            "icon": "hammer",
             "pages": [
-              "sdk/vercel-ai",
-              "sdk/langchain",
-              "sdk/mcp"
+              "toolkit/index",
+              "toolkit/vercel-ai-sdk",
+              "toolkit/langchain",
+              "toolkit/openai-agents",
+              "toolkit/mastra"
             ]
           },
           {
-            "group": "Changelog",
+            "group": "MCP Server",
+            "icon": "server",
             "pages": [
-              "changelog/product-updates"
+              "mcp/index",
+              "mcp/setup",
+              "mcp/claude-desktop"
+            ]
+          },
+          {
+            "group": "SaaS Integrations",
+            "icon": "code",
+            "pages": [
+              "saas/index"
+            ]
+          },
+          {
+            "group": "BuildKit",
+            "icon": "toolbox",
+            "pages": [
+              "buildkit/index"
             ]
           }
         ]
@@ -86,8 +104,14 @@
             "group": "API Documentation",
             "pages": [
               "api-reference/introduction",
-              "api-reference/authentication",
-              "api-reference/passthrough"
+              "api-reference/authentication"
+            ]
+          },
+          {
+            "group": "Passthrough API",
+            "pages": [
+              "api-reference/passthrough/index",
+              "api-reference/passthrough/building-requests"
             ]
           },
           {
@@ -105,39 +129,66 @@
         ]
       },
       {
-        "tab": "Blog",
+        "tab": "Use Cases & Tutorials",
         "groups": [
           {
-            "group": "Blog Posts",
+            "group": "Overview",
             "pages": [
-              "blog/overview",
-              "blog/awesome-pica"
+              "use-cases/index"
             ]
           },
           {
-            "group": "BuildKit",
+            "group": "Tutorials",
             "pages": [
-              "blog/buildkit/sales-agent-mcp",
-              "blog/buildkit/quickbooks-langchain-invoice-agent",
-              "blog/buildkit/hr-applicant-tracker",
-              "blog/buildkit/automated-lead-qualification-agent",
-              "blog/buildkit/day-summary-mcp",
-              "blog/buildkit/email-assistant",
-              "blog/buildkit/gmail-email-sync-automation",
-              "blog/buildkit/get-daily-tasks",
-              "blog/buildkit/smart-home-data-hub",
-              "blog/buildkit/investment-research-assistant",
-              "blog/buildkit/get-daily-updates"
+              "use-cases/buildkit/email-assistant",
+              "use-cases/buildkit/get-daily-tasks",
+              "use-cases/buildkit/day-summary-mcp",
+              "use-cases/buildkit/gmail-email-sync-automation",
+              "use-cases/buildkit/sales-agent-mcp",
+              "use-cases/buildkit/automated-lead-qualification-agent",
+              "use-cases/buildkit/hr-applicant-tracker",
+              "use-cases/buildkit/gmail-calendar-agent-tutorial",
+              "use-cases/buildkit/instantdb-waitlist-app",
+              "use-cases/buildkit/quickbooks-langchain-invoice-agent",
+              "use-cases/buildkit/investment-research-assistant",
+              "use-cases/buildkit/smart-home-data-hub",
+              "use-cases/buildkit/elevenlabs",
+              "use-cases/buildkit/chat-app"
             ]
           },
           {
-            "group": "Use Cases",
+            "group": "Community",
             "pages": [
-              "blog/use-cases/openai-agents",
-              "blog/use-cases/elevenlabs",
-              "blog/use-cases/chat-app",
-              "blog/use-cases/instantdb-waitlist-app",
-              "blog/use-cases/gmail-calendar-agent-tutorial"
+              "use-cases/community/awesome-pica"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Showcase",
+        "groups": [
+          {
+            "group": "Showcase",
+            "pages": [
+              "showcase/index"
+            ]
+          },
+          {
+            "group": "Featured",
+            "pages": [
+              "showcase/everyday-new",
+              "showcase/tempo-mcp-app-store"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "groups": [
+          {
+            "group": "Changelog",
+            "pages": [
+              "changelog/product-updates"
             ]
           }
         ]
@@ -184,20 +235,24 @@
         "header": "Resources",
         "items": [
           {
-            "label": "Connectors",
-            "href": "https://www.picaos.com/integrations"
+            "label": "Integrations",
+            "href": "https://app.picaos.com/tools"
           },
           {
             "label": "Status",
             "href": "https://status.picaos.com"
           },
           {
-            "label": "Blog",
-            "href": "https://www.picaos.com/community/posts"
+            "label": "AuthKit",
+            "href": "https://docs.picaos.com/authkit"
           },
           {
-            "label": "Use Cases",
-            "href": "https://github.com/picahq/awesome-pica"
+            "label": "ToolKit",
+            "href": "https://docs.picaos.com/toolkit"
+          },
+          {
+            "label": "MCP Server",
+            "href": "https://docs.picaos.com/mcp"
           },
           {
             "label": "Changelog",

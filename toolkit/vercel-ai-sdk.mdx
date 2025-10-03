@@ -1,0 +1,611 @@
+---
+title: "Vercel AI SDK"
+description: "Build AI agents with Vercel AI SDK and Pica ToolKit"
+---
+
+[![npm version](https://img.shields.io/npm/v/%40picahq%2Ftoolkit)](https://npmjs.com/package/@picahq/toolkit)
+
+<Frame>
+  <img src="/images/toolkit/vercel-ai-sdk-banner.svg" alt="Pica Vercel AI SDK Banner" style={{ borderRadius: '5px' }} />
+</Frame>
+
+Pica's ToolKit provides enterprise-grade integration capabilities for AI agents built with the Vercel AI SDK. Give your agents intelligent access to 150+ third-party integrations with built-in authentication, error handling, and Pica's knowledge base.
+
+## Prerequisites
+
+Before installing ToolKit, you'll need:
+
+1. **Pica Account** - Free account for managing integrations
+2. **Vercel AI SDK** - Version 5.0.0 or higher with your provider's package
+3. **LLM Provider & API Key** – You'll need an API key from your preferred LLM provider (such as OpenAI, Anthropic, Google, xAI, Groq, Mistral, Cohere, etc.).  
+Supported providers include: OpenAI, Anthropic, Google, xAI, Groq, Mistral, Cohere, and [many more](https://ai-sdk.dev/providers/ai-sdk-providers).
+
+## Installation
+
+<CodeGroup>
+```bash npm
+npm install @picahq/toolkit
+```
+
+```bash yarn
+yarn add @picahq/toolkit
+```
+
+```bash pnpm
+pnpm add @picahq/toolkit
+```
+</CodeGroup>
+
+## Quick Start
+
+<Steps>
+  <Step title="Get your API key">
+    1. [Create a Pica account](https://app.picaos.com) (free to sign up)
+    2. Navigate to [API keys](https://app.picaos.com/settings/api-keys)
+    3. Create a new API key and set it as an environment variable:
+    
+    ```bash .env
+    PICA_SECRET_KEY=your_api_key_here
+    ```
+  </Step>
+  
+  <Step title="Connect an integration">
+    Go to the [Connections page](https://app.picaos.com/connections) and connect an integration (e.g., Gmail, Slack, Google Calendar). You'll need at least one connection for your agent to interact with.
+  </Step>
+  
+  <Step title="Initialize the ToolKit">
+    Create a new `Pica` instance in your API route or server component:
+    
+    ```typescript app/api/chat/route.ts
+    import { Pica } from '@picahq/toolkit';
+    import { openai } from '@ai-sdk/openai';
+    import { streamText } from 'ai';
+
+    export async function POST(req: Request) {
+      const { messages } = await req.json();
+
+      // Initialize Pica with your API key
+      const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+        connectors: ["*"], // Access all connected integrations
+        actions: ["*"]     // Access all available actions
+      });
+
+      const result = streamText({
+        model: openai("gpt-5"),
+        messages,
+        tools: pica.tools(),         // Load Pica tools
+        system: pica.systemPrompt,   // Load Pica system prompt
+      });
+
+      return result.toDataStreamResponse();
+    }
+    ```
+  </Step>
+</Steps>
+
+## Configuration
+
+The `Pica` class accepts an API key and an optional configuration object:
+
+```typescript
+const pica = new Pica(apiKey, options);
+```
+
+### Configuration Options
+
+<ParamField path="connectors" type="string[]">
+  Array of connection keys to enable. Set to `["*"]` to enable all connections, or specify individual connection keys from your [connections page](https://app.picaos.com/connections). You can also programmatically get the connection keys from the [List Connections API](/api-reference/vault/connections/list).
+  
+  ```typescript
+  // Enable all connections
+  connectors: ["*"]
+  
+  // Enable specific connections
+  connectors: [
+    "test::gmail::default::6914d0c8f9bb46718514377722ebc23d",
+    "test::slack::default::209ff9b9c9504ffea9f203cdc23e",
+    "test::quickbooks::default::2783638f6173421bbbbfabbbfa124a8e
+  ]
+  ```
+</ParamField>
+
+<ParamField path="actions" type="string[]">
+  Array of action IDs to enable. Set to `["*"]` to enable all actions, or specify individual action IDs from the [available actions table](https://app.picaos.com/tools).
+  
+  ```typescript
+  // Enable all actions
+  actions: ["*"]
+  
+  // Enable specific actions
+  actions: [
+    "conn_mod_def::GGSNOTZxFUU::ZWXBuJboTpS3Q_U06pF8gA"
+  ]
+  ```
+</ParamField>
+
+<ParamField path="permissions" type="'read' | 'write' | 'admin'" default="admin">
+  Control which HTTP methods the agent can use:
+  - `"read"` - Only GET requests (read-only access)
+  - `"write"` - POST, PUT, PATCH requests (create/update operations)
+  - `"admin"` - All HTTP methods including DELETE
+  
+  ```typescript
+  // Read-only agent
+  permissions: "read"
+  ```
+</ParamField>
+
+<ParamField path="identity" type="string">
+  Filter connections by a specific identity value (e.g., user ID, team ID). Use with `identityType` for multi-tenant applications.
+  
+  ```typescript
+  identity: "user_123"
+  ```
+</ParamField>
+
+<ParamField path="identityType" type="'user' | 'team' | 'organization' | 'project'">
+  Specify the type of identity for connection filtering. Works with `identity` parameter.
+  
+  ```typescript
+  identity: "user_123",
+  identityType: "user"
+  ```
+</ParamField>
+
+<ParamField path="authkit" type="boolean" default={false}>
+  Enable [AuthKit](/authkit/overview) integration to allow users to connect new integrations through your agent. Adds the `promptToConnectIntegration` tool.
+  
+  ```typescript
+  authkit: true
+  ```
+</ParamField>
+
+<ParamField path="serverUrl" type="string" default="https://api.picaos.com">
+  Custom Pica API server URL for enterprise or development environments.
+  
+  ```typescript
+  serverUrl: "https://my-pica-instance.com"
+  ```
+</ParamField>
+
+<ParamField path="headers" type="Record<string, string>">
+  Additional HTTP headers to include in all API requests.
+  
+  ```typescript
+  headers: {
+    'X-Custom-Header': 'value'
+  }
+  ```
+</ParamField>
+
+## Core Methods
+
+### `tools()`
+
+Returns a ToolSet compatible with Vercel AI SDK's `tools` parameter. This is the primary way to give your agent access to Pica's integration capabilities.
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"]
+});
+
+const result = streamText({
+  model: openai("gpt-5"),
+  tools: pica.tools(), // Load all available tools
+  // ...
+});
+```
+
+**Available tools:**
+- `listPicaConnections` - Lists all available connections (when `connectors: ["*"]`)
+- `searchPlatformActions` - Searches for actions on a specific platform
+- `getActionsKnowledge` - Retrieves detailed knowledge about specific actions
+- `execute` - Executes an action with the provided parameters
+- `promptToConnectIntegration` - Prompts user to connect an integration (when `authkit: true`)
+
+### `systemPrompt`
+
+Returns the generated system prompt that instructs the agent on how to use Pica tools effectively.
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"]
+});
+
+const result = streamText({
+  model: openai("gpt-5"),
+  system: pica.systemPrompt, // Use Pica's system prompt
+  // ...
+});
+```
+
+### `generateSystemPrompt(userPrompt?, separator?)`
+
+Combines your custom system prompt with Pica's system prompt. Useful when you have specific instructions for your agent.
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!);
+
+const customPrompt = "You are a helpful sales assistant.";
+const combinedPrompt = pica.generateSystemPrompt(customPrompt);
+
+// Result: "You are a helpful sales assistant.\n\n[Pica's system prompt]"
+```
+
+<ParamField path="userPrompt" type="string">
+  Your custom system prompt to prepend
+</ParamField>
+
+<ParamField path="separator" type="string" default="\n\n">
+  Separator between your prompt and Pica's prompt
+</ParamField>
+
+### `getConnectedIntegrations()`
+
+Retrieves all connected integrations for the configured scope.
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"]
+});
+
+const connections = await pica.getConnectedIntegrations();
+console.log(`You have ${connections.length} connections`);
+```
+
+### `getAvailableConnectors()`
+
+Retrieves all available connectors in Pica (150+ integrations).
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!);
+
+const connectors = await pica.getAvailableConnectors();
+console.log(`Pica supports ${connectors.length} integrations`);
+```
+
+### `getAvailableActions(platform)`
+
+Retrieves all available actions for a specific platform.
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!);
+
+const gmailActions = await pica.getAvailableActions("gmail");
+console.log(`Gmail has ${gmailActions.length} available actions`);
+```
+
+## Usage Patterns
+
+### Standard Agent
+
+A standard agent with full access to execute actions:
+
+```typescript app/api/chat/route.ts
+import { Pica } from '@picahq/toolkit';
+import { openai } from '@ai-sdk/openai';
+import { streamText } from 'ai';
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+
+  const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+    connectors: ["*"],
+    actions: ["*"],
+    permissions: "admin" // Full access
+  });
+
+  const result = streamText({
+    model: openai("gpt-5"),
+    messages,
+    tools: pica.tools(),
+    system: pica.systemPrompt,
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+### Read-Only Agent
+
+Restrict the agent to read-only operations:
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"],
+  permissions: "read" // Only GET requests allowed
+});
+
+const result = streamText({
+  model: openai("gpt-5"),
+  messages,
+  tools: pica.tools(),
+  system: pica.systemPrompt,
+});
+```
+
+### Scoped to Specific Connections
+
+Limit the agent to specific connections:
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: [
+    "test::gmail::default::6faf1d3707f846ef89295c836df71c94",
+    "test::slack::default::abc123"
+  ],
+  actions: ["*"]
+});
+```
+
+### Multi-Tenant Agent
+
+Filter connections by user identity:
+
+```typescript app/api/chat/route.ts
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  const userId = req.headers.get("x-user-id"); // Your auth system
+
+  const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+    connectors: ["*"],
+    actions: ["*"],
+    identity: userId,
+    identityType: "user"
+  });
+
+  const result = streamText({
+    model: openai("gpt-5"),
+    messages,
+    tools: pica.tools(),
+    system: pica.systemPrompt,
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+### With AuthKit Integration
+
+Allow users to connect new integrations through your agent:
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"],
+  authkit: true // Enable AuthKit
+});
+
+// Your agent can now prompt users to connect integrations
+// User: "Send a message to Slack"
+// Agent: "You need to connect Slack first. [Uses promptToConnectIntegration tool]"
+```
+
+<Info>
+This feature works best when your application also uses [AuthKit](/authkit/overview) to let users connect integrations directly through your UI. The `promptToConnectIntegration` tool informs users they need to connect an integration, and AuthKit provides the interface to do so.
+</Info>
+
+### Custom System Prompt
+
+Combine your instructions with Pica's:
+
+```typescript
+const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+  connectors: ["*"],
+  actions: ["*"]
+});
+
+const customPrompt = `You are a sales automation assistant.
+Your goal is to help sales teams manage leads and follow-ups.
+Always be professional and concise.`;
+
+const result = streamText({
+  model: openai("gpt-5"),
+  messages,
+  tools: pica.tools(),
+  system: pica.generateSystemPrompt(customPrompt),
+});
+```
+
+## Complete Example
+
+Here's a complete Next.js API route with all the features:
+
+```typescript expandable app/api/chat/route.ts
+import { Pica } from '@picahq/toolkit';
+import { openai } from '@ai-sdk/openai';
+import { streamText } from 'ai';
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  
+  // Get user from your auth system
+  const userId = req.headers.get("x-user-id");
+  
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  // Initialize Pica with user-specific settings
+  const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+    connectors: ["*"],      // All user's connections
+    actions: ["*"],         // All available actions
+    permissions: "admin",   // Full access
+    identity: userId,       // Filter by user
+    identityType: "user",   // User-scoped connections
+    authkit: true          // Allow connecting new integrations
+  });
+
+  // Custom instructions for your agent
+  const customPrompt = `You are a productivity assistant that helps users 
+  automate tasks across their connected tools. Be helpful and proactive.`;
+
+  const result = streamText({
+    model: openai("gpt-5"),
+    messages,
+    tools: pica.tools(),
+    system: pica.generateSystemPrompt(customPrompt),
+    stopWhen: stepCountIs(25), // Limit execution steps
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+## Demo Application
+
+See a complete working example with user interface:
+
+<Card title="ToolKit Demo" icon="github" href="https://github.com/picahq/toolkit-demo" horizontal>
+  Interactive demo chat application showcasing Pica ToolKit with Vercel AI SDK
+</Card>
+
+## TypeScript Support
+
+The ToolKit is written in TypeScript and includes full type definitions:
+
+```typescript
+import { 
+  Pica,
+  PicaOptions,
+  Connection,
+  Connector,
+  AvailableAction,
+  ExecuteActionResponse
+} from '@picahq/toolkit';
+
+// Full IntelliSense support
+const pica: Pica = new Pica(apiKey, options);
+const connections: Connection[] = await pica.getConnectedIntegrations();
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Start with specific connections" icon="user-check">
+    Instead of `connectors: ["*"]` in production, specify exact connection keys. This reduces the agent's context window and improves performance.
+    
+    ```typescript
+    // Development
+    connectors: ["*"]
+    
+    // Production
+    connectors: [
+      "live::gmail::default::abc123",
+      "live::slack::default::def456"
+    ]
+    ```
+  </Accordion>
+  
+  <Accordion title="Use permissions strategically" icon="lock">
+    Set appropriate permission levels based on your use case:
+    - **Customer-facing agents**: Use `"read"` or `"write"` to prevent destructive operations
+    - **Internal automation**: Use `"admin"` for full control
+  </Accordion>
+  
+  <Accordion title="Combine with step limits" icon="gauge">
+    Prevent infinite loops by setting `stopWhen` in your Vercel AI SDK configuration:
+    
+    ```typescript
+    streamText({
+      model: openai("gpt-5"),
+      tools: pica.tools(),
+      stopWhen: stepCountIs(25), // Limit execution steps
+      // ...
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Handle multi-tenancy" icon="users">
+    Always filter by identity in multi-user applications:
+    
+    ```typescript
+    const pica = new Pica(process.env.PICA_SECRET_KEY!, {
+      connectors: ["*"],
+      identity: userId,
+      identityType: "user"
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Monitor API usage" icon="chart-line">
+    Each tool execution counts as an API request. Monitor usage in your [Pica dashboard](https://app.picaos.com/usage) and view request activity in your [logs](https://app.picaos.com/logs).
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="No connections available" icon="circle-exclamation">
+    **Problem**: Agent reports no connections are available.
+    
+    **Solutions**:
+    - Verify you've connected integrations in the [Pica dashboard](https://app.picaos.com/connections)
+    - Check that `connectors` is set correctly (use `["*"]` to enable all)
+    - If using `identity` filtering, ensure the identity value matches your connections
+  </Accordion>
+  
+  <Accordion title="Actions not executing" icon="circle-xmark">
+    **Problem**: Agent finds actions but can't execute them.
+    
+    **Solutions**:
+    - Ensure `actions: ["*"]` or specific action IDs are configured
+    - Check `permissions` level allows the required HTTP method
+    - Verify the connection has proper authentication (re-authenticate if needed)
+    - Check for error messages in the agent's response
+  </Accordion>
+  
+  <Accordion title="System prompt too long" icon="file-lines">
+    **Problem**: Token limit exceeded due to large system prompt.
+    
+    **Solutions**:
+    - Reduce the number of connections with specific `connectors` array
+    - Limit actions with specific `actions` array
+    - Use a model with larger context window (e.g., GPT-5)
+  </Accordion>
+  
+  <Accordion title="Authentication errors" icon="key">
+    **Problem**: Getting 401 or authentication errors.
+    
+    **Solutions**:
+    - Verify `PICA_SECRET_KEY` environment variable is set correctly
+    - Check API key is valid in [settings](https://app.picaos.com/settings/api-keys)
+    - Ensure connections are properly authenticated (check connection status)
+  </Accordion>
+</AccordionGroup>
+
+## What's next?
+
+<CardGroup cols={2}>
+  <Card
+    title="View other frameworks"
+    icon="layer-group"
+    href="/toolkit"
+  >
+    Explore ToolKit integrations for LangChain, OpenAI, Mastra, and MCP
+  </Card>
+  <Card
+    title="Browse available actions"
+    icon="list"
+    href="https://app.picaos.com/tools"
+  >
+    Explore the 25,000+ actions across 150+ integrations
+  </Card>
+  <Card
+    title="Add AuthKit"
+    icon="plug"
+    href="/authkit"
+  >
+    Let users connect their own integrations through your app
+  </Card>
+  <Card
+    title="Get help"
+    icon="life-ring"
+    href="mailto:support@picaos.com"
+  >
+    Contact support for assistance with your implementation
+  </Card>
+</CardGroup>
