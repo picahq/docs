@@ -1,0 +1,336 @@
+---
+title: Build a Google Calendar Booking Agent
+description: Build an AI-powered booking agent that automatically schedules meetings using OpenAI's Agent Builder and Pica MCP Server
+---
+
+<Frame>
+  <iframe
+    width="100%"
+    height="415"
+    src="https://www.youtube.com/embed/15WgxTTOtbI"
+    title="Google Calendar Booking Agent Tutorial"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  ></iframe>
+</Frame>
+
+Scheduling meetings is a time-consuming task that involves:
+
+- **Back-and-forth emails** to find availability
+- **Manually checking calendars** to avoid conflicts
+- **Creating calendar events** and sending invitations
+- **Confirming details** with all participants
+
+What if you could automate all of this with an AI agent?
+
+With [**OpenAI's Agent Builder**](https://platform.openai.com/agent-builder/) and [**Pica**](https://picaos.com/), you can build an intelligent booking agent that handles meeting scheduling automatically.
+
+---
+
+## What You'll Build
+
+An AI booking agent that:
+
+- 🤖 **Greets users** and collects meeting requirements
+- 📅 **Checks your Google Calendar** for availability using Pica
+- ⏰ **Suggests available time slots** based on preferences
+- ✉️ **Creates calendar events** with guest invitations
+- ✅ **Confirms bookings** with the user
+
+All with natural language conversations!
+
+---
+
+## Prerequisites
+
+Before starting, make sure you have:
+
+- An OpenAI account with access to [Agent Builder](https://platform.openai.com/agent-builder/)
+- A Pica account ([sign up here](https://app.picaos.com))
+
+---
+
+## Part 1: Build the Agent in OpenAI Agent Builder
+
+<Steps>
+
+<Step title="Create a New Agent">
+
+Navigate to [OpenAI's Agent Builder](https://platform.openai.com/agent-builder/) and create a new agent.
+
+Click **+ New Agent** to get started.
+
+</Step>
+
+<Step title="Configure the Agent Node">
+
+Add an **Agent** node to your workflow and configure it with the following system prompt:
+
+```text
+You are a helpful meeting scheduling assistant with access to my Google Calendar via Pica. Your job is to find an available time on my calendar to schedule a meeting with the user.
+
+Meeting times are 30 minutes.
+
+Instructions:
+1. Greet the user and let them know you're here to help schedule a meeting.
+2. Ask the user for:
+   - Their full name
+   - Their email address
+   - Any preferred date/time range (if they have one)
+3. Check my Google Calendar via Pica for available times that fit their preferences.
+4. Suggest available meeting time options to the user (or choose the earliest suitable time if they don't specify).
+5. Once confirmed, create the event in my calendar and include the user's name and email as a guest.
+6. Confirm with the user that the meeting has been scheduled.
+
+Be polite, efficient, and clear throughout the process.
+```
+
+<Tip>
+Copy the prompt above and paste it into your Agent node's system prompt field. This gives your agent clear instructions on how to handle the booking flow.
+</Tip>
+
+</Step>
+
+<Step title="Add the Pica MCP Server">
+
+Click **+ New Tools** → **MCP Server** → **+ Server**
+
+Configure the MCP server with these settings:
+
+<CodeGroup>
+
+```text URL
+https://mcp.picaos.com/mcp
+```
+
+```text Label
+pica_mcp_server
+```
+
+```text Authentication
+Custom Headers
+```
+
+</CodeGroup>
+
+For the **Header Value**, you'll need your Pica Secret Key:
+
+1. Visit [Pica API Keys](https://app.picaos.com/settings/api-keys)
+2. Copy your secret key
+3. Add it as a custom header:
+
+```text
+x-pica-secret: YOUR_SECRET_KEY
+```
+
+<Warning>
+Keep your Pica secret key secure! Never commit it to version control or share it publicly.
+</Warning>
+
+</Step>
+
+<Step title="Connect Google Calendar">
+
+Your agent needs access to Google Calendar:
+
+1. Go to [Pica Dashboard Connections](https://app.picaos.com/connections)
+2. Click **+ Add Connection**
+3. Select **Google Calendar**
+4. Authorize Pica to access your calendar
+
+<img
+  src="/images/new-connection.gif"
+  alt="Adding Google Calendar connection"
+  style={{ borderRadius: '8px', marginTop: '16px' }}
+/>
+
+</Step>
+
+<Step title="Publish Your Agent">
+
+Once everything is configured:
+
+1. Test your agent using the preview panel on the right
+2. Click **Publish** in the top-right corner
+3. Copy the **Workflow ID** that appears after publishing
+
+You'll need this Workflow ID for the next part!
+
+</Step>
+
+</Steps>
+
+---
+
+## Part 2: Build the ChatKit Interface
+
+Now let's create a beautiful chat interface for your booking agent using OpenAI's ChatKit.
+
+<Steps>
+
+<Step title="Clone the ChatKit Starter App">
+
+```bash
+git clone https://github.com/openai/openai-chatkit-starter-app.git
+cd openai-chatkit-starter-app
+```
+
+</Step>
+
+<Step title="Install Dependencies">
+
+```bash
+npm install
+```
+
+</Step>
+
+<Step title="Configure Environment Variables">
+
+Create a `.env.local` file in the root directory:
+
+```bash
+OPENAI_API_KEY=your_openai_api_key
+NEXT_PUBLIC_CHATKIT_WORKFLOW_ID=your_workflow_id
+```
+
+<AccordionGroup>
+
+<Accordion title="Where do I find these values?">
+
+**OPENAI_API_KEY**: 
+- Go to [OpenAI API Keys](https://platform.openai.com/api-keys)
+- Create a new key within the same org & project as your Agent Builder
+
+**NEXT_PUBLIC_CHATKIT_WORKFLOW_ID**: 
+- This is the Workflow ID you copied after publishing your agent
+- It should look something like: `wf_abc123xyz`
+
+</Accordion>
+
+</AccordionGroup>
+
+</Step>
+
+<Step title="Run the Application">
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+</Step>
+
+<Step title="Test Your Booking Agent">
+
+Try starting a conversation:
+
+- "I'd like to schedule a meeting"
+- "Can you help me book a 30-minute call?"
+- "I want to meet tomorrow afternoon"
+
+Your agent should:
+1. Greet you warmly
+2. Ask for your details
+3. Check your calendar for availability
+4. Suggest time slots
+5. Create the meeting when confirmed
+
+<Frame>
+  <img
+    src="/images/tutorials/booking-agent-demo.png"
+    alt="Booking Agent in action"
+    style={{ borderRadius: '8px' }}
+  />
+</Frame>
+
+</Step>
+
+</Steps>
+
+### Extend the Agent
+
+You can enhance your booking agent by:
+
+- **Adding timezone support** for international meetings
+- **Integrating Gmail** to send custom confirmation emails
+- **Checking multiple calendars** for team availability
+- **Adding meeting types** (15min, 30min, 60min calls)
+- **Collecting meeting agendas** before scheduling
+
+### Connect More Services
+
+Pica supports 150+ integrations through the MCP server. Add more tools to your agent:
+
+- **Slack** - Send meeting notifications
+- **Notion** - Create meeting notes pages
+- **Zoom** - Generate video meeting links
+- **Linear** - Create follow-up tasks
+
+Visit the [Pica Dashboard](https://app.picaos.com/connections) to explore available connections.
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+
+<Accordion title="Agent isn't connecting to calendar">
+
+Make sure:
+- Your Google Calendar connection is active in [Pica Dashboard](https://app.picaos.com/connections)
+- The `x-pica-secret` header is correctly set in Agent Builder
+- You've published the agent after making changes
+
+</Accordion>
+
+<Accordion title="ChatKit won't load the workflow">
+
+Verify:
+- `NEXT_PUBLIC_CHATKIT_WORKFLOW_ID` matches your published workflow ID
+- `OPENAI_API_KEY` is from the same org/project as Agent Builder
+- The workflow is published (not just saved as draft)
+
+</Accordion>
+
+<Accordion title="Calendar events aren't being created">
+
+Check:
+- The agent has permission to write to your calendar
+- You confirmed the time slot in the conversation
+- The guest email address is valid
+
+</Accordion>
+
+</AccordionGroup>
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card
+    title="OpenAI Agent Builder Documentation"
+    href="https://platform.openai.com/docs/agent-builder"
+  >
+    Learn how to create, configure, and deploy agents using OpenAI's Agent Builder.
+  </Card>
+  <Card
+    title="ChatKit JavaScript Library"
+    href="https://openai.github.io/chatkit-js/"
+  >
+    Integrate conversational AI into your app with the official ChatKit JS library.
+  </Card>
+  <Card
+    title="Pica MCP Server"
+    href="https://mcp.picaos.com"
+  >
+    Access the Pica MCP Server for seamless integration with 150+ SaaS tools.
+  </Card>
+  <Card
+    title="Pica API Reference"
+    href="https://docs.picaos.com/api-reference"
+  >
+    Explore the full API documentation for Pica's endpoints and capabilities.
+  </Card>
+</CardGroup>

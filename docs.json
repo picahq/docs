@@ -140,6 +140,7 @@
           {
             "group": "Tutorials",
             "pages": [
+              "use-cases/agentkit/booking-agent",
               "use-cases/buildkit/email-assistant",
               "use-cases/buildkit/get-daily-tasks",
               "use-cases/buildkit/day-summary-mcp",
