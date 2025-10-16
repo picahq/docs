@@ -178,7 +178,9 @@
             "group": "Featured",
             "pages": [
               "showcase/everyday-new",
-              "showcase/tempo-mcp-app-store"
+              "showcase/tempo-mcp-app-store",
+              "showcase/steve-os",
+              "showcase/parallel"
             ]
           }
         ]
