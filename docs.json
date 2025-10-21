@@ -140,6 +140,7 @@
           {
             "group": "Tutorials",
             "pages": [
+              "use-cases/buildkit/claude-daily-pulse-skill",
               "use-cases/buildkit/gmail-contact-form",
               "use-cases/agentkit/booking-agent",
               "use-cases/buildkit/email-assistant",
