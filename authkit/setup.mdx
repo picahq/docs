@@ -84,7 +84,7 @@ Before you begin, make sure you have:
         
         ```typescript
         import { NextRequest, NextResponse } from "next/server";
-        import { AuthKitToken } from "@picahq/authkit-node";
+        import { AuthKitToken } from "@picahq/authkit-token";
 
         const corsHeaders = {
           "Access-Control-Allow-Origin": "*",
@@ -132,7 +132,7 @@ Before you begin, make sure you have:
         
         ```typescript
         import type { NextApiRequest, NextApiResponse } from "next";
-        import { AuthKitToken } from "@picahq/authkit-node";
+        import { AuthKitToken } from "@picahq/authkit-token";
 
         export default async function handler(
           req: NextApiRequest,
@@ -168,7 +168,7 @@ Before you begin, make sure you have:
       <Tab title="Express.js">
         ```typescript
         import express from "express";
-        import { AuthKitToken } from "@picahq/authkit-node";
+        import { AuthKitToken } from "@picahq/authkit-token";
 
         const app = express();
         app.use(express.json());
