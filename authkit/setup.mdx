@@ -29,9 +29,36 @@ Before you begin, make sure you have:
 
     Install the AuthKit token generator for your backend. This package creates secure tokens that authorize users to connect integrations.
     
-    ```bash
-    npm install @picahq/authkit-node
-    ```
+    <Tabs>
+      <Tab title="Node.js">
+      <Card
+        title="NPM Package"
+        icon="npm"
+        href="https://www.npmjs.com/package/@picahq/authkit-token"
+        horizontal
+      >
+        View on npm
+      </Card>
+      
+      ```bash
+      npm install @picahq/authkit-token
+      ```
+      </Tab>
+      <Tab title="Python">
+      <Card
+        title="PyPI Package"
+        icon="python"
+        href="https://pypi.org/project/authkit-token/"
+        horizontal
+      >
+        View on PyPI
+      </Card>
+      
+      ```bash
+      pip install authkit-token
+      ```
+      </Tab>
+    </Tabs>
   </Step>
   
   <Step title="Step 2">
@@ -169,6 +196,72 @@ Before you begin, make sure you have:
         });
         ```
       </Tab>
+      
+      <Tab title="FastAPI">
+        ```python
+        from typing import Optional
+        from fastapi import FastAPI, HTTPException
+        from pydantic import BaseModel
+        from authkit_token import AuthKitToken, IdentityType
+
+        app = FastAPI()
+
+        # Initialize the client with your API key
+        # In production, load this from environment variables
+        authkit_client = AuthKitToken("sk_live_your_api_key_here")
+
+        class TokenRequest(BaseModel):
+            identity: Optional[str] = None
+            identity_type: Optional[IdentityType] = None
+
+        @app.post("/authkit-token")
+        async def create_authkit_token(request: TokenRequest):
+            # Create the token asynchronously
+            token = await authkit_client.create_async(
+                identity=request.identity,
+                identity_type=request.identity_type
+            )
+
+            if token is None:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Failed to create token"
+                )
+
+            return token
+        ```
+      </Tab>
+      
+      <Tab title="Flask">
+        ```python
+        from flask import Flask, jsonify, request
+        from authkit_token import AuthKitToken
+
+        app = Flask(__name__)
+
+        # Initialize the client with your API key
+        # In production, load this from environment variables
+        authkit_client = AuthKitToken("sk_live_your_api_key_here")
+
+        @app.route("/authkit-token", methods=["POST"])
+        def create_authkit_token():
+            data = request.get_json() or {}
+            
+            identity = data.get("identity")
+            identity_type = data.get("identity_type")
+
+            # Create the token
+            token = authkit_client.create(
+                identity=identity,
+                identity_type=identity_type
+            )
+
+            if token is None:
+                return jsonify({"error": "Failed to create token"}), 500
+
+            return jsonify(token)
+        ```
+      </Tab>
     </Tabs>
     
     ### Token parameters
@@ -202,6 +295,15 @@ Before you begin, make sure you have:
     ```bash
     npm install @picahq/authkit
     ```
+
+    <Card
+      title="NPM Package"
+      icon="npm"
+      href="https://www.npmjs.com/package/@picahq/authkit"
+      horizontal
+    >
+      View on npm
+    </Card>
     
     This package works with any major frontend framework.
   </Step>
