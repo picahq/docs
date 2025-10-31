@@ -1,0 +1,386 @@
+---
+title: "Organizations and Projects"
+description: "Collaborate at scale with Organizations and Projects. Perfect for enterprise teams, multi-tenant setups, and managing multiple environments."
+---
+
+<Frame caption="Collaborate at scale — with structure, control, and flexibility">
+  <iframe
+    className="w-full aspect-video rounded-xl"
+    src="https://www.youtube.com/embed/hJ1cwV-L49c"
+    title="Introducing Organizations and Projects"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  ></iframe>
+</Frame>
+
+## Overview
+
+Organizations and Projects enable teams to collaborate at scale with proper structure, control, and flexibility. Organize your integrations, workflows, and environments while maintaining clear access control across your team.
+
+<CardGroup cols={2}>
+  <Card icon="building" title="Organizations">
+    Create dedicated organizations for your company with role-based access control
+  </Card>
+  <Card icon="folder" title="Projects">
+    Organize integrations, workflows, and environments within your organization
+  </Card>
+  <Card icon="users" title="Team Collaboration">
+    Invite team members with specific roles and permissions
+  </Card>
+  <Card icon="key" title="Scoped API Keys">
+    Generate API keys scoped to specific organizations or projects
+  </Card>
+</CardGroup>
+
+<Info>
+Organizations and Projects are available for enterprise Pica users. Perfect for larger teams, multi-tenant setups, or anyone managing multiple environments under one account.
+</Info>
+
+---
+
+## Organizations
+
+Organizations are the top-level structure for managing your team and resources. Each organization has its own members, projects, connections, and API keys.
+
+### Organization Roles
+
+Organizations support three roles with different permission levels:
+
+<AccordionGroup>
+  <Accordion title="Admin (Owner)" icon="crown">
+    **Full control** over the organization
+    
+    **Permissions:**
+    - Transfer ownership to another admin
+    - Create, update, and delete all organization resources
+    - Manage all projects within the organization
+    - Create and revoke organization invitations
+    - Manage connections, secrets, and AuthKit configurations
+    - View all organization activity and settings
+    
+    <Info>There is always one Admin who is the owner of the organization.</Info>
+  </Accordion>
+  
+  <Accordion title="Manager" icon="user-gear">
+    **Manage resources** but cannot modify organization settings
+    
+    **Permissions:**
+    - Create and manage projects
+    - Create, read, update, and delete connections
+    - Manage secrets and AuthKit configurations
+    - List and read organization resources
+    - Cannot create or revoke invitations
+    - Cannot delete the organization
+  </Accordion>
+  
+  <Accordion title="Member" icon="user">
+    **Read-only access** with limited creation rights
+    
+    **Permissions:**
+    - List and view connections
+    - List and view AuthKit configurations
+    - Create and list secrets
+    - Cannot modify or delete resources
+    - Cannot invite other members
+    - Cannot manage projects
+  </Accordion>
+</AccordionGroup>
+
+### Creating an Organization
+
+<video
+  muted
+  controls
+  className="w-full aspect-video"
+  src="/videos/create-an-organization.mp4"
+></video>
+
+<Steps>
+  <Step title="Navigate to Organizations">
+    Go to the [Pica Dashboard](https://app.picaos.com) and click on the **Personal** space in the navbar.
+  </Step>
+  
+  <Step title="Create Organization">
+    Click the **+ Create Organization** button and provide a name for your organization.
+  </Step>
+</Steps>
+
+### Inviting Team Members to an Organization
+
+<video
+  muted
+  controls
+  className="w-full aspect-video"
+  src="/videos/invite-to-organization.mp4"
+></video>
+
+<Steps>
+  <Step title="Open Organization Settings">
+    Once inside the Organization, navigate to the settings menu and click on the **People** tab.
+  </Step>
+  
+  <Step title="Send Invitation">
+    Click **+ Invite** button and enter the email addresses of the people you want to invite.
+  
+    Select the appropriate role for the new member:
+    - **Admin**: Full organization control (use sparingly)
+    - **Manager**: Can manage resources and projects
+    - **Member**: Read-only access with limited creation rights
+  </Step>
+  
+  <Step title="Send Invitation">
+    Click **Send Invitation**. The recipient will receive an email with instructions to join your organization. You can also choose to resend or revoke the invitation.
+  </Step>
+</Steps>
+
+---
+
+## Projects
+
+Projects help you organize integrations, workflows, and environments within an organization. Each project can have its own team members, connections, and scoped API keys.
+
+### Project Roles
+
+Projects share the same role structure as organizations:
+
+<CardGroup cols={3}>
+  <Card icon="crown" title="Admin">
+    Full control over the project and all its resources
+  </Card>
+  <Card icon="user-gear" title="Manager">
+    Can manage project resources but cannot delete the project
+  </Card>
+  <Card icon="user" title="Member">
+    Read-only access with limited creation rights
+  </Card>
+</CardGroup>
+
+### Creating a Project
+
+<video
+  muted
+  controls
+  className="w-full aspect-video"
+  src="/videos/create-a-project.mp4"
+></video>
+
+<Steps>
+  <Step title="Enter Organization">
+    Select the Organization you want to create a project in from the dropdown in the navbar.
+  </Step>
+  <Step title="Create Project">
+    Click the **+ Create Project** button in the navbar.
+  </Step>
+</Steps>
+
+### Inviting Members to a Project
+
+<video
+  muted
+  controls
+  className="w-full aspect-video"
+  src="/videos/invite-to-project.mp4"
+></video>
+
+<Steps>
+  <Step title="Open Project Settings">
+    Inside your project, select the **People** tab.
+  </Step>
+  
+  <Step title="Invite to Project">
+    Click the **+ Invite** button to add people to this project.
+  </Step>
+  
+  <Step title="Set Project Role">
+    Assign the member’s project role:
+    - **Admin**: Full control over the project
+    - **Manager**: Manage project resources and settings
+    - **Member**: Read-only access with limited creation rights
+  </Step>
+</Steps>
+
+<Info>
+Project members must also be members of the parent organization. When you invite someone to a project who isn't in the organization yet, they'll be added to both.
+</Info>
+
+---
+
+## Scoped API Keys
+
+Organizations and Projects each have their own API keys that are automatically scoped to that specific context. This provides secure, isolated access to resources.
+
+### Organization API Keys
+
+Organization-scoped API keys provide access to:
+- All projects within the organization
+- Organization-level connections and secrets
+- Organization-level AuthKit configurations
+- All resources the API key creator has permission to access
+
+<Steps>
+  <Step title="Navigate to API Keys">
+    From your organization dashboard, go to **API Keys** in the sidebar.
+  </Step>
+  
+  <Step title="Create API Key">
+    Click **Create API Key** and provide a descriptive name for the key.
+  </Step>
+  
+  <Step title="Copy Key">
+    **Important:** Copy the API key immediately. For security reasons, it will only be displayed once.
+  </Step>
+  
+  <Step title="Use in Your Application">
+    Use this API key in your application to access organization resources:
+    
+    ```bash
+    curl https://api.picaos.com/v1/vault/connections \
+      -H "x-pica-secret: your_organization_api_key"
+    ```
+  </Step>
+</Steps>
+
+### Project API Keys
+
+Project-scoped API keys provide access to:
+- Resources only within that specific project
+- Project-level connections and secrets
+- Project-level AuthKit configurations
+- Isolated from other projects in the organization
+
+<Steps>
+  <Step title="Navigate to Project API Keys">
+    From your project dashboard, go to **API Keys** in the sidebar.
+  </Step>
+  
+  <Step title="Create Project API Key">
+    Click **Create API Key** and provide a descriptive name.
+  </Step>
+  
+  <Step title="Copy Key">
+    **Important:** Copy the API key immediately. It will only be displayed once for security.
+  </Step>
+  
+  <Step title="Use in Your Application">
+    Use this project-scoped API key to access only that project's resources:
+    
+    ```bash
+    curl https://api.picaos.com/v1/connections \
+      -H "x-pica-secret: your_project_api_key"
+    ```
+  </Step>
+</Steps>
+
+<Warning>
+**Security Best Practices:**
+- Never expose API keys in client-side code or version control
+- Use project-scoped keys when you only need access to specific project resources
+- Rotate API keys regularly, especially if they may have been compromised
+- Delete unused API keys immediately
+</Warning>
+
+---
+
+## Permission Reference
+
+Here's a complete reference of permissions for each role:
+
+### Organization Permissions
+
+| Permission | Admin | Manager | Member |
+|------------|-------|---------|--------|
+| Create invitations | ✅ | ❌ | ❌ |
+| List invitations | ✅ | ❌ | ❌ |
+| Revoke invitations | ✅ | ❌ | ❌ |
+| Resend invitations | ✅ | ❌ | ❌ |
+| List connections | ✅ | ✅ | ✅ |
+| Create connections | ✅ | ✅ | ❌ |
+| Read connections | ✅ | ✅ | ❌ |
+| Update connections | ✅ | ✅ | ❌ |
+| Delete connections | ✅ | ❌ | ❌ |
+| List secrets | ✅ | ✅ | ✅ |
+| Create secrets | ✅ | ✅ | ✅ |
+| Read secrets | ✅ | ✅ | ❌ |
+| Update secrets | ✅ | ✅ | ❌ |
+| Delete secrets | ✅ | ✅ | ❌ |
+| List AuthKit | ✅ | ✅ | ✅ |
+| Create AuthKit | ✅ | ✅ | ❌ |
+| Read AuthKit | ✅ | ✅ | ✅ |
+| Update AuthKit | ✅ | ✅ | ❌ |
+| Delete AuthKit | ✅ | ✅ | ❌ |
+| Create projects | ✅ | ✅ | ❌ |
+
+### Project Permissions
+
+Project permissions follow the same structure as organization permissions, but are scoped to the specific project.
+
+| Permission | Admin | Manager | Member |
+|------------|-------|---------|--------|
+| List connections | ✅ | ✅ | ✅ |
+| Create connections | ✅ | ✅ | ❌ |
+| Read connections | ✅ | ✅ | ❌ |
+| Update connections | ✅ | ✅ | ❌ |
+| Delete connections | ✅ | ❌ | ❌ |
+| List secrets | ✅ | ✅ | ✅ |
+| Create secrets | ✅ | ✅ | ✅ |
+| Read secrets | ✅ | ✅ | ❌ |
+| Update secrets | ✅ | ✅ | ❌ |
+| Delete secrets | ✅ | ✅ | ❌ |
+| List AuthKit | ✅ | ✅ | ✅ |
+| Create AuthKit | ✅ | ✅ | ❌ |
+| Read AuthKit | ✅ | ✅ | ✅ |
+| Update AuthKit | ✅ | ✅ | ❌ |
+| Delete AuthKit | ✅ | ✅ | ❌ |
+
+---
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use Project-Scoped Keys" icon="key">
+    Always use project-scoped API keys when working with specific environments or clients. This provides better security and isolation.
+  </Accordion>
+  
+  <Accordion title="Principle of Least Privilege" icon="shield">
+    Grant team members the minimum level of access they need. Use Member roles for read-only access and Manager roles when write access is needed.
+  </Accordion>
+  
+  <Accordion title="Separate Environments" icon="layer-group">
+    Create separate projects for development, staging, and production to prevent accidental modifications to production resources.
+  </Accordion>
+  
+  <Accordion title="Regular Access Reviews" icon="user-check">
+    Periodically review organization and project members to ensure everyone still needs their current level of access.
+  </Accordion>
+  
+  <Accordion title="Descriptive Names" icon="tag">
+    Use clear, descriptive names for organizations, projects, and API keys to make management easier as you scale.
+  </Accordion>
+  
+  <Accordion title="Monitor API Key Usage" icon="chart-line">
+    Track which API keys are being used and rotate or revoke unused keys regularly.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Need Help?
+
+<CardGroup cols={2}>
+  <Card
+    title="Contact Support"
+    icon="envelope"
+    href="mailto:support@picaos.com"
+  >
+    Get help with Organizations and Projects setup
+  </Card>
+  <Card
+    title="View API Reference"
+    icon="code"
+    href="/api-reference/introduction"
+  >
+    Learn how to use organization and project API keys
+  </Card>
+</CardGroup>
+
