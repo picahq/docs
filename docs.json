@@ -19,7 +19,6 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "anchors": [],
     "global": {
       "anchors": [
         {
