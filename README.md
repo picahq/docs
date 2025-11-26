@@ -1,6 +1,6 @@
 # Pica Documentation
 
-Pica is a powerful platform that provides APIs and tools to build, deploy, and scale AI agents with seamless access to over 150+ integrations. It simplifies the process of connecting AI agents to real-world tools and services through a unified interface.
+Pica is a powerful platform that provides APIs and tools to build, deploy, and scale AI agents with seamless access to over 200+ integrations. It simplifies the process of connecting AI agents to real-world tools and services through a unified interface.
 
 Documentation is available at [docs.picaos.com](https://docs.picaos.com) and built with [Mintlify](https://www.mintlify.app/).
 
