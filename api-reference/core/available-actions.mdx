@@ -34,8 +34,41 @@ description: 'Get a list of available actions for a given platform'
 
 ## Response
 
-<ResponseField name="actions" type="Action[]">
-  Array of Actions
+<ResponseField name="type" type="string">
+  The response type identifier (`Available Actions`)
+</ResponseField>
+
+<ResponseField name="rows" type="Action[]">
+  Array of Action objects
+  <Expandable title="Action properties">
+    <ResponseField name="title" type="string">
+      The human-readable title of the action
+    </ResponseField>
+
+    <ResponseField name="key" type="string">
+      The unique identifier key for the action
+    </ResponseField>
+
+    <ResponseField name="method" type="'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'">
+      The HTTP method used for this action
+    </ResponseField>
+
+    <ResponseField name="platform" type="string">
+      The platform this action belongs to
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total" type="number">
+  Total number of actions available
+</ResponseField>
+
+<ResponseField name="pages" type="number">
+  Total number of pages available
+</ResponseField>
+
+<ResponseField name="page" type="number">
+  Current page number
 </ResponseField>
 
 <RequestExample>

@@ -12,8 +12,29 @@ description: 'Create a new user, or get an existing user by email'
 
 ## Response
 
-<ResponseField name="user" type="User">
-  The created user and their secrets
+<ResponseField name="id" type="string">
+  The unique identifier for the user
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  The email address of the user
+</ResponseField>
+
+<ResponseField name="throughput" type="number">
+  The rate limit throughput for the user
+</ResponseField>
+
+<ResponseField name="secrets" type="object">
+  The API keys for the user
+  <Expandable title="Secrets properties">
+    <ResponseField name="live" type="string">
+      The live environment API key
+    </ResponseField>
+
+    <ResponseField name="sandbox" type="string">
+      The sandbox/test environment API key
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 <RequestExample>
