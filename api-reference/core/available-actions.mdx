@@ -34,10 +34,6 @@ description: 'Get a list of available actions for a given platform'
 
 ## Response
 
-<ResponseField name="type" type="string">
-  The response type identifier (`Available Actions`)
-</ResponseField>
-
 <ResponseField name="rows" type="Action[]">
   Array of Action objects
   <Expandable title="Action properties">
@@ -81,7 +77,6 @@ curl 'https://api.picaos.com/v1/available-actions/exa' \
 <ResponseExample>
 ```json Response
 {
-    "type": "Available Actions",
     "rows": [
         {
             "title": "Get Contents",

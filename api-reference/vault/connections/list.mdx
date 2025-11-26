@@ -48,10 +48,6 @@ description: 'List available Connections'
 
 ## Response
 
-<ResponseField name="type" type="string">
-  The response type identifier (`Vault Connections`)
-</ResponseField>
-
 <ResponseField name="rows" type="Connection[]">
   Array of Connection objects
   <Expandable title="Connection properties">
@@ -143,7 +139,6 @@ curl 'https://api.picaos.com/v1/vault/connections' \
 <ResponseExample>
 ```json Response
 {
-  "type": "Vault Connections",
   "rows": [
     {
       "id": "673f79c6-0110-408b-bcbe-f4da000e66c7",

@@ -36,10 +36,6 @@ description: 'Get a list of available connectors'
 
 ## Response
 
-<ResponseField name="type" type="string">
-  The response type identifier (`Available Connectors`)
-</ResponseField>
-
 <ResponseField name="rows" type="Connector[]">
   Array of Connector objects
   <Expandable title="Connector properties">
@@ -123,7 +119,6 @@ curl 'https://api.picaos.com/v1/available-connectors' \
 <ResponseExample>
 ```json Response
 {
-    "type": "Available Connectors",
     "rows": [
         {
             "id": 62,
