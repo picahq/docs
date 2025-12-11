@@ -35,6 +35,11 @@
           "anchor": "Status",
           "icon": "signal",
           "href": "https://status.picaos.com"
+        },
+        {
+          "anchor": "Feedback Board",
+          "icon": "message",
+          "href": "https://feedback.picaos.com"
         }
       ]
     },
@@ -220,7 +225,7 @@
       },
       {
         "label": "Support",
-        "href": "mailto:support@picaos.com"
+        "href": "https://feedback.picaos.com"
       }
     ],
     "primary": {
